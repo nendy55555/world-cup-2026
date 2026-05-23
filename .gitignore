@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local config / secrets
+.env
+.env.local
+*.secret
+
+# Node (if ever added)
+node_modules/
+npm-debug.log*
+
+# Logs
+*.log
+
+# Build output (none currently, but reserved)
+dist/
+build/
