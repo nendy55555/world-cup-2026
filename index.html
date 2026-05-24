@@ -2,40 +2,67 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#001D14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WC Boyz">
 <title>World Cup Boyz &mdash; FIFA 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Anton&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* ── Surface scale (deep navy → stadium-light navy) — Trionda Power Palette ── */
-  --bg:     #050B26;    /* night navy */
-  --bg2:    #0B1547;    /* deep navy */
-  --bg3:    #142270;    /* mid navy elevated */
-  --bg4:    #1E319A;    /* bright navy hover */
+  /* ── Surface scale (warm forest dark) — 2010 Sun-Baked ── */
+  --bg:     #0F1A12;    /* warm forest dark */
+  --bg2:    #182A1C;    /* warm dark */
+  --bg3:    #233A28;    /* card surface — earthy mid */
+  --bg4:    #355040;    /* elevated / hover — dusty sage */
 
-  /* ── Borders — brighter, less muted ── */
-  --border:        #2E4BC4;        /* punchy navy edge */
-  --border2:       rgba(255,255,255,0.45);   /* white accent divider */
-  --border-strong: #4569E8;
+  /* ── Borders — sage/olive, not neon ── */
+  --border:        #3F5A45;        /* sage olive border */
+  --border2:       rgba(232,185,49,0.40);    /* dusty gold divider */
+  --border-strong: #6E8F6E;        /* sage highlight */
 
-  /* ── Text — less faded ── */
-  --text:  #ffffff;
-  --text2: #FFD93D;     /* gold emphasis (leaders / trophies) */
-  --text3: #C9D4FF;     /* readable muted (was #8fb39e — much brighter) */
+  /* ── Text — warm cream muted, not stark yellow ── */
+  --text:  #F5EDD8;     /* warm bone (was pure white) */
+  --text2: #E8B931;     /* dusty gold emphasis */
+  --text3: #C9BC8A;     /* parchment muted */
 
-  /* ── Semantic colors — bold Trionda red/white/blue ── */
-  --gold:   #FFD93D;
-  --green:  #00E676;    /* reserved: live + win status */
-  --green2: #4CFFA8;
-  --red:    #FF1744;    /* Trionda bright red — primary action */
-  --red2:   #FF4D6A;
-  --blue:   #2D5BFF;    /* Trionda bright blue */
-  --blue2:  #6A8DFF;
-  --white:  #FFFFFF;
-  --cream:  #FFF1F4;    /* warm off-white */
-  --glow:        rgba(255,23,68,0.28);   /* red glow */
-  --glow-blue:   rgba(45,91,255,0.30);
-  --glow-white:  rgba(255,255,255,0.18);
+  /* ── Semantic colors — 2010 sun-baked: dusty gold, terracotta, wine ── */
+  --gold:    #E8B931;   /* sun-baked gold (was neon #E8B931) */
+  --yellow:  #E8B931;
+  --yellow2: #F4D165;   /* warm honey hover */
+  --orange:  #C4612E;   /* terracotta (was hot #C4612E) */
+  --orange2: #DD8050;   /* burnt sienna hover */
+  --red:     #B43A2E;   /* wine red (was flag #B43A2E) */
+  --red2:    #CE5544;
+  --blue:    #4A6B8C;   /* dusty teal-blue (was neon #4A6B8C) */
+  --blue2:   #7A98B6;
+  --blue3:   #7A98B6;
+  --mex:     #2D5A3A;   /* muted Mexico green */
+  --mex2:    #4A7A55;   /* sage Mexico */
+  --green:   #7AAA6A;   /* sage live/win (was bright #7AAA6A) */
+  --green2:  #9BC287;
+  --white:   #F5EDD8;   /* warm bone, not stark white */
+  --cream:   #E8D7B0;   /* parchment paper highlight */
+  --cream2:  #F2E4C2;   /* lighter parchment */
+  --glow:         rgba(232,185,49,0.35);    /* dusty gold glow */
+  --glow-orange:  rgba(196,97,46,0.40);
+  --glow-red:     rgba(180,58,46,0.35);
+  --glow-green:   rgba(74,122,85,0.45);
+  --glow-blue:    rgba(74,107,140,0.30);
+  --glow-white:   rgba(245,237,216,0.18);
+
+  /* ── Type families ── */
+  --font-display: 'Anton', 'Inter', 'Impact', sans-serif;
+  --font-sans:    'Inter', -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
 
   /* ── Type scale (8 sizes) ── */
   --fs-caption: 0.625rem;   /* 10px — micro labels */
@@ -51,31 +78,53 @@
   --r-sm: 4px;  --r-md: 8px;  --r-lg: 12px;  --r-pill: 999px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-a{color:var(--green);text-decoration:none;}
+body{
+  font-family:var(--font-sans);
+  background:
+    radial-gradient(ellipse 900px 450px at 15% -8%,  rgba(232,185,49,0.16), transparent 62%),
+    radial-gradient(ellipse 800px 400px at 92% 22%,  rgba(196,97,46,0.14), transparent 62%),
+    radial-gradient(ellipse 700px 500px at 8% 75%,   rgba(180,58,46,0.10), transparent 62%),
+    radial-gradient(ellipse 900px 500px at 100% 95%, rgba(74,107,140,0.10), transparent 62%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);min-height:100vh;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(232,185,49,0.03) 0 18px, transparent 18px 36px),
+    radial-gradient(rgba(245,237,216,0.025) 1px, transparent 1px);
+  background-size:auto, 4px 4px;
+  opacity:.6;
+}
+.hdr, .tab-nav, .sbar, .main, .footer{position:relative;z-index:1;}
+a{color:var(--gold);text-decoration:none;}
+a:hover{color:var(--orange);}
 
 /* ═══ HEADER ═══ */
 .hdr{
   background:
-    repeating-linear-gradient(90deg,
-      rgba(255,255,255,0.05) 0 60px,
-      transparent 60px 120px),
-    radial-gradient(ellipse at 20% 20%, rgba(255,23,68,0.35) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 80%, rgba(45,91,255,0.40) 0%, transparent 55%),
-    linear-gradient(135deg,#0B1547 0%,#142270 35%,#1E319A 65%,#0B1547 100%);
-  border-bottom:4px solid;
-  border-image:linear-gradient(90deg,#FF1744 0%,#FF1744 33%,#FFFFFF 33%,#FFFFFF 66%,#2D5BFF 66%,#2D5BFF 100%) 1;
-  padding:30px 0 24px;text-align:center;position:relative;overflow:hidden;
+    repeating-linear-gradient(45deg,
+      rgba(245,237,216,0.035) 0 16px,
+      transparent 16px 32px),
+    radial-gradient(circle at 18% 26%, rgba(232,185,49,0.40) 0%, transparent 50%),
+    radial-gradient(circle at 82% 62%, rgba(196,97,46,0.32) 0%, transparent 52%),
+    radial-gradient(circle at 50% 108%, rgba(74,107,140,0.25) 0%, transparent 55%),
+    linear-gradient(160deg,#1B2C20 0%,#2D4A36 50%,#1B2C20 100%);
+  padding:34px 0 26px;text-align:center;position:relative;overflow:hidden;
 }
 .hdr::before{
   content:'';position:absolute;top:-30%;left:10%;width:80%;height:160%;
-  background:radial-gradient(ellipse,rgba(255,255,255,0.18) 0%,transparent 60%);
+  background:radial-gradient(ellipse,rgba(255,255,255,0.22) 0%,transparent 60%);
   pointer-events:none;
 }
 .hdr::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,#FF1744 0%,#FF1744 33%,#FFFFFF 33%,#FFFFFF 66%,#2D5BFF 66%,#2D5BFF 100%);
-  box-shadow:0 0 20px rgba(255,23,68,0.5), 0 0 20px rgba(45,91,255,0.5);
+  content:'';position:absolute;bottom:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,
+    #EF1A2D 0%,   #EF1A2D 33.33%,
+    #006847 33.33%, #006847 66.66%,
+    #0033A0 66.66%, #0033A0 100%);
+  box-shadow:0 0 28px rgba(180,58,46,0.55), 0 0 28px rgba(45,90,58,0.45), 0 0 28px rgba(0,51,160,0.55);
 }
 
 /* Pitch watermark */
@@ -84,19 +133,72 @@ a{color:var(--green);text-decoration:none;}
   pointer-events:none;opacity:.055;z-index:0;
 }
 .hdr-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 20px;text-align:center;}
-.hdr-icon{display:inline-flex;align-items:center;justify-content:center;margin-bottom:6px;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 26px rgba(255,23,68,0.55)) drop-shadow(0 0 40px rgba(45,91,255,0.45));animation:ballFloat 5s ease-in-out infinite;}
-.hdr-icon svg{display:block;width:72px;height:72px;}
-@keyframes ballFloat{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-4px) rotate(3deg);}}
-.hdr h1{
-  font-size:var(--fs-h1);font-weight:900;letter-spacing:-0.04em;margin-bottom:5px;
-  color:#ffffff;
-  background:linear-gradient(90deg,#FF1744 0%,#FFFFFF 50%,#6A8DFF 100%);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  text-shadow:0 4px 24px rgba(255,23,68,0.35);
-  filter:drop-shadow(0 0 18px rgba(255,255,255,0.25));
+.hdr-icon{display:inline-flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 22px rgba(180,58,46,0.45)) drop-shadow(0 0 36px rgba(0,51,160,0.35));}
+.hdr-icon svg{display:block;width:78px;height:78px;}
+.hdr-ball-img{display:block;object-fit:contain;border-radius:50%;}
+.hdr-ball-lg{width:84px;height:84px;animation:ballFloat 5s ease-in-out infinite;}
+.hdr-ball-sm{width:44px;height:44px;opacity:.78;animation:ballFloat 5s ease-in-out infinite;}
+.hdr-ball-sm:first-child{animation-delay:-1.6s;transform-origin:center;}
+.hdr-ball-sm:last-child{animation-delay:-3.2s;transform-origin:center;}
+@media(max-width:640px){
+  .hdr-icon{gap:10px;}
+  .hdr-ball-lg{width:60px;height:60px;}
+  .hdr-ball-sm{width:32px;height:32px;}
 }
-.hdr-sub{font-size:var(--fs-small);color:var(--text3);font-weight:500;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
+@keyframes ballFloat{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-5px) rotate(3deg);}}
+.hdr h1{
+  font-family:var(--font-display);
+  font-size:3.6rem;font-weight:400;letter-spacing:0;line-height:.95;margin-bottom:8px;
+  text-transform:uppercase;
+  color:#E8D7B0;
+  text-shadow:
+    2px 2px 0 #B43A2E,
+    0 0 22px rgba(232,185,49,0.40),
+    0 6px 20px rgba(0,0,0,0.45);
+}
+@media(max-width:680px){.hdr h1{font-size:2.6rem;}}
+.hdr-sub{font-size:var(--fs-small);color:#E8B931;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:14px;text-shadow:0 0 12px rgba(232,185,49,0.35), 1px 1px 0 rgba(0,0,0,0.35);}
 .hdr-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+
+/* ═══ LEAGUE SWITCHER ═══ */
+.league-switcher{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:14px;flex-wrap:wrap;
+}
+.league-switcher-lbl{
+  font-size:.66rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--text3);opacity:.78;
+}
+.league-pill-group{
+  display:inline-flex;background:rgba(8,16,52,0.55);border:1px solid var(--border);
+  border-radius:999px;padding:4px;gap:2px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.league-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+  background:transparent;border:0;color:var(--text3);cursor:pointer;
+  font-family:inherit;font-weight:700;font-size:.82rem;letter-spacing:.02em;
+  transition:background .18s ease, color .18s ease, transform .12s ease;
+}
+.league-pill:hover{color:#fff;background:rgba(74,107,140,0.18);}
+.league-pill:active{transform:scale(0.97);}
+.league-pill.active{
+  background:linear-gradient(135deg, var(--red) 0%, var(--blue2) 100%);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(180,58,46,0.35), 0 0 0 1px rgba(255,255,255,0.22) inset;
+}
+.league-pill-name{font-weight:800;}
+.league-pill-meta{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.66rem;
+  opacity:.78;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,0.18);
+}
+.league-pill.active .league-pill-meta{background:rgba(0,0,0,0.28);opacity:.92;}
+@media(max-width:680px){
+  .league-switcher{margin-top:10px;gap:6px;}
+  .league-pill{padding:6px 11px;font-size:.74rem;}
+  .league-pill-meta{font-size:.6rem;}
+}
 /* ═══ UNIFIED PILL SYSTEM ═══
    One shape for every metadata/status pill in the app. Differentiation
    is by color tone only. Two sizes:
@@ -107,13 +209,13 @@ a{color:var(--green);text-decoration:none;}
 .host-badge, .dteam-group, .group-badge, .bseed {
   display:inline-flex;align-items:center;gap:4px;
   font-family:'JetBrains Mono',monospace;
-  font-size:var(--fs-caption);font-weight:700;
-  letter-spacing:.04em;line-height:1.4;
+  font-size:var(--fs-caption);font-weight:800;
+  letter-spacing:.05em;line-height:1.4;
   padding:3px 9px;border-radius:var(--r-pill);
   white-space:nowrap;flex-shrink:0;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--border-strong);
-  color:var(--text3);
+  background:rgba(45,90,58,.45);
+  border:1px solid rgba(232,185,49,.40);
+  color:#C9BC8A;
   text-transform:uppercase;
 }
 /* tight inline variant for badges that sit next to other text */
@@ -126,43 +228,57 @@ a{color:var(--green);text-decoration:none;}
 /* ── Tone variants ── */
 .lbdraft, .lb-gap.leading, .sbc-pill.first, .badge.gold,
 .host-badge, .nation-squad-status.provisional {
-  background:rgba(255,215,0,.10);border-color:rgba(255,215,0,.30);color:var(--gold);
+  background:linear-gradient(135deg,rgba(232,185,49,.30),rgba(196,97,46,.18));
+  border-color:#E8B931;color:#E8B931;
+  box-shadow:0 0 10px rgba(232,185,49,.30);
 }
 .lbalive, .sbc-pill.tied, .badge.green, .nation-squad-status.official {
-  background:rgba(0,255,136,.10);border-color:rgba(0,255,136,.30);color:var(--green);
+  background:rgba(74,122,85,.45);border-color:#7AAA6A;color:#FFFFFF;
 }
 .badge.red, .nation-squad-status.tba {
-  background:rgba(233,69,96,.10);border-color:rgba(233,69,96,.30);color:var(--red);
+  background:rgba(180,58,46,.45);border-color:#CE5544;color:#FFFFFF;
+}
+.badge.blue {
+  background:rgba(74,107,140,.40);border-color:#7A98B6;color:#FFFFFF;
+}
+.badge.orange {
+  background:rgba(196,97,46,.45);border-color:#DD8050;color:#FFFFFF;
 }
 
 /* ═══ STATUS BAR ═══ */
 .sbar{
-  background:var(--bg2);border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,#182A1C,#233A28);
+  border-top:1px solid rgba(232,185,49,0.30);
+  border-bottom:1px solid rgba(232,185,49,0.30);
   padding:12px 20px;display:flex;justify-content:center;align-items:center;gap:16px;
   font-size:var(--fs-small);color:var(--text);flex-wrap:wrap;
 }
-.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0;}
-.sdot.live   {background:#00ff88;animation:sdotpulse 1.8s infinite;}
+.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0;}
+.sdot.live   {background:#7AAA6A;animation:sdotpulse 1.8s infinite;}
 .sdot.idle   {background:var(--text3);}
-.sdot.loading{background:#1A4DD9;animation:sdotpulse 0.9s infinite;}
-.sdot.draft  {background:#ffd700;animation:sdotpulse 2.5s infinite;}
+.sdot.loading{background:var(--yellow);animation:sdotpulse 0.9s infinite;}
+.sdot.draft  {background:var(--orange);animation:sdotpulse 2.5s infinite;}
 @keyframes sdotpulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.4);}
-  50%    {box-shadow:0 0 0 5px rgba(255,215,0,0);}
+  0%,100%{box-shadow:0 0 0 0 rgba(232,185,49,0.65);}
+  50%    {box-shadow:0 0 0 7px rgba(232,185,49,0);}
 }
 .rbtn{
-  background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);
-  padding:8px 16px;border-radius:var(--r-md);font-size:var(--fs-small);font-weight:600;cursor:pointer;
+  background:linear-gradient(135deg,#E8B931,#C4612E);
+  color:#0F1A12;border:1px solid #FFFFFF;
+  padding:8px 16px;border-radius:var(--r-md);font-size:var(--fs-small);font-weight:800;cursor:pointer;
   transition:all .2s;font-family:inherit;white-space:nowrap;min-height:36px;
+  box-shadow:0 4px 16px rgba(232,185,49,0.35);letter-spacing:.04em;text-transform:uppercase;
 }
-.rbtn:hover{background:rgba(255,215,0,0.22);}
+.rbtn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 6px 22px rgba(196,97,46,0.45);}
 .rbtn:disabled{opacity:.4;cursor:not-allowed;}
 
 /* ═══ TAB NAV ═══ */
 .tab-nav{
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  display:flex;justify-content:center;gap:4px;padding:10px 20px;
+  background:linear-gradient(180deg,#233A28,#182A1C);
+  border-bottom:1px solid rgba(232,185,49,0.32);
+  display:flex;justify-content:center;gap:6px;padding:10px 20px;
   position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 18px rgba(0,0,0,0.3);
 }
 .tab-btn{
   display:flex;align-items:center;justify-content:center;gap:6px;
@@ -172,10 +288,14 @@ a{color:var(--green);text-decoration:none;}
   font-family:inherit;transition:all .15s;white-space:nowrap;
   letter-spacing:.02em;min-height:44px;
 }
-.tab-btn:hover{background:rgba(0,200,83,0.10);border-color:rgba(0,200,83,0.32);color:var(--text);}
+.tab-btn{font-family:var(--font-sans);}
+.tab-btn{border-color:rgba(232,185,49,0.22);color:#C9BC8A;}
+.tab-btn:hover{background:rgba(232,185,49,0.12);border-color:rgba(232,185,49,0.50);color:#F5EDD8;}
 .tab-btn.active{
-  background:rgba(255,215,0,0.15);border-color:rgba(255,215,0,0.45);
-  color:var(--gold);box-shadow:0 0 14px rgba(255,215,0,0.15);
+  background:linear-gradient(135deg,#E8B931 0%,#C4612E 100%);
+  border-color:#F5EDD8;color:#1B2C20;
+  box-shadow:0 0 22px rgba(232,185,49,0.42), 0 4px 14px rgba(196,97,46,0.30);
+  font-weight:800;letter-spacing:.04em;
 }
 .tab-pane{display:none;}
 .tab-pane.active{display:block;}
@@ -183,25 +303,74 @@ a{color:var(--green);text-decoration:none;}
 /* ═══ MAIN ═══ */
 .main{max-width:1280px;margin:0 auto;padding:22px 20px 60px;}
 .sec-lbl{
-  font-size:var(--fs-caption);font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+  font-size:.72rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;
+  color:#E8B931;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  font-family:var(--font-sans);
 }
-.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+.sec-lbl::before{
+  content:'';width:9px;height:9px;border-radius:50%;
+  background:#E8B931;box-shadow:0 0 14px rgba(232,185,49,0.85);
+  flex-shrink:0;
+}
+.sec-lbl::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,#E8B931 0%,#C4612E 30%,#B43A2E 60%,transparent 100%);border-radius:1px;}
 .sec-lbl-icon{font-size:.9rem;margin-right:2px;vertical-align:-.1em;}
 
 /* ═══ DRAFT PENDING BANNER ═══ */
 .draft-pending{
-  background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(0,201,94,0.05));
-  border:1px solid rgba(0,201,94,0.25);border-radius:14px;
-  padding:22px 28px;text-align:center;margin-bottom:28px;
+  background:
+    radial-gradient(circle at 12% 0%,rgba(232,185,49,0.32),transparent 55%),
+    radial-gradient(circle at 88% 100%,rgba(180,58,46,0.32),transparent 55%),
+    radial-gradient(circle at 50% 50%,rgba(196,97,46,0.16),transparent 70%),
+    linear-gradient(135deg,rgba(45,90,58,0.65),rgba(0,40,24,0.85));
+  border:2px solid #E8B931;border-radius:18px;
+  padding:26px 30px;text-align:center;margin-bottom:28px;
+  box-shadow:0 14px 50px rgba(232,185,49,0.22), 0 0 0 1px rgba(196,97,46,0.30) inset;
+  position:relative;overflow:hidden;
 }
-.draft-pending h2{font-size:var(--fs-h3);font-weight:800;color:var(--green);margin-bottom:8px;}
-.draft-pending p{font-size:var(--fs-body);color:rgba(255,255,255,.85);line-height:1.6;}
+.draft-pending h2{font-family:var(--font-display);font-size:1.9rem;font-weight:400;color:#E8B931;margin-bottom:8px;letter-spacing:.02em;text-transform:uppercase;text-shadow:2px 2px 0 #C4612E, -1px -1px 0 #B43A2E, 0 0 24px rgba(232,185,49,0.5);}
+.draft-pending p{font-size:var(--fs-body);color:#C9BC8A;line-height:1.6;font-weight:500;}
 .draft-pending-sub{font-size:var(--fs-small);color:var(--text3);margin-top:8px;font-family:'JetBrains Mono',monospace;}
 .kicks-off{
-  display:inline-flex;align-items:center;gap:6px;margin-top:12px;
-  background:rgba(0,201,94,.12);border:1px solid rgba(0,201,94,.3);
-  padding:5px 16px;border-radius:20px;font-size:.73rem;font-weight:700;color:var(--green);
+  display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  background:linear-gradient(135deg,#E8B931,#C4612E);border:2px solid #FFFFFF;
+  padding:8px 20px;border-radius:24px;font-size:.82rem;font-weight:900;color:#0F1A12;
+  letter-spacing:.08em;text-transform:uppercase;
+  box-shadow:0 6px 24px rgba(232,185,49,0.55), 0 4px 14px rgba(196,97,46,0.45);
+}
+/* ═══ KICKOFF COUNTDOWN ═══ */
+.kickoff-countdown{
+  margin-top:18px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;
+}
+.kc-cell{
+  background:linear-gradient(180deg,#0d1730 0%,#070d1f 100%);
+  border:1px solid rgba(232,185,49,.4);border-radius:10px;
+  padding:10px 16px;min-width:74px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.05) inset, 0 8px 24px rgba(196,97,46,.18);
+  position:relative;overflow:hidden;
+}
+.kc-cell::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,185,49,.65),transparent);
+}
+.kc-num{display:block;font-size:1.8rem;font-weight:900;line-height:1;color:#E8B931;
+  text-shadow:0 0 14px rgba(232,185,49,.45),0 2px 0 rgba(196,97,46,.45);}
+.kc-lbl{display:block;font-size:.5rem;font-weight:700;letter-spacing:.18em;
+  color:#C9BC8A;margin-top:6px;text-transform:uppercase;}
+.kc-live{
+  margin-top:18px;display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#00ff88,#00b35e);color:#0F1A12;
+  border:2px solid #fff;border-radius:24px;padding:8px 20px;
+  font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:.82rem;
+  box-shadow:0 6px 24px rgba(0,255,136,.5);
+}
+.kc-live::before{
+  content:'';width:10px;height:10px;border-radius:50%;background:#0F1A12;
+  box-shadow:0 0 0 4px rgba(0,29,20,.25);animation:dotpulse 1.4s infinite;
+}
+@media (max-width:520px){
+  .kc-cell{padding:8px 12px;min-width:60px;}
+  .kc-num{font-size:1.4rem;}
 }
 
 /* ═══ TOURNAMENT PROGRESS ═══ */
@@ -225,8 +394,9 @@ a{color:var(--green);text-decoration:none;}
 /* ═══ GAMES TICKER ═══ */
 .ticker{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:22px;}
 .ticker-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;gap:10px;flex-wrap:wrap;}
-.ticker-title{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);}
-.ticker-rlabel{font-size:.62rem;color:var(--gold);font-weight:600;background:rgba(255,215,0,.12);padding:3px 10px;border-radius:10px;}
+.ticker-title{font-family:var(--font-display);font-size:1.15rem;font-weight:400;text-transform:uppercase;letter-spacing:.04em;color:#E8B931;display:inline-flex;align-items:center;gap:8px;}
+.ticker-title::before{content:'';width:7px;height:7px;border-radius:50%;background:#E8B931;box-shadow:0 0 12px rgba(232,185,49,.85);}
+.ticker-rlabel{font-size:.62rem;color:#0F1A12;font-weight:900;background:linear-gradient(135deg,#E8B931,#C4612E);padding:3px 11px;border-radius:10px;letter-spacing:.08em;text-transform:uppercase;}
 .ticker-filters{display:flex;gap:5px;flex-wrap:wrap;}
 .tfbtn{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text3);font-family:inherit;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 9px;border-radius:var(--r-pill);cursor:pointer;transition:all .15s;}
 .tfbtn:hover{color:var(--text);border-color:var(--border-strong);}
@@ -285,25 +455,31 @@ a{color:var(--green);text-decoration:none;}
 .lboard{display:flex;flex-direction:column;gap:5px;margin-bottom:32px;}
 .lbrow{
   display:grid;grid-template-columns:36px 1fr 320px auto;gap:14px;align-items:center;
-  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
+  background:linear-gradient(90deg,rgba(45,90,58,0.55),rgba(0,40,24,0.85));
+  border:1px solid rgba(232,185,49,0.30);border-radius:12px;
   padding:16px 18px;transition:all .3s;cursor:default;position:relative;overflow:hidden;
-  border-left:3px solid transparent;min-height:140px;
+  border-left:6px solid transparent;min-height:140px;
+  box-shadow:0 4px 22px rgba(0,0,0,0.35), 0 0 0 1px rgba(232,185,49,0.05) inset;
 }
-.lbrow:hover{background:var(--bg4);transform:translateX(3px);}
-.lbrow.lead{border-color:rgba(255,215,0,.4);background:linear-gradient(135deg,rgba(255,215,0,.06),var(--bg3));}
-@keyframes leadShimmer{0%,100%{border-color:rgba(255,215,0,.25);}50%{border-color:rgba(255,215,0,.65);}}
+.lbrow:hover{background:linear-gradient(90deg,rgba(74,122,85,0.65),rgba(0,61,44,0.92));transform:translateX(4px);box-shadow:0 8px 32px rgba(232,185,49,0.22), 0 0 0 1px rgba(232,185,49,0.15) inset;}
+.lbrow.lead{border-color:#E8B931;background:linear-gradient(90deg,rgba(232,185,49,.30),rgba(196,97,46,.22) 45%,rgba(0,61,44,0.92));box-shadow:0 10px 36px rgba(232,185,49,.32), 0 0 0 1px #E8B931 inset;}
+@keyframes leadShimmer{0%,100%{border-color:#E8B931;}50%{border-color:#C4612E;box-shadow:0 10px 40px rgba(196,97,46,.42), 0 0 0 2px #E8B931 inset;}}
 .lbrow.lead{animation:leadShimmer 2.4s ease-in-out infinite;}
 .lbrow.lead.au{animation:fadeUp .4s cubic-bezier(.25,.46,.45,.94) forwards, leadShimmer 2.4s .4s ease-in-out infinite;}
 
-.lbrow.pc0{border-left-color:#f5a623;} .lbrow.pc1{border-left-color:#60a5fa;}
-.lbrow.pc2{border-left-color:#34d399;} .lbrow.pc3{border-left-color:#f87171;}
-.lbrow.pc4{border-left-color:#a78bfa;} .lbrow.pc5{border-left-color:#fb923c;}
+.lbrow{border-left-width:5px;}
+.lbrow.pc0{border-left-color:#E8B931;}  /* yellow */
+.lbrow.pc1{border-left-color:#C4612E;}  /* orange */
+.lbrow.pc2{border-left-color:#B43A2E;}  /* red */
+.lbrow.pc3{border-left-color:#4A7A55;}  /* green */
+.lbrow.pc4{border-left-color:#4A6B8C;}  /* blue */
+.lbrow.pc5{border-left-color:#FFFFFF;}  /* white */
 
 .lbrank{font-size:var(--fs-small);font-weight:700;color:var(--text3);font-family:'JetBrains Mono',monospace;text-align:center;font-variant-numeric:tabular-nums;}
 .lbrow.lead .lbrank{color:var(--gold);}
 .lbinfo{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.lbname-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.lbname{font-size:var(--fs-strong);font-weight:700;white-space:nowrap;letter-spacing:-.01em;}
+.lbname-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.lbname{font-family:var(--font-display);font-size:1.7rem;font-weight:400;letter-spacing:0;line-height:1;white-space:nowrap;text-transform:uppercase;}
 /* .lbalive .lbdraft .lb-gap styled by unified pill system */
 .lbflags{display:none;gap:4px;align-items:center;flex-wrap:wrap;min-height:18px;margin-top:2px;}
 .lbflag{width:24px;height:17px;border-radius:3px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.12);transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.3);position:relative;}
@@ -313,9 +489,10 @@ a{color:var(--green);text-decoration:none;}
 .flag-empty{width:24px;height:17px;border-radius:3px;border:1.5px dashed var(--border-strong);flex-shrink:0;opacity:.25;}
 .lbscore{font-size:var(--fs-h2);font-weight:800;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;}
 
-.pc0{--pc:#f5a623;} .pc1{--pc:#60a5fa;} .pc2{--pc:#34d399;}
-.pc3{--pc:#f87171;} .pc4{--pc:#a78bfa;} .pc5{--pc:#fb923c;}
-.lbname{color:var(--pc);} .lbscore{color:var(--pc);}
+.pc0{--pc:#E8B931;} .pc1{--pc:#DD8050;} .pc2{--pc:#D86E66;}
+.pc3{--pc:#7AAA6A;} .pc4{--pc:#7A98B6;} .pc5{--pc:#FFFFFF;}
+.lbname{color:var(--pc);text-shadow:2px 2px 0 rgba(0,0,0,.35), 0 0 18px rgba(232,185,49,.18);}
+.lbscore{color:var(--pc);text-shadow:2px 2px 0 #2D5A3A;}
 
 /* 2×4 nation chip grid */
 .nation-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:320px;}
@@ -341,7 +518,8 @@ a{color:var(--green);text-decoration:none;}
 
 /* ═══ BAR CHART ═══ */
 .sbc{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px 22px 22px;margin-bottom:32px;}
-.sbc-title{font-size:.7rem;font-weight:700;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.sbc-title{font-family:var(--font-display);font-size:1.15rem;font-weight:400;color:#E8B931;margin-bottom:16px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.04em;}
+.sbc-title::before{content:'';width:7px;height:7px;border-radius:50%;background:#E8B931;box-shadow:0 0 12px rgba(232,185,49,.85);}
 .sbc-vchart{display:flex;align-items:flex-end;gap:8px;height:260px;}
 .sbc-vcol{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;height:100%;}
 .sbc-vbar-wrap{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end;}
@@ -350,7 +528,7 @@ a{color:var(--green);text-decoration:none;}
 .sbc-vseg:last-child{border-top:none;}
 .sbc-vseg img{object-fit:cover;pointer-events:none;filter:drop-shadow(0 0 4px rgba(255,255,255,.7));}
 .sbc-vfoot{padding-top:8px;display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;}
-.sbc-vname{font-size:.7rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center;}
+.sbc-vname{font-family:var(--font-display);font-size:.95rem;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center;text-transform:uppercase;letter-spacing:.02em;}
 .sbc-vscore{font-size:var(--fs-h3);font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;font-variant-numeric:tabular-nums;}
 .sbc-vbar-empty{width:100%;height:5px;background:rgba(255,255,255,.05);border-radius:4px;}
 /* .sbc-pill styled by unified pill system (.first .tied .behind variants) */
@@ -358,11 +536,11 @@ a{color:var(--green);text-decoration:none;}
 /* ═══ DRAFT CARDS ═══ */
 .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(275px,1fr));gap:12px;margin-bottom:32px;}
 .dcard{background:var(--bg3);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;}
-.dcard:hover{border-color:rgba(0,201,94,.18);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.3);}
+.dcard:hover{border-color:#E8B931;transform:translateY(-2px);box-shadow:0 12px 34px rgba(232,185,49,.28),0 0 0 1px rgba(196,97,46,.30) inset;}
 .dcard-accent{height:3px;}
 .dcard-hdr{padding:12px 14px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:10px;}
 .dcard-hdr-left{display:flex;flex-direction:column;gap:3px;}
-.dcard-name{font-size:var(--fs-strong);font-weight:700;letter-spacing:-.01em;}
+.dcard-name{font-family:var(--font-display);font-size:1.55rem;font-weight:400;letter-spacing:0;line-height:1;text-transform:uppercase;}
 .dcard-career{font-size:var(--fs-caption);color:var(--text3);font-family:'JetBrains Mono',monospace;}
 .dcard-hdr-right{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
 .dcard-score{font-size:var(--fs-h2);font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1;font-variant-numeric:tabular-nums;}
@@ -384,20 +562,47 @@ a{color:var(--green);text-decoration:none;}
 .pool-conf-title{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:7px;display:flex;align-items:center;gap:6px;}
 .pool-conf-title::after{content:'';flex:1;height:1px;background:var(--border);}
 .pool-conf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px;}
-.nation-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;transition:all .2s;cursor:pointer;overflow:hidden;}
-.nation-card:hover{border-color:rgba(255,215,0,.3);background:var(--bg4);}
-.nation-card.host{border-color:rgba(255,215,0,.3);background:linear-gradient(135deg,rgba(255,215,0,.06),var(--bg3));}
-.nation-card.open{grid-column:1/-1;border-color:rgba(0,201,94,.4);background:linear-gradient(180deg,var(--bg4) 0%,var(--bg3) 100%);box-shadow:0 4px 24px rgba(0,0,0,.4),0 0 0 1px rgba(0,201,94,.18) inset;cursor:default;}
+.nation-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;transition:all .2s;cursor:pointer;overflow:visible;position:relative;}
+.nation-card.open{overflow:hidden;}
+.nation-card:hover{border-color:#E8B931;background:var(--bg4);box-shadow:0 6px 22px rgba(232,185,49,.32);transform:translateY(-1px);}
+/* ── Projected XI hover tooltip ── */
+.nation-lineup-tip{position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,-4px);z-index:200;background:linear-gradient(180deg,#0d1730 0%,#070d1f 100%);border:1px solid rgba(255,23,68,.35);border-radius:10px;padding:11px 11px 12px;box-shadow:0 16px 48px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06) inset,0 0 24px rgba(255,23,68,.18);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .14s ease,transform .14s ease,visibility 0s linear .14s;width:260px;}
+.nlt-pitch{display:block;margin:0 0 9px;border-radius:6px;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 4px 14px rgba(0,0,0,.45);}
+.nlt-roster{}
+.nation-card:not(.open):hover .nation-lineup-tip{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .14s ease,transform .14s ease,visibility 0s linear 0s;}
+.pool-conf-grid > .nation-card:nth-last-child(-n+4) .nation-lineup-tip{top:auto;bottom:calc(100% + 8px);transform:translate(-50%,4px);}
+.pool-conf-grid > .nation-card:nth-last-child(-n+4):hover .nation-lineup-tip{transform:translate(-50%,0);}
+.nlt-hdr{display:flex;justify-content:space-between;align-items:center;font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:.11em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08);}
+.nlt-hdr-lbl{font-weight:700;}
+.nlt-formation{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:800;color:#D86E66;letter-spacing:.06em;text-shadow:0 0 12px rgba(255,107,130,.4);}
+.nlt-line{margin-bottom:6px;}
+.nlt-line:last-child{margin-bottom:0;}
+.nlt-line-lbl{font-size:.48rem;font-weight:800;letter-spacing:.14em;color:#8090b8;margin-bottom:3px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+.nlt-player{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:1.5px 0;font-size:.7rem;line-height:1.25;}
+.nlt-player-name{font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nlt-player-club{font-size:.52rem;color:#6a7ba0;font-family:'JetBrains Mono',monospace;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;}
+.nlt-empty{font-size:.7rem;color:var(--text3);font-style:italic;text-align:center;padding:6px 0;}
+@media (hover:none){.nation-lineup-tip{display:none;}}
+.nation-card.host{border-color:#E8B931;background:linear-gradient(135deg,rgba(232,185,49,.20),var(--bg3));box-shadow:0 0 0 1px rgba(232,185,49,.30) inset, 0 4px 18px rgba(232,185,49,.15);}
+.nation-card.open{grid-column:1/-1;border-color:#E8B931;background:linear-gradient(180deg,var(--bg4) 0%,var(--bg3) 100%);box-shadow:0 8px 32px rgba(232,185,49,.30),0 0 0 2px #E8B931 inset;cursor:default;}
 .nation-card-hdr{padding:8px 10px;display:flex;align-items:center;gap:8px;min-width:0;}
-.nation-card.open .nation-card-hdr{padding:11px 14px;border-bottom:1px solid var(--border);background:rgba(0,201,94,.04);}
+.nation-card.open .nation-card-hdr{padding:11px 14px;border-bottom:1px solid rgba(232,185,49,.30);background:rgba(232,185,49,.14);}
 .nation-card-info{flex:1 1 0;min-width:0;overflow:hidden;}
 .nation-chevron{font-size:.55rem;color:var(--text3);transition:transform .25s;flex-shrink:0;margin-left:2px;opacity:.65;}
 .nation-card .nation-squad-status{flex-shrink:0;padding:2px 7px;font-size:9px;letter-spacing:.04em;}
 .nation-card.open .nation-squad-status{padding:3px 9px;font-size:var(--fs-caption);}
-.nation-card.open .nation-chevron{transform:rotate(180deg);color:var(--green);}
+.nation-card.open .nation-chevron{transform:rotate(180deg);color:#D86E66;}
 /* .nation-squad-status styled by unified pill system (.official .provisional .tba variants) */
 .nation-squad-body{padding:10px 14px 14px;animation:fadeInSquad .25s ease;}
 @keyframes fadeInSquad{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.nation-stats-row{display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:10px;background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;}
+.nsr-rank{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:800;color:var(--gold);letter-spacing:.02em;display:flex;align-items:baseline;gap:5px;}
+.nsr-rank .nsr-lbl{color:var(--text3);font-weight:700;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;}
+.nsr-divider{flex:0 0 1px;align-self:stretch;background:var(--border);}
+.nsr-odds-block{display:flex;align-items:center;gap:7px;margin-left:auto;}
+.nsr-odds-lbl{color:var(--text3);font-weight:700;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;}
+.nsr-impl{font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;color:var(--text2);letter-spacing:.02em;}
+.nation-stats-row .avail-odds{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:.02em;white-space:nowrap;}
 .squad-tba-msg{padding:18px 12px;text-align:center;color:var(--text3);font-size:.72rem;font-style:italic;}
 .squad-tba-msg strong{display:block;color:var(--text2);font-style:normal;font-weight:700;margin-bottom:3px;font-size:.78rem;}
 .squad-group{margin-top:10px;}
@@ -430,10 +635,11 @@ a{color:var(--green);text-decoration:none;}
 }
 .group-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 .group-card-hdr{
-  background:rgba(255,215,0,.1);border-bottom:1px solid var(--border);
-  padding:7px 12px;display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(90deg,rgba(232,185,49,.30),rgba(196,97,46,.22));
+  border-bottom:1px solid #E8B931;
+  padding:8px 12px;display:flex;justify-content:space-between;align-items:center;
 }
-.group-lbl{font-size:.72rem;font-weight:800;color:var(--gold);letter-spacing:.05em;}
+.group-lbl{font-family:var(--font-display);font-size:1.05rem;font-weight:400;color:#0F1A12;letter-spacing:.04em;text-transform:uppercase;}
 .group-dates{font-size:.55rem;color:var(--text3);font-family:'JetBrains Mono',monospace;}
 .group-team-row{
   display:flex;align-items:center;gap:7px;padding:6px 12px;
@@ -473,10 +679,11 @@ a{color:var(--green);text-decoration:none;}
   display:flex;flex-direction:column;flex:1;min-width:0;
 }
 .bracket-round-hdr{
-  text-align:center;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--gold);background:rgba(255,215,0,.08);
-  border:1px solid rgba(255,215,0,.25);border-radius:8px;
-  padding:5px 8px;margin:0 4px 8px;white-space:nowrap;
+  text-align:center;font-family:var(--font-display);font-size:1rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;
+  color:#0F1A12;background:linear-gradient(90deg,#E8B931,#C4612E);
+  border:2px solid #FFFFFF;border-radius:8px;
+  padding:6px 8px;margin:0 4px 8px;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(196,97,46,0.35);
 }
 .bracket-matches{
   display:flex;flex-direction:column;justify-content:space-around;
@@ -500,11 +707,11 @@ a{color:var(--green);text-decoration:none;}
 .bteam.winner{background:rgba(0,255,136,.1);}
 .bteam.loser{opacity:.45;}
 .bteam.tbd{opacity:.35;}
-.bteam.live{background:rgba(0,102,255,.12);animation:bteamLive 1.8s ease-in-out infinite;}
-.bteam.live .bscore{color:#5aa6ff;}
+.bteam.live{background:rgba(232,185,49,.20);animation:bteamLive 1.8s ease-in-out infinite;}
+.bteam.live .bscore{color:#E8B931;text-shadow:1px 1px 0 #C4612E;}
 .bteam.draw{background:rgba(255,215,0,.06);}
 .bteam.draw .bscore{color:var(--gold);}
-@keyframes bteamLive{0%,100%{box-shadow:inset 0 0 0 0 rgba(0,102,255,0);}50%{box-shadow:inset 0 0 8px 0 rgba(0,102,255,0.35);}}
+@keyframes bteamLive{0%,100%{box-shadow:inset 0 0 0 0 rgba(232,185,49,0);}50%{box-shadow:inset 0 0 10px 0 rgba(232,185,49,0.55);}}
 .bflag{width:18px;height:12px;object-fit:cover;border-radius:2px;border:1px solid rgba(255,255,255,.09);flex-shrink:0;}
 .bname{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bscore{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:var(--fs-small);margin-left:auto;flex-shrink:0;font-variant-numeric:tabular-nums;}
@@ -542,10 +749,10 @@ a{color:var(--green);text-decoration:none;}
 /* Projected bracket banner — shows while seeds aren't locked */
 .bracket-proj-banner{
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  background:linear-gradient(135deg,rgba(255,215,0,.10),rgba(0,200,83,.06));
-  border:1px dashed rgba(255,215,0,.45);border-radius:10px;
+  background:linear-gradient(135deg,rgba(232,185,49,.22),rgba(196,97,46,.18));
+  border:1px dashed #E8B931;border-radius:10px;
   padding:11px 16px;margin-bottom:14px;
-  font-size:.72rem;letter-spacing:.04em;color:var(--gold);
+  font-size:.72rem;letter-spacing:.04em;color:#E8B931;
 }
 .bracket-proj-banner .pbn-tag{
   font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:800;
@@ -807,10 +1014,17 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 .dr-shell-sub{font-size:.66rem;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
 .dr-shell-body{padding:20px;}
 
-.dr-hero{background:linear-gradient(135deg,rgba(255,215,0,.06),rgba(0,102,255,.06),rgba(233,69,96,.05));border:1px solid var(--border);border-radius:16px;padding:26px 28px;text-align:center;position:relative;overflow:hidden;}
-.dr-hero::before{content:'';position:absolute;top:-40%;left:-10%;width:120%;height:180%;background:radial-gradient(ellipse,rgba(255,215,0,.08) 0%,transparent 55%);pointer-events:none;}
+.dr-hero{background:
+  radial-gradient(circle at 12% 0%,rgba(232,185,49,.40),transparent 55%),
+  radial-gradient(circle at 88% 100%,rgba(180,58,46,.38),transparent 55%),
+  radial-gradient(circle at 50% 50%,rgba(196,97,46,.22),transparent 65%),
+  linear-gradient(135deg,rgba(45,90,58,.55),rgba(0,40,24,.85));
+  border:2px solid #E8B931;border-radius:18px;padding:28px 30px;text-align:center;position:relative;overflow:hidden;
+  box-shadow:0 14px 50px rgba(232,185,49,.25), 0 0 0 1px rgba(196,97,46,.30) inset;
+}
+.dr-hero::before{content:'';position:absolute;top:-40%;left:-10%;width:120%;height:180%;background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 14px,transparent 14px 28px);pointer-events:none;}
 .dr-hero-eyebrow{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);margin-bottom:8px;position:relative;}
-.dr-hero-title{font-size:1.55rem;font-weight:900;letter-spacing:-.02em;margin-bottom:6px;position:relative;}
+.dr-hero-title{font-family:var(--font-display);font-size:2.6rem;font-weight:400;letter-spacing:0;margin-bottom:8px;position:relative;line-height:.95;text-transform:uppercase;color:#E8B931;text-shadow:2px 2px 0 #C4612E,-1px -1px 0 #B43A2E,0 0 28px rgba(232,185,49,0.5);}
 .dr-hero-sub{font-size:.82rem;color:var(--text2);line-height:1.5;position:relative;max-width:560px;margin:0 auto;}
 
 .dr-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,rgba(255,215,0,.18),rgba(255,215,0,.08));border:1px solid rgba(255,215,0,.45);color:var(--gold);padding:9px 22px;border-radius:10px;font-family:inherit;font-size:.78rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:all .2s;}
@@ -844,14 +1058,18 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 @keyframes pipPop{0%{transform:scale(.6);opacity:0;}60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
 .dr-order-pip.pop{animation:pipPop .35s cubic-bezier(.34,1.56,.64,1);}
 
-.otc-banner{background:linear-gradient(135deg,var(--bg3) 0%,var(--bg4) 60%,var(--bg3) 100%);border:2px solid rgba(255,215,0,.45);border-radius:16px;padding:18px 22px;position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;box-shadow:0 0 28px rgba(255,215,0,.08);}
+.otc-banner{background:
+  radial-gradient(circle at 20% 0%,rgba(232,185,49,.35),transparent 55%),
+  radial-gradient(circle at 80% 100%,rgba(196,97,46,.30),transparent 55%),
+  linear-gradient(135deg,#233A28 0%,#2D5A3A 60%,#233A28 100%);
+  border:2px solid #E8B931;border-radius:18px;padding:18px 22px;position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;box-shadow:0 8px 36px rgba(232,185,49,.30), 0 0 0 1px rgba(196,97,46,.30) inset;}
 .otc-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(255,215,0,.12) 0%,transparent 55%);pointer-events:none;}
 @keyframes otcPulse{0%,100%{border-color:rgba(255,215,0,.45);box-shadow:0 0 28px rgba(255,215,0,.08);}50%{border-color:rgba(255,215,0,.75);box-shadow:0 0 36px rgba(255,215,0,.18);}}
 .otc-banner.live{animation:otcPulse 2.4s ease-in-out infinite;}
 .otc-avatar{width:58px;height:58px;border-radius:50%;font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.18);position:relative;flex-shrink:0;text-shadow:0 1px 4px rgba(0,0,0,.4);}
 .otc-info{display:flex;flex-direction:column;gap:2px;min-width:0;position:relative;}
 .otc-eyebrow{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--gold);}
-.otc-name{font-size:1.55rem;font-weight:900;line-height:1.1;letter-spacing:-.02em;}
+.otc-name{font-family:var(--font-display);font-size:2.2rem;font-weight:400;line-height:.95;letter-spacing:0;text-transform:uppercase;}
 .otc-meta{font-size:.7rem;color:var(--text2);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;margin-top:3px;}
 .otc-meta .snake{color:var(--gold);}
 .otc-progress{position:relative;display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:130px;}
@@ -967,7 +1185,7 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 .mp-bar-self{font-size:.7rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;}
 .mp-bar-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
 
-.mp-claim-card{background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(0,102,255,.05));border:1px solid rgba(255,215,0,.45);border-radius:14px;padding:18px 22px;}
+.mp-claim-card{background:linear-gradient(135deg,rgba(232,185,49,.20),rgba(196,97,46,.18));border:2px solid #E8B931;border-radius:14px;padding:18px 22px;box-shadow:0 10px 32px rgba(232,185,49,.25);}
 .mp-claim-title{font-size:.96rem;font-weight:800;color:var(--text);margin-bottom:5px;}
 .mp-claim-sub{font-size:.74rem;color:var(--text2);margin-bottom:14px;}
 .mp-claim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
@@ -993,7 +1211,7 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 .mp-locked-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.32);border-radius:8px;padding:6px 11px;font-size:.7rem;font-weight:800;color:#00ff88;}
 .mp-locked-badge .lock-ico{font-size:.85em;}
 
-.mp-setup-cta{background:linear-gradient(135deg,rgba(0,102,255,.1),rgba(0,217,102,.06));border:1px solid rgba(0,102,255,.35);border-radius:12px;padding:14px 18px;margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.mp-setup-cta{background:linear-gradient(135deg,rgba(74,107,140,.22),rgba(74,122,85,.18));border:1px solid #7A98B6;border-radius:12px;padding:14px 18px;margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .mp-setup-cta-text{flex:1;min-width:0;}
 .mp-setup-cta-title{font-size:.84rem;font-weight:800;color:var(--text);margin-bottom:3px;}
 .mp-setup-cta-sub{font-size:.66rem;color:var(--text2);line-height:1.4;}
@@ -1008,6 +1226,331 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
   .dr-hero{padding:18px;}
   .dr-hero-title{font-size:1.2rem;}
 }
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  MOBILE POLISH PASS — 2026-05-22                                    */
+/*  Bottom thumb-reach tab nav, sticky OTC, denser Draft Room cells,   */
+/*  iOS safe-area handling, 44px+ tap targets on draft actions.        */
+/* ═══════════════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+
+  /* ── iOS safe-area + smooth touch scroll ──────────────────────── */
+  html,body{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(255,215,0,.25);}
+  body{padding-bottom:env(safe-area-inset-bottom);}
+  .dboard-wrap,.ticker-scroll,.dr-order-list,.avail-grid{-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
+
+  /* ── HEADER — tighter on mobile ───────────────────────────────── */
+  .hdr{padding:14px 0 12px;}
+  .hdr h1{font-size:1.45rem;margin-bottom:2px;}
+  .hdr-icon{margin-bottom:2px;}
+  .hdr-icon svg{width:46px;height:46px;}
+  .hdr-sub{font-size:.55rem;letter-spacing:.12em;margin-bottom:8px;}
+  .hdr-badges{gap:6px;}
+
+  /* ── TAB NAV — pin to bottom, thumb-reach, safe-area-aware ────── */
+  .tab-nav{
+    position:fixed;left:0;right:0;bottom:0;top:auto;
+    background:linear-gradient(180deg,#233A28 0%,#0F1A12 100%);
+    border-top:2px solid #E8B931;border-bottom:none;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    gap:4px;z-index:200;
+    box-shadow:0 -8px 32px rgba(232,185,49,.20), 0 -2px 10px rgba(0,0,0,.55);
+  }
+  .tab-btn{
+    flex:1;padding:8px 4px;min-height:54px;font-size:.62rem;
+    flex-direction:column;gap:3px;border-radius:10px;line-height:1.1;
+    letter-spacing:.04em;text-transform:uppercase;font-weight:700;
+  }
+  .tab-btn.active{box-shadow:0 0 18px rgba(232,185,49,.55), inset 0 0 10px rgba(196,97,46,.20);}
+
+  /* Reserve space so content doesn't hide behind the fixed nav */
+  .main{padding:16px 12px calc(96px + env(safe-area-inset-bottom));}
+
+  /* ── DRAFT PENDING BANNER — tighter ──────────────────────────── */
+  .draft-pending{padding:16px 16px;border-radius:14px;margin-bottom:18px;}
+  .draft-pending h2{font-size:1.05rem;}
+  .draft-pending p{font-size:.82rem;line-height:1.5;}
+
+  /* ── LEADERBOARD — bigger score, punchier rows ───────────────── */
+  .lbrow{
+    grid-template-columns:28px 1fr auto;
+    padding:14px 14px;gap:10px;min-height:64px;border-radius:12px;
+    border-left-width:4px;
+  }
+  .lbname{font-size:.95rem;}
+  .lbscore{font-size:1.5rem;}
+  .lbrank{font-size:.78rem;}
+  .lbflags{gap:3px;margin-top:4px;}
+  .lbflag,.flag-empty{width:18px;height:13px;}
+  .lbinfo{gap:5px;}
+  /* Hide pot/alive badges on tiny screens — name + score + flag strip is enough */
+  .lboard .badge:not(.lbdraft){font-size:.5rem;padding:2px 6px;}
+
+  /* ── TOURNAMENT PROGRESS — already responsive, just tighter ──── */
+  .tprog{padding:10px 12px;margin-bottom:16px;border-radius:10px;}
+  .tpr-lbl{font-size:.48rem;}
+  .tpr-dot{width:8px;height:8px;}
+
+  /* ── GAMES TICKER — already horiz-scrolls, just snug ─────────── */
+  .ticker{padding:10px 12px;margin-bottom:18px;}
+  .tcard{min-width:220px;max-width:240px;}
+
+  /* ── BAR CHART — shorter on small screens ────────────────────── */
+  .sbc{padding:14px 14px 16px;margin-bottom:22px;}
+  .sbc-vchart{height:160px;gap:5px;}
+  .sbc-vname{font-size:.6rem;}
+  .sbc-vscore{font-size:1.05rem;}
+
+  /* ── DRAFT CARDS — single column ─────────────────────────────── */
+  .dgrid{grid-template-columns:1fr;gap:10px;margin-bottom:22px;}
+
+  /* ── NATIONS POOL ─────────────────────────────────────────────── */
+  .pool-conf-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
+
+  /* ════════════════════════════════════════════════════════════════ */
+  /*  DRAFT ROOM — mobile-first overrides                            */
+  /* ════════════════════════════════════════════════════════════════ */
+
+  .dr-wrap{gap:12px;}
+  .dr-shell-hdr{padding:10px 14px;}
+  .dr-shell-title{font-size:.82rem;}
+  .dr-shell-sub{font-size:.58rem;}
+
+  /* Sticky OTC banner — always know whose turn while scrolling */
+  .otc-banner{
+    position:sticky;top:8px;z-index:80;
+    padding:10px 12px;border-radius:12px;
+    grid-template-columns:auto 1fr;gap:10px;
+  }
+  .otc-avatar{width:42px;height:42px;font-size:1rem;border-width:2px;}
+  .otc-name{font-size:1.1rem;}
+  .otc-eyebrow{font-size:.55rem;letter-spacing:.12em;}
+  .otc-meta{font-size:.6rem;margin-top:1px;}
+  .otc-progress{margin-top:6px;padding-top:8px;border-top:1px dashed var(--border);}
+  .otc-progress-num{font-size:.95rem;}
+  .otc-progress-lbl{font-size:.5rem;}
+
+  /* "Picking as" — keep visible next to OTC */
+  .picking-as-row{padding:9px 12px;gap:8px;border-radius:10px;}
+  .picking-as-lbl{font-size:.54rem;letter-spacing:.1em;}
+  .picking-as-select{font-size:.82rem;padding:8px 30px 8px 11px;min-height:42px;}
+  .picking-as-hint{font-size:.56rem;width:100%;margin-left:0;text-align:right;}
+
+  /* Snake draft board — keep horizontal scroll but tighten every cell */
+  .dboard-wrap{
+    margin:0 -14px;padding:0 14px 6px;
+    /* Hint that the board scrolls — fade edges */
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
+            mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
+  }
+  .dboard{min-width:480px;gap:4px;}
+  .dboard-row{gap:4px;}
+  .dboard-rd-label{min-width:30px;font-size:.6rem;padding:3px 0;}
+  .dboard-rd-arrow{font-size:.5rem;}
+  .dboard-player-hdr{padding:5px 3px;font-size:.6rem;gap:2px;}
+  .dboard-player-hdr-name{font-size:.6rem;}
+  .dboard-player-hdr-bar{height:2px;}
+  .dboard-cell{min-height:38px;padding:3px 4px;gap:3px;border-radius:6px;}
+  .dboard-cell-flag{width:16px;height:11px;}
+  .dboard-cell-name{font-size:.58rem;}
+  .dboard-cell-pick{font-size:.45rem;}
+  .dboard-cell-tbd{font-size:.5rem;}
+
+  /* Available nations — punchier cards, finger-sized draft button */
+  .avail-toolbar{gap:6px;margin-bottom:10px;}
+  .avail-search{font-size:.86rem;padding:10px 12px;min-height:44px;min-width:0;width:100%;}
+  .avail-filter{font-size:.8rem;padding:10px;min-height:44px;}
+  .avail-count{font-size:.6rem;padding:8px 11px;}
+  .avail-grid{
+    grid-template-columns:1fr;gap:8px;
+    max-height:none; /* let it grow — bottom tab nav covers; user scrolls naturally */
+  }
+  .avail-card{padding:10px 12px;border-radius:10px;}
+  .avail-card-close{width:24px;height:24px;font-size:.8rem;top:6px;right:6px;}
+  .avail-card-draft{
+    padding:10px 18px;font-size:.78rem;min-height:42px;
+    border-radius:8px;letter-spacing:.08em;
+  }
+  .avail-name{font-size:.92rem;}
+  .avail-flag{width:32px;height:22px;}
+  .avail-meta{font-size:.6rem;}
+  .avail-odds{font-size:.74rem;padding:4px 9px;}
+
+  /* Confirm bar — full width, safe-area, easy thumb access */
+  .confirm-bar{
+    margin-top:12px;padding:12px 14px;gap:10px;border-radius:12px;
+    bottom:calc(70px + env(safe-area-inset-bottom)); /* clear the bottom tab nav */
+  }
+  .confirm-bar-flag{width:36px;height:25px;}
+  .confirm-bar-target{font-size:.95rem;}
+  .confirm-bar-actions{width:100%;gap:8px;}
+  .confirm-bar-actions .dr-btn{flex:1;padding:11px 14px;font-size:.78rem;min-height:44px;}
+
+  /* Recent picks list */
+  .recent-list{max-height:none;}
+  .recent-row{padding:8px 10px;font-size:.74rem;}
+
+  /* Draft hero CTA buttons — full width on mobile */
+  .dr-btn-group{flex-direction:column;}
+  .dr-btn{width:100%;padding:13px 18px;min-height:46px;font-size:.82rem;}
+  .dr-btn.sm{width:auto;padding:7px 14px;min-height:36px;font-size:.7rem;}
+
+  /* Setup name rows — easier to type on */
+  .dr-setup-grid{grid-template-columns:1fr;gap:8px;}
+  .dr-name-row{padding:11px 14px;}
+  .dr-name-input{font-size:.95rem;min-height:30px;}
+  .dr-order-pip{padding:9px 13px;font-size:.78rem;}
+
+  /* Multiplayer pieces */
+  .mp-bar{padding:10px 12px;gap:8px;border-radius:10px;}
+  .mp-bar-actions{width:100%;margin-left:0;}
+  .mp-bar-actions .dr-btn{flex:1;}
+  .mp-claim-card{padding:14px 16px;}
+  .mp-claim-grid{grid-template-columns:1fr;}
+  .mp-claim-btn{padding:13px 14px;min-height:48px;}
+  .mp-toast{top:auto;bottom:calc(80px + env(safe-area-inset-bottom));right:12px;left:12px;text-align:center;font-size:.88rem;padding:12px 18px;}
+
+  /* DR stats — 2 column on mobile, not auto-fit */
+  .dr-complete-stats{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .dr-stat-val{font-size:1.2rem;}
+
+  /* Tables — already horizontal-scroll on small but tighten */
+  table.dt{font-size:.72rem;}
+  table.dt th,table.dt td{padding:8px 10px;}
+  .twrap-title{padding:10px 12px;font-size:.72rem;}
+
+  /* Footer needs clearance from bottom tab */
+  .footer{padding:18px 14px 18px;}
+}
+
+/* Extra-small phones (iPhone SE etc) */
+@media(max-width:380px){
+  .tab-btn{font-size:.56rem;padding:6px 3px;}
+  .lbname{font-size:.88rem;}
+  .lbscore{font-size:1.35rem;}
+  .dboard{min-width:420px;}
+  .otc-name{font-size:1rem;}
+  .otc-avatar{width:38px;height:38px;font-size:.92rem;}
+}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  OFFLINE BANNER                                                     */
+/* ═══════════════════════════════════════════════════════════════════ */
+.offline-banner{
+  position:fixed; left:50%; transform:translateX(-50%);
+  top:calc(env(safe-area-inset-top, 0px) + 8px);
+  z-index:9999;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 14px; border-radius:999px;
+  background:linear-gradient(135deg, rgba(228,0,43,0.92), rgba(180,0,30,0.92));
+  color:#fff; font-size:.72rem; font-weight:700; letter-spacing:.04em;
+  box-shadow:0 8px 24px rgba(228,0,43,0.35), 0 0 0 1px rgba(255,255,255,0.12) inset;
+  transition:opacity .25s ease, transform .25s ease;
+  pointer-events:none;
+}
+.offline-banner.hidden{ opacity:0; transform:translateX(-50%) translateY(-12px); }
+.offline-banner.back-online{
+  background:linear-gradient(135deg, rgba(0,200,83,0.95), rgba(0,150,60,0.95));
+  box-shadow:0 8px 24px rgba(0,200,83,0.35), 0 0 0 1px rgba(255,255,255,0.12) inset;
+}
+.offline-banner .ob-dot{
+  width:8px; height:8px; border-radius:50%; background:#fff;
+  animation:obDot 1.6s ease-in-out infinite;
+}
+.offline-banner.back-online .ob-dot{ animation:none; }
+@keyframes obDot{
+  0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,0.6); }
+  50%    { box-shadow:0 0 0 6px rgba(255,255,255,0); }
+}
+@media(max-width:640px){
+  .offline-banner{ top:calc(env(safe-area-inset-top, 0px) + 6px); font-size:.65rem; padding:6px 12px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  iOS SCROLL POLISH                                                  */
+/* ═══════════════════════════════════════════════════════════════════ */
+.dboard-wrap,.bracket-wrap,.ticker-scroll,.avail-grid,.recent-list,.dr-order-list{
+  overscroll-behavior:contain;
+}
+body{ overscroll-behavior-y:contain; }
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  REDUCED MOTION                                                     */
+/* ═══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.05s !important;
+    scroll-behavior:auto !important;
+  }
+  .hdr-icon,.tpr-dot.now,.otc-banner.live,.bteam.live,
+  .lbrow.lead,.mp-bar-dot,.dboard-otc-dot,.tcard.live{ animation:none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  PULL-TO-REFRESH                                                    */
+/* ═══════════════════════════════════════════════════════════════════ */
+.ptr-indicator{
+  position:fixed; left:50%; top:0; transform:translateX(-50%) translateY(-100%);
+  display:flex; align-items:center; gap:8px;
+  padding:10px 16px; border-radius:0 0 14px 14px;
+  background:linear-gradient(135deg, rgba(0,40,24,0.96), rgba(10,60,38,0.96));
+  border:1px solid var(--border2); border-top:none;
+  color:var(--text2); font-size:.7rem; font-weight:700; letter-spacing:.05em;
+  text-transform:uppercase;
+  z-index:9998; pointer-events:none;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  opacity:0; transition:opacity .15s ease, transform .15s ease;
+}
+.ptr-indicator.visible{ opacity:1; transform:translateX(-50%) translateY(0); }
+.ptr-indicator.refreshing{
+  background:linear-gradient(135deg, rgba(0,200,83,0.96), rgba(0,150,60,0.96));
+  color:#fff; border-color:rgba(0,255,136,0.5);
+}
+.ptr-spin{
+  width:14px; height:14px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.3); border-top-color:#fff;
+  animation:ptrSpin .8s linear infinite;
+}
+@keyframes ptrSpin{ to{ transform:rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  SWIPE TAB TRANSITION                                               */
+/* ═══════════════════════════════════════════════════════════════════ */
+.tab-pane.swipe-in-from-right{ animation:swipeInRight .22s ease; }
+.tab-pane.swipe-in-from-left{ animation:swipeInLeft .22s ease; }
+@keyframes swipeInRight{ from{ transform:translateX(30px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+@keyframes swipeInLeft{  from{ transform:translateX(-30px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  BRACKET + NATIONS — mobile polish                                  */
+/* ═══════════════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+  .bracket-wrap{
+    margin:0 -12px; padding:0 12px 12px;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);
+            mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);
+  }
+  .bracket{ min-width:680px; }
+  .bracket-round-hdr{ font-size:.72rem; padding:5px 6px; margin:0 3px 6px; }
+  .bracket-matches{ padding:0 3px; gap:5px; }
+  .bteam{ padding:4px 6px; font-size:.6rem; gap:4px; }
+  .bflag{ width:14px; height:10px; }
+  .bscore{ font-size:.66rem; }
+  .groups-grid{ grid-template-columns:1fr; gap:8px; }
+  .group-card-hdr{ padding:7px 10px; }
+  .group-lbl{ font-size:.95rem; }
+  .group-team-row{ padding:7px 10px; font-size:.78rem; }
+  .grp-flag{ width:18px; height:13px; }
+  .grp-pos{ width:16px; height:16px; font-size:.6rem; }
+  .nation-card.open .nation-card-hdr{ padding:9px 12px; }
+  .nation-squad-body{ padding:8px 10px 10px; }
+  .squad-group-hdr{ font-size:.58rem; margin-bottom:5px; }
+  .squad-pos-badge{ min-width:22px; height:16px; font-size:.5rem; padding:0 4px; }
+  .squad-tba-msg{ padding:14px 10px; font-size:.68rem; }
+}
+
 </style>
 </head>
 <body>
@@ -1033,53 +1576,30 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
     <path class="pl" d="M 1371 160 A 14 14 0 0 1 1385 172" opacity=".5"/>
   </svg>
   <div class="hdr-inner">
-    <div class="hdr-icon" aria-label="FIFA Trionda Ball">
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img">
-        <defs>
-          <radialGradient id="trBall" cx="38%" cy="30%" r="80%">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="55%" stop-color="#f1f4f2"/>
-            <stop offset="100%" stop-color="#bdc6c1"/>
-          </radialGradient>
-          <radialGradient id="trGleam" cx="35%" cy="28%" r="32%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-          </radialGradient>
-          <path id="trArc" d="M 24,74 A 28,28 0 0 0 76,74" fill="none"/>
-        </defs>
-        <!-- Base sphere -->
-        <circle cx="50" cy="50" r="46" fill="url(#trBall)" stroke="#9aa49f" stroke-width="0.5"/>
-        <!-- Red panel (upper left, Canada/USA red) -->
-        <path d="M 50,46 Q 36,18 14,28 Q 18,46 50,46 Z" fill="#E4002B"/>
-        <!-- Blue panel (right, FIFA blue) -->
-        <path d="M 50,46 Q 78,36 86,60 Q 72,60 50,46 Z" fill="#1A4DD9"/>
-        <!-- Green panel (bottom, Mexico) -->
-        <path d="M 50,46 Q 60,74 36,84 Q 30,64 50,46 Z" fill="#0E7A3E"/>
-        <!-- Gold seam accents -->
-        <g stroke="#FFD700" stroke-width="0.55" fill="none" opacity="0.6">
-          <path d="M 50,46 Q 36,18 14,28"/>
-          <path d="M 50,46 Q 78,36 86,60"/>
-          <path d="M 50,46 Q 60,74 36,84"/>
-        </g>
-        <!-- FIFA badge -->
-        <circle cx="50" cy="46" r="6" fill="#1A4DD9" stroke="#ffffff" stroke-width="0.7"/>
-        <text x="50" y="48.2" text-anchor="middle" font-size="3.8" font-weight="900" fill="#ffffff" font-family="Inter,sans-serif" letter-spacing="-0.2">FIFA</text>
-        <!-- TRIONDA arc -->
-        <text font-size="5.2" font-weight="900" fill="#0E7A3E" font-family="Inter,sans-serif" letter-spacing="1.2">
-          <textPath href="#trArc" startOffset="50%" text-anchor="middle">TRIONDA</textPath>
-        </text>
-        <!-- Outer gold edge -->
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#FFD700" stroke-width="0.7" opacity="0.45"/>
-        <!-- Highlight gleam -->
-        <ellipse cx="38" cy="32" rx="12" ry="7" fill="url(#trGleam)"/>
-      </svg>
+    <div class="hdr-icon" aria-label="FIFA Trionda 2026 Match Ball">
+      <img src="trionda-ball-circle.png" alt="" class="hdr-ball-img hdr-ball-sm" aria-hidden="true">
+      <img src="trionda-ball-circle.png" alt="FIFA Trionda 2026 Match Ball" class="hdr-ball-img hdr-ball-lg">
+      <img src="trionda-ball-circle.png" alt="" class="hdr-ball-img hdr-ball-sm" aria-hidden="true">
     </div>
     <h1>WORLD CUP BOYZ</h1>
     <div class="hdr-sub">FIFA World Cup 2026 · Snake Draft Tracker</div>
     <div class="hdr-badges">
       <span class="badge green">2026 FIFA World Cup</span>
       <span class="badge">USA · Canada · Mexico</span>
-      <span class="badge gold">6 Players · 8 Nations Each</span>
+      <span class="badge gold" id="leagueSub">USC · 6 Players · 8 Nations Each</span>
+    </div>
+    <div class="league-switcher" id="leagueSwitcher">
+      <span class="league-switcher-lbl">League</span>
+      <div class="league-pill-group" role="tablist" aria-label="Switch league">
+        <button class="league-pill" data-league="main" role="tab" onclick="switchLeague('main')">
+          <span class="league-pill-name">USC</span>
+          <span class="league-pill-meta">6 × 8</span>
+        </button>
+        <button class="league-pill" data-league="squad" role="tab" onclick="switchLeague('squad')">
+          <span class="league-pill-name">Chadwick</span>
+          <span class="league-pill-meta">4 × 12</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1110,6 +1630,7 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
       <p>Once you run the snake draft, this tracker will light up with live scores, points, and group stage action for all 6 squads.</p>
       <div class="draft-pending-sub">48 nations · 6 players · 8 picks each · snake draft</div>
       <div class="kicks-off">🗓️ Tournament Kicks Off · June 11, 2026</div>
+      <div id="kickoffCountdown" class="kickoff-countdown" aria-live="polite"></div>
     </div>
 
     <!-- Tournament Progress -->
@@ -1207,9 +1728,9 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 
 </div>
 
-<div id="mockBanner" style="display:none;background:linear-gradient(90deg,#0f1a10,#152a17,#0f1a10);border-top:1px solid rgba(0,201,94,.2);border-bottom:1px solid rgba(0,201,94,.2);padding:9px 20px;text-align:center;font-size:.8rem;color:#6a9b75;">
-  🔮 <strong style="color:var(--green)">MOCK DATA MODE</strong> — Simulated matches. Set
-  <code style="background:rgba(0,201,94,.1);border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:.76rem">MOCK_MODE = false</code> for live ESPN data.
+<div id="mockBanner" style="display:none;background:linear-gradient(90deg,#002818,#003D2C,#002818);border-top:1px solid rgba(255,217,61,.45);border-bottom:1px solid rgba(255,217,61,.45);padding:9px 20px;text-align:center;font-size:.8rem;color:#FFE89A;">
+  🔮 <strong style="color:#FFD93D">MOCK DATA MODE</strong> — Simulated matches. Set
+  <code style="background:rgba(255,217,61,.18);border:1px solid #FFD93D;border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:#FFFFFF">MOCK_MODE = false</code> for live ESPN data.
 </div>
 
 <div class="footer">
@@ -1227,21 +1748,146 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 // ║  To go LIVE: flip OFFSEASON = false on June 11, 2026        ║
 // ╚══════════════════════════════════════════════════════════════╝
 
+// ── HAPTIC FEEDBACK ───────────────────────────────────────────────
+// Wrapper around navigator.vibrate. iOS Safari ignores vibrate (no Web
+// Vibration API) — no-op there. Android Chrome supports patterns.
+const HAPTICS_KEY = 'wcb-haptics-enabled';
+function hapticsEnabled(){
+  try { return localStorage.getItem(HAPTICS_KEY) !== '0'; } catch(_){ return true; }
+}
+function vibe(pattern){
+  try {
+    if(!hapticsEnabled()) return;
+    if(navigator.vibrate) navigator.vibrate(pattern);
+  } catch(_){}
+}
+function setHapticsEnabled(on){
+  try { localStorage.setItem(HAPTICS_KEY, on ? '1' : '0'); } catch(_){}
+}
+
+// ── OFFLINE / ONLINE TOAST ────────────────────────────────────────
+let _offlineBannerEl = null;
+function ensureOfflineBanner(){
+  if(_offlineBannerEl) return _offlineBannerEl;
+  const el = document.createElement('div');
+  el.id = 'offlineBanner';
+  el.className = 'offline-banner hidden';
+  el.setAttribute('role', 'status');
+  el.setAttribute('aria-live', 'polite');
+  el.innerHTML = '<span class="ob-dot"></span><span class="ob-text">Offline · scores paused</span>';
+  document.body.appendChild(el);
+  _offlineBannerEl = el;
+  return el;
+}
+function setOfflineState(off){
+  const el = ensureOfflineBanner();
+  if(off){
+    el.classList.remove('hidden');
+    el.classList.remove('back-online');
+    el.querySelector('.ob-text').textContent = 'Offline · scores paused';
+  } else {
+    el.classList.add('back-online');
+    el.querySelector('.ob-text').textContent = 'Back online ✓';
+    setTimeout(()=>{ el.classList.add('hidden'); el.classList.remove('back-online'); }, 1800);
+  }
+}
+function initOfflineDetection(){
+  ensureOfflineBanner();
+  if(!navigator.onLine) setOfflineState(true);
+  window.addEventListener('offline', () => setOfflineState(true));
+  window.addEventListener('online', () => {
+    setOfflineState(false);
+    if(typeof OFFSEASON !== 'undefined' && !OFFSEASON && typeof forceRefresh === 'function'){
+      try { forceRefresh(); } catch(_){}
+    }
+  });
+}
+
 // ── PLAYER COLORS ────────────────────────────────────────────────
-const COLORS = ['#f5a623','#60a5fa','#34d399','#f87171','#a78bfa','#fb923c'];
+// Extended to 8 slots so leagues with up to 8 players render cleanly.
+const COLORS = ['#f5a623','#60a5fa','#34d399','#f87171','#a78bfa','#fb923c','#22d3ee','#f472b6'];
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  LEAGUES — multi-draft support                              ║
+// ║  Each league is an independent draft with its own roster,    ║
+// ║  nationsPerPlayer, and persisted state. Active league is     ║
+// ║  resolved on boot: #league=<id> → localStorage → default.    ║
+// ║  Storage keys are namespaced via _keyDraftStore() etc. so    ║
+// ║  switching leagues is a clean swap.                          ║
+// ╚══════════════════════════════════════════════════════════════╝
+const LEAGUES = {
+  main: {
+    id: 'main',
+    name: 'USC',
+    shortName: 'USC',
+    sub: 'USC · 6 Players · 8 Nations Each',
+    players: ['Thomas','Andrew','Paul','Carson','Rudger','Shaq'],
+    nationsPerPlayer: 8,
+  },
+  squad: {
+    id: 'squad',
+    name: 'Chadwick',
+    shortName: 'Chadwick',
+    sub: 'Chadwick · 4 Players · 12 Nations Each',
+    players: ['Thomas','Tiny',"Mia's Fiance",'doyersbeast'],
+    nationsPerPlayer: 12,
+  },
+};
+const DEFAULT_LEAGUE_ID = 'main';
+const LEAGUE_KEY = 'wcb-league-v1';
+
+function _readLeagueIdFromHash(){
+  const h = location.hash || '';
+  const m = h.match(/(?:^|[#&])league=([a-z0-9]+)/i);
+  return m ? m[1] : null;
+}
+function _resolveInitialLeagueId(){
+  const fromHash = _readLeagueIdFromHash();
+  if(fromHash && LEAGUES[fromHash]) return fromHash;
+  try {
+    const fromStore = localStorage.getItem(LEAGUE_KEY);
+    if(fromStore && LEAGUES[fromStore]) return fromStore;
+  } catch(e){}
+  return DEFAULT_LEAGUE_ID;
+}
+let currentLeagueId = _resolveInitialLeagueId();
+function getLeague(){ return LEAGUES[currentLeagueId] || LEAGUES[DEFAULT_LEAGUE_ID]; }
+
+// ── Per-league storage key helpers ──
+function _keyDraftStore(id){ return 'wcb-draft-v1::' + (id || currentLeagueId); }
+function _keyPickingAs(id){ return 'wcb-picking-as-v1::' + (id || currentLeagueId); }
+function _keyClaimedName(id){ return 'wcb-mp-claimed-name-v1::' + (id || currentLeagueId); }
+
+// One-time migration: legacy unscoped keys → main-league scoped (idempotent)
+(function _migrateLegacyLeagueStorage(){
+  try {
+    const migrations = [
+      ['wcb-draft-v1',           _keyDraftStore('main')],
+      ['wcb-picking-as-v1',      _keyPickingAs('main')],
+      ['wcb-mp-claimed-name-v1', _keyClaimedName('main')],
+    ];
+    migrations.forEach(([from,to])=>{
+      const v = localStorage.getItem(from);
+      if(v && !localStorage.getItem(to)) localStorage.setItem(to, v);
+    });
+  } catch(e){}
+})();
+
+// ── ACTIVE-LEAGUE GLOBALS (let — reassigned by applyLeagueGlobals on switch) ──
+let DRAFT_ROUNDS = getLeague().nationsPerPlayer;
+let DEFAULT_NAMES = getLeague().players.slice();
+
+function applyLeagueGlobals(){
+  const L = getLeague();
+  DEFAULT_NAMES = L.players.slice();
+  DRAFT_ROUNDS = L.nationsPerPlayer;
+}
 
 // ── DRAFT ────────────────────────────────────────────────────────
-// After the draft: fill nations[] with each player's 8 picks.
-// Use exact names from ALL_NATIONS. picks[] = snake pick numbers.
-let DRAFT = {
-  Thomas: { nations:[], picks:[], trophies:0, ci:0 },
-  Andrew: { nations:[], picks:[], trophies:0, ci:1 },
-  Paul:   { nations:[], picks:[], trophies:0, ci:2 },
-  Carson: { nations:[], picks:[], trophies:0, ci:3 },
-  Rudger: { nations:[], picks:[], trophies:0, ci:4 },
-  Shaq:   { nations:[], picks:[], trophies:0, ci:5 },
-};
-let DRAFT_COMPLETE = Object.values(DRAFT).some(p => p.nations.length > 0);
+// Reshape from active league. Filled by the Draft Room as picks land.
+let DRAFT = {};
+DEFAULT_NAMES.forEach((nm,i)=>{ DRAFT[nm] = { nations:[], picks:[], trophies:0, ci:i }; });
+let DRAFT_COMPLETE = false;
 
 // ── MODE FLAGS ────────────────────────────────────────────────────
 // ▶ Flip OFFSEASON to false on June 11 when the tournament starts.
@@ -1655,6 +2301,55 @@ function computeBracketResolved(){
     const w=koWinner(findGameBetween(fa,fb));
     if(w) bracketResolved['CHAMPION']=w;
   }
+
+  // ── Elimination derivation ──
+  // Group stage:
+  //   - Position 4 of a completed group → eliminated
+  //   - Position 3 → eliminated only if NOT in top 8 best 3rd-place teams
+  //     (computed once ALL 12 groups have finished)
+  // Knockout: loser of any finished KO game is eliminated.
+  nationElim = {};
+
+  // Per-team count of finished group matches (each team plays 3)
+  const teamGroupGamesFinished = {};
+  allGames.forEach(g => {
+    if(g.upcoming || g.live) return;
+    if(!(g.round||'').toLowerCase().includes('group')) return;
+    teamGroupGamesFinished[g.homeTeam] = (teamGroupGamesFinished[g.homeTeam]||0) + 1;
+    teamGroupGamesFinished[g.awayTeam] = (teamGroupGamesFinished[g.awayTeam]||0) + 1;
+  });
+
+  // Walk each group; if all 4 teams have 3 finished games, lock standings.
+  const allThirds = [];
+  let completedGroupCount = 0;
+  letters.forEach(g => {
+    const nations = (GROUPS_MAP[g]||[]).slice();
+    if(!nations.length) return;
+    const groupDone = nations.every(n => (teamGroupGamesFinished[n.name]||0) >= 3);
+    if(!groupDone) return;
+    completedGroupCount++;
+    nations.sort(compareGroupStanding);
+    if(nations[3]) nationElim[nations[3].name] = true;     // 4th place — out
+    if(nations[2]) allThirds.push(nations[2]);              // 3rd place — pending
+  });
+
+  // Once ALL 12 groups complete, bottom 4 of the 12 third-placed teams are out
+  if(completedGroupCount === letters.length){
+    allThirds.sort(compareGroupStanding);
+    allThirds.slice(8).forEach(n => { nationElim[n.name] = true; });
+  }
+
+  // Knockout losers — any finished game not in the group stage
+  allGames.forEach(g => {
+    if(g.upcoming || g.live) return;
+    if(g.homeScore===null || g.awayScore===null) return;
+    if((g.round||'').toLowerCase().includes('group')) return;
+    let loser = null;
+    if(g.homeScore > g.awayScore) loser = g.awayTeam;
+    else if(g.awayScore > g.homeScore) loser = g.homeTeam;
+    else if(g.shootoutWinner) loser = g.shootoutWinner === g.homeTeam ? g.awayTeam : g.homeTeam;
+    if(loser) nationElim[loser] = true;
+  });
 }
 
 // ── ESPN API ──────────────────────────────────────────────────────
@@ -1891,15 +2586,58 @@ async function fetchESPN(){
 }
 
 // ── TAB SWITCHING ─────────────────────────────────────────────────
-function switchTab(id, btn){
+const VALID_TABS = ['standings','draft','bracket','nations'];
+function switchTab(id, btn, opts){
+  if(!VALID_TABS.includes(id)) id = 'standings';
+  opts = opts || {};
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
-  // Lazy-render bracket on first visit
+  const pane = document.getElementById('tab-'+id);
+  if(pane) pane.classList.add('active');
+  if(btn){ btn.classList.add('active'); }
+  else {
+    document.querySelectorAll('.tab-btn').forEach(b=>{
+      const oc = b.getAttribute('onclick') || '';
+      if(oc.indexOf("'"+id+"'") !== -1) b.classList.add('active');
+    });
+  }
   if(id==='bracket') renderBracket();
   if(id==='draft') renderDraft();
   setupReveal();
+  if(!opts.fromHash){
+    try {
+      const params = _parseHashParams();
+      params.tab = id;
+      _writeHashParams(params);
+    } catch(_){}
+  }
+  vibe([8]);
+  if(opts.scrollTop !== false) try { window.scrollTo({top:0, behavior:'instant'}); } catch(_){ window.scrollTo(0,0); }
+}
+
+function _parseHashParams(){
+  const raw = (location.hash || '').replace(/^#/, '');
+  const out = {};
+  if(!raw) return out;
+  raw.split('&').forEach(kv => {
+    if(!kv) return;
+    const i = kv.indexOf('=');
+    if(i < 0){ out[kv] = ''; return; }
+    out[decodeURIComponent(kv.slice(0,i))] = decodeURIComponent(kv.slice(i+1));
+  });
+  return out;
+}
+function _writeHashParams(params){
+  const str = Object.entries(params).filter(([_,v])=>v!=null && v!=='').map(([k,v])=>`${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+  const next = str ? '#'+str : '';
+  if(next !== location.hash){
+    try { history.replaceState(null, '', location.pathname + location.search + next); }
+    catch(_){ location.hash = next; }
+  }
+}
+function applyTabFromHash(){
+  const tab = _parseHashParams().tab;
+  if(tab && VALID_TABS.includes(tab)) switchTab(tab, null, {fromHash:true, scrollTop:false});
 }
 
 // ── RENDER: TOURNAMENT PROGRESS ───────────────────────────────────
@@ -1923,6 +2661,34 @@ function renderTournamentProgress(){
       <div class="tpr-date">${s.date}</div>
     </div>`;
   }).join('');
+}
+
+// ── KICKOFF COUNTDOWN ────────────────────────────────────────────
+// Group Stage opener: Mexico v ? in Mexico City, Jun 11, 2026 at 12:00 ET (16:00 UTC).
+const KICKOFF_MS = new Date('2026-06-11T16:00:00Z').getTime();
+let _kcTimer = null;
+function renderKickoffCountdown(){
+  const el = document.getElementById('kickoffCountdown');
+  if(!el) return;
+  const diff = KICKOFF_MS - Date.now();
+  if(diff <= 0){
+    el.innerHTML = `<div class="kc-live">⚽ Tournament Live</div>`;
+    if(_kcTimer){ clearInterval(_kcTimer); _kcTimer=null; }
+    return;
+  }
+  const s = Math.floor(diff/1000);
+  const d = Math.floor(s/86400);
+  const h = Math.floor((s%86400)/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  const cell = (n,lbl)=>`<div class="kc-cell"><span class="kc-num">${String(n).padStart(2,'0')}</span><span class="kc-lbl">${lbl}</span></div>`;
+  el.innerHTML = cell(d,'Days') + cell(h,'Hrs') + cell(m,'Min') + cell(sec,'Sec');
+}
+function startKickoffCountdown(){
+  renderKickoffCountdown();
+  if(_kcTimer) clearInterval(_kcTimer);
+  // Tick every second pre-kickoff; the renderer self-stops when diff <= 0.
+  _kcTimer = setInterval(renderKickoffCountdown, 1000);
 }
 
 // ── RENDER: MATCH STRIP / TICKER ──────────────────────────────────
@@ -2294,7 +3060,7 @@ function renderGroupsGrid(){
           ${posBadge}
           ${ownerColor?`<span class="grp-owner-dot" style="background:${ownerColor}"></span>`:'<span class="grp-owner-dot" style="background:transparent"></span>'}
           <img class="grp-flag" src="${flag(n.code,40)}" loading="lazy" onerror="this.style.opacity='.15'">
-          <span class="grp-name">${n.name}${n.host?'<span class="host-badge">host</span>':''}</span>
+          <span class="grp-name">${n.name}</span>
           <span class="grp-record" style="opacity:.6">${w}W ${d}D</span>
           <span class="grp-pts">${pts}</span>
         </div>`;
@@ -2884,10 +3650,26 @@ function squadGroupHtml(label,key,players){
   </div>`;
 }
 
+function nationStatsRowHtml(nation){
+  const odds = oddsForNation(nation.name);
+  const tier = oddsTier(odds);
+  const rank = fifaRank(nation.name);
+  return `<div class="nation-stats-row">
+    <span class="nsr-rank" title="FIFA World Ranking"><span class="nsr-lbl">FIFA</span>#${rank}</span>
+    <span class="nsr-divider"></span>
+    <span class="nsr-odds-block">
+      <span class="nsr-odds-lbl">WC Champ</span>
+      <span class="avail-odds tier-${tier}" title="Odds to win 2026 World Cup (${WORLD_CUP_ODDS_UPDATED})">${fmtOddsShort(odds)}</span>
+      <span class="nsr-impl" title="Implied probability">${fmtImplied(odds)}</span>
+    </span>
+  </div>`;
+}
 function squadBodyHtml(nation){
   const sq=(typeof SQUADS!=='undefined')?getSquad(nation.name):{status:'tba',gk:[],def:[],mid:[],att:[]};
+  const statsRow = nationStatsRowHtml(nation);
   if(sq.status==='tba'||squadTotal(sq)===0){
     return `<div class="nation-squad-body">
+      ${statsRow}
       <div class="squad-tba-msg">
         <strong>Squad not yet announced</strong>
         Final 26-man roster releases before kickoff (Jun 11, 2026).
@@ -2895,6 +3677,7 @@ function squadBodyHtml(nation){
     </div>`;
   }
   return `<div class="nation-squad-body">
+    ${statsRow}
     ${squadGroupHtml('Goalkeepers','GK',sq.gk)}
     ${squadGroupHtml('Defenders','DEF',sq.def)}
     ${squadGroupHtml('Midfielders','MID',sq.mid)}
@@ -2908,6 +3691,110 @@ function statusBadgeHtml(name){
   if(sq.status==='official') return `<span class="nation-squad-status official">✓ ${squadTotal(sq)}</span>`;
   if(sq.status==='provisional') return `<span class="nation-squad-status provisional">${squadTotal(sq)} prov</span>`;
   return `<span class="nation-squad-status tba">TBA</span>`;
+}
+
+// Map an XI to (x,y) positions on a pitch from a formation string like "4-3-3"
+// or "4-2-3-1". Positions are returned in the same order as proj.players
+// (GK first, then back-line to front-line, left-to-right within each line).
+// Coords are unit fractions: x ∈ [0,1] (left→right), y ∈ [0,1] (back→front).
+function pitchPositionsForFormation(formationStr){
+  const parts = formationStr.split('-').map(n=>parseInt(n,10)).filter(n=>!isNaN(n));
+  const out = [{ x:0.5, y:0.93 }]; // GK at the back
+  const lineCount = parts.length;
+  parts.forEach((count, lineIdx) => {
+    const yT = lineCount===1 ? 0.5 : lineIdx/(lineCount-1);
+    const y = 0.78 - (0.78-0.12) * yT;
+    for(let i=0;i<count;i++){
+      const xT = (i+1)/(count+1);
+      const x = 0.10 + (0.90-0.10) * xT;
+      out.push({ x, y });
+    }
+  });
+  return out;
+}
+
+// Surname for the pitch label — handles "Vinicius Junior", "Mac Allister", etc.
+function lineLastName(fullName){
+  const tokens = fullName.split(/\s+/);
+  if(tokens.length === 1) return tokens[0];
+  const last = tokens[tokens.length-1];
+  if(['Jr','Jr.','Sr','Sr.','Junior','II','III'].includes(last)) return tokens[tokens.length-2];
+  return last;
+}
+
+// Hover tooltip: 2D pitch + roster grouped by line.
+function lineupTipHtml(name){
+  if(typeof PROJECTED_LINEUPS==='undefined' || typeof projectedXI!=='function') return '';
+  const proj = projectedXI(name);
+  if(!proj){
+    return `<div class="nation-lineup-tip">
+      <div class="nlt-hdr"><span class="nlt-hdr-lbl">Projected XI</span></div>
+      <div class="nlt-empty">No projection yet</div>
+    </div>`;
+  }
+  // ── SVG pitch ──
+  const positions = pitchPositionsForFormation(proj.formation);
+  const W = 230, H = 165;
+  const lineColors = { GK:'#FFD93D', DEF:'#FF6B82', MID:'#7BB7FF', FWD:'#FF1744' };
+  const dots = proj.players.map((p,i) => {
+    const pos = positions[i] || {x:0.5, y:0.5};
+    const cx = (pos.x * W).toFixed(1);
+    const cy = (pos.y * H).toFixed(1);
+    const c = lineColors[p.line] || '#fff';
+    const label = lineLastName(p.name);
+    return `<g>
+      <circle cx="${cx}" cy="${cy}" r="6" fill="${c}" stroke="#0a1228" stroke-width="1.5" filter="url(#nltDot)"/>
+      <text x="${cx}" y="${(parseFloat(cy)+13).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="7.2" font-family="system-ui,-apple-system,sans-serif" font-weight="700" stroke="#0a1228" stroke-width="2.4" paint-order="stroke" style="paint-order:stroke;letter-spacing:.02em">${label}</text>
+    </g>`;
+  }).join('');
+  const pitch = `<svg class="nlt-pitch" viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="nltGrass" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#1f7544"/>
+        <stop offset="100%" stop-color="#0c3a1f"/>
+      </linearGradient>
+      <pattern id="nltStripes" patternUnits="userSpaceOnUse" width="${W}" height="${(H/8).toFixed(2)}">
+        <rect width="${W}" height="${(H/16).toFixed(2)}" fill="rgba(255,255,255,.05)"/>
+      </pattern>
+      <filter id="nltDot" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="1" stdDeviation="1.4" flood-color="#000" flood-opacity=".55"/>
+      </filter>
+    </defs>
+    <rect width="${W}" height="${H}" rx="6" fill="url(#nltGrass)"/>
+    <rect width="${W}" height="${H}" rx="6" fill="url(#nltStripes)"/>
+    <g stroke="rgba(255,255,255,.55)" stroke-width="1" fill="none">
+      <rect x="4" y="4" width="${W-8}" height="${H-8}" rx="2"/>
+      <line x1="4" y1="${H/2}" x2="${W-4}" y2="${H/2}"/>
+      <circle cx="${W/2}" cy="${H/2}" r="14"/>
+      <circle cx="${W/2}" cy="${H/2}" r="1.5" fill="rgba(255,255,255,.55)"/>
+      <rect x="${W*0.25}" y="4" width="${W*0.5}" height="20"/>
+      <rect x="${W*0.37}" y="4" width="${W*0.26}" height="10"/>
+      <rect x="${W*0.25}" y="${H-24}" width="${W*0.5}" height="20"/>
+      <rect x="${W*0.37}" y="${H-14}" width="${W*0.26}" height="10"/>
+    </g>
+    ${dots}
+  </svg>`;
+
+  // ── Roster list ──
+  const groups = {GK:[],DEF:[],MID:[],FWD:[]};
+  proj.players.forEach(p => groups[p.line].push(p));
+  const lineRow = (lbl, arr) => arr.length ? `<div class="nlt-line">
+    <div class="nlt-line-lbl">${lbl}</div>
+    ${arr.map(p=>`<div class="nlt-player"><span class="nlt-player-name">${p.name}</span>${p.club?`<span class="nlt-player-club">${p.club}</span>`:''}</div>`).join('')}
+  </div>` : '';
+  return `<div class="nation-lineup-tip">
+    <div class="nlt-hdr">
+      <span class="nlt-hdr-lbl">Projected XI</span>
+      <span class="nlt-formation">${proj.formation}</span>
+    </div>
+    ${pitch}
+    <div class="nlt-roster">
+      ${lineRow('Forwards', groups.FWD)}
+      ${lineRow('Midfield', groups.MID)}
+      ${lineRow('Defense', groups.DEF)}
+      ${lineRow('Goalkeeper', groups.GK)}
+    </div>
+  </div>`;
 }
 
 function renderNationsPool(){
@@ -2941,7 +3828,7 @@ function renderNationsPool(){
               ${statusBadgeHtml(n.name)}
               <span class="nation-chevron">▼</span>
             </div>
-            ${open?squadBodyHtml(n):''}
+            ${open?squadBodyHtml(n):lineupTipHtml(n.name)}
           </div>`;
         }).join('')}
       </div>
@@ -2980,7 +3867,7 @@ async function render(){
   if(OFFSEASON&&!MOCK_MODE){
     updateStatus('Loading schedule…','loading');
     const b=document.getElementById('draftPendingBanner');
-    if(b) b.style.display='block';
+    if(b){ b.style.display='block'; startKickoffCountdown(); }
     document.getElementById('sGames').textContent='Kicks off June 11, 2026';
   } else {
     updateStatus('Loading match data…','loading');
@@ -3065,28 +3952,24 @@ async function forceRefresh(){
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  MULTIPLAYER SYNC — Firebase Realtime Database              ║
+// ║  MULTIPLAYER SYNC — Supabase Realtime + Postgres            ║
 // ║                                                              ║
-// ║  TO ENABLE LIVE MULTI-DEVICE DRAFTS:                        ║
-// ║  1. Go to https://console.firebase.google.com/             ║
-// ║  2. Create a new project (free tier is plenty)             ║
-// ║  3. Add a Web App, copy the firebaseConfig                 ║
-// ║  4. Realtime Database → Create Database → "Start in test"  ║
-// ║     (or set rules: { ".read": true, ".write": true } —     ║
-// ║      fine for a casual friend league)                      ║
-// ║  5. Paste the 5 values below and save the file.            ║
+// ║  Project: world-cup-2026 (Supabase free tier)                ║
+// ║  Schema:  rooms(id text PK, state jsonb, host_browser_id,    ║
+// ║                 claimed_names jsonb, updated_at)             ║
+// ║  Realtime: rooms table is in `supabase_realtime` publication ║
 // ║                                                              ║
-// ║  If left blank, the app still works perfectly in single-   ║
-// ║  device mode — just no live cross-browser sync.            ║
+// ║  The publishable key below is safe to ship client-side —     ║
+// ║  Row-Level Security policies in Supabase control access.    ║
+// ║                                                              ║
+// ║  If config is blank, the app falls back to single-device    ║
+// ║  mode (still fully functional, just no cross-browser sync). ║
 // ╚══════════════════════════════════════════════════════════════╝
-const FIREBASE_CONFIG = {
-  apiKey:       '',  // e.g. "AIzaSy..."
-  authDomain:   '',  // e.g. "my-project.firebaseapp.com"
-  databaseURL:  '',  // e.g. "https://my-project-default-rtdb.firebaseio.com"
-  projectId:    '',  // e.g. "my-project"
-  appId:        '',  // e.g. "1:1234567890:web:abc123"
+const SUPABASE_CONFIG = {
+  url:            'https://gyqbvnxybnjaxjqecqud.supabase.co',
+  publishableKey: 'sb_publishable_n3MKjp_X9HGPDZpGHJkNaA_PJYVYDb-',
 };
-const MULTIPLAYER_READY = !!(FIREBASE_CONFIG.databaseURL && FIREBASE_CONFIG.apiKey);
+const MULTIPLAYER_READY = !!(SUPABASE_CONFIG.url && SUPABASE_CONFIG.publishableKey);
 
 // ── Live state ────────────────────────────────────────────────────
 let mpEnabled = false;       // true when actively connected to a room
@@ -3094,14 +3977,16 @@ let mpRoomId = null;         // current room id
 let mpRole = 'guest';        // 'host' | 'guest'
 let mpBrowserId = null;      // stable per-browser uuid
 let mpClaimedName = null;    // which player THIS browser is locked to
-let mpPresence = {};         // { [playerName]: { browserId, lastSeen } }
-let mpFb = null;             // loaded firebase namespace { ref, set, onValue, runTransaction, off, ... } + { db, app }
+let mpPresence = {};         // { [playerName]: { browserId, lastSeen } } — sticky claims
+let mpSb = null;             // { client, mod, channel } — loaded Supabase client + active room channel
 let mpUnsubs = [];           // teardown callbacks
 let mpRemoteSeq = 0;         // applied remote seq, to ignore self-echo
 let mpLastTurnPlayer = null; // last "on the clock" — drives the buzzer trigger
 
 const MP_BROWSER_KEY = 'wcb-mp-browser-id';
-const MP_CLAIMED_KEY = 'wcb-mp-claimed-name-v1';
+// MP_CLAIMED_KEY is league-scoped → use _keyClaimedName().
+// Browser ID is per-device, NOT per-league (one identity follows a browser
+// across leagues — but the claimed player name resets per league).
 
 function mpInitBrowserId(){
   try {
@@ -3109,27 +3994,18 @@ function mpInitBrowserId(){
     if(!id){ id = 'b_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem(MP_BROWSER_KEY, id); }
     mpBrowserId = id;
   } catch(e){ mpBrowserId = 'b_' + Math.random().toString(36).slice(2, 10); }
-  try { mpClaimedName = localStorage.getItem(MP_CLAIMED_KEY) || null; } catch(e){}
+  try { mpClaimedName = localStorage.getItem(_keyClaimedName()) || null; } catch(e){}
 }
 
-// ── Lazy load Firebase modular SDK ───────────────────────────────
-async function mpLoadFirebase(){
-  if(mpFb) return mpFb;
-  const [appMod, dbMod] = await Promise.all([
-    import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js'),
-  ]);
-  const app = appMod.initializeApp(FIREBASE_CONFIG);
-  const db = dbMod.getDatabase(app);
-  mpFb = {
-    app, db,
-    ref: dbMod.ref, set: dbMod.set, get: dbMod.get,
-    onValue: dbMod.onValue, off: dbMod.off,
-    runTransaction: dbMod.runTransaction,
-    onDisconnect: dbMod.onDisconnect, serverTimestamp: dbMod.serverTimestamp,
-    update: dbMod.update, remove: dbMod.remove,
-  };
-  return mpFb;
+// ── Lazy load Supabase JS SDK ────────────────────────────────────
+async function mpLoadSupabase(){
+  if(mpSb && mpSb.client) return mpSb;
+  const mod = await import('https://esm.sh/@supabase/supabase-js@2');
+  const client = mod.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.publishableKey, {
+    realtime: { params: { eventsPerSecond: 10 } },
+  });
+  mpSb = { client, mod, channel: null };
+  return mpSb;
 }
 
 // ── Room URL helpers ─────────────────────────────────────────────
@@ -3139,7 +4015,8 @@ function mpRoomFromHash(){
   return m ? m[1] : null;
 }
 function mpRoomUrl(roomId){
-  return location.origin + location.pathname + '#room=' + roomId;
+  // Always pin the league so the invitee lands in the correct draft.
+  return location.origin + location.pathname + '#league=' + currentLeagueId + '&room=' + roomId;
 }
 function mpNewRoomId(){
   // 6-char base36 → 60M combos, plenty for a friend group
@@ -3149,54 +4026,80 @@ function mpNewRoomId(){
 // ── Connect / disconnect ─────────────────────────────────────────
 async function mpConnectToRoom(roomId, opts={}){
   if(!MULTIPLAYER_READY){
-    alert('Multiplayer not configured. Paste your Firebase config at the top of the file to enable live drafts.');
+    alert('Multiplayer not configured. Paste your Supabase config at the top of the file to enable live drafts.');
     return false;
   }
-  await mpLoadFirebase();
-  const { ref, set, get, onValue, onDisconnect, serverTimestamp } = mpFb;
+  await mpLoadSupabase();
+  const sb = mpSb.client;
 
   mpRoomId = roomId;
   mpEnabled = true;
 
-  // Determine role: first-write wins
-  const metaRef = ref(mpFb.db, `rooms/${roomId}/meta`);
-  const metaSnap = await get(metaRef);
-  if(!metaSnap.exists()){
-    // We're the host: seed the room with the local draftState if we have one
+  // Read existing room (if any) to determine role + seed local state
+  const { data: existing, error: selErr } = await sb
+    .from('rooms')
+    .select('id, state, host_browser_id, claimed_names')
+    .eq('id', roomId)
+    .maybeSingle();
+  if(selErr){
+    console.warn('mpConnect: select error', selErr);
+    mpEnabled = false; mpRoomId = null;
+    alert('Could not connect to room — Supabase select error. Check console.');
+    return false;
+  }
+
+  if(!existing){
+    // We're the host — insert a new room row
     mpRole = 'host';
-    await set(metaRef, { hostBrowserId: mpBrowserId, createdAt: serverTimestamp() });
-    if(opts.seedState && draftState){
-      await set(ref(mpFb.db, `rooms/${roomId}/state`), draftState);
+    const seed = (opts.seedState && draftState) ? JSON.parse(JSON.stringify(draftState)) : {};
+    if(seed && seed.picks === undefined) seed.picks = [];
+    const { error: insErr } = await sb.from('rooms').insert({
+      id: roomId,
+      state: seed,
+      host_browser_id: mpBrowserId,
+      claimed_names: {},
+    });
+    if(insErr){
+      // Race: another client may have just inserted. Re-read and treat as guest.
+      console.warn('mpConnect: insert race, re-reading', insErr);
+      const { data: re } = await sb.from('rooms').select('id, state, host_browser_id, claimed_names').eq('id', roomId).maybeSingle();
+      if(!re){ mpEnabled = false; mpRoomId = null; return false; }
+      mpRole = re.host_browser_id === mpBrowserId ? 'host' : 'guest';
+      mpPresence = re.claimed_names || {};
+      if(re.state && Object.keys(re.state).length) mpApplyRemoteState(re.state);
     }
   } else {
-    mpRole = (metaSnap.val().hostBrowserId === mpBrowserId) ? 'host' : 'guest';
+    mpRole = existing.host_browser_id === mpBrowserId ? 'host' : 'guest';
+    mpPresence = existing.claimed_names || {};
+    if(existing.state && Object.keys(existing.state).length) mpApplyRemoteState(existing.state);
   }
 
-  // Subscribe to remote state changes
-  const stateRef = ref(mpFb.db, `rooms/${roomId}/state`);
-  const stateUnsub = onValue(stateRef, snap => {
-    const remote = snap.val();
-    if(!remote){ return; }
-    mpApplyRemoteState(remote);
-  });
-  mpUnsubs.push(() => mpFb.off(stateRef));
+  // Subscribe to realtime postgres_changes on THIS room row only
+  const channel = sb.channel(`room:${roomId}`)
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'rooms',
+      filter: `id=eq.${roomId}`,
+    }, payload => {
+      const row = payload.new;
+      if(!row) return;
+      if(row.claimed_names){
+        mpPresence = row.claimed_names;
+      }
+      if(row.state && Object.keys(row.state).length){
+        mpApplyRemoteState(row.state);
+      } else {
+        renderDraft();
+      }
+    })
+    .subscribe();
 
-  // Subscribe to presence map (who has claimed which name)
-  const presRef = ref(mpFb.db, `rooms/${roomId}/presence`);
-  const presUnsub = onValue(presRef, snap => {
-    mpPresence = snap.val() || {};
-    renderDraft();
-  });
-  mpUnsubs.push(() => mpFb.off(presRef));
+  mpSb.channel = channel;
+  mpUnsubs.push(() => { try { sb.removeChannel(channel); } catch(e){} });
 
-  // Claim our name if previously chosen and still free
+  // Re-claim our name if previously chosen and still free
   if(mpClaimedName){ await mpClaimIdentity(mpClaimedName, /*silent*/true); }
-
-  // Heartbeat presence + clean up on disconnect
-  if(mpClaimedName){
-    const myPresRef = ref(mpFb.db, `rooms/${roomId}/presence/${mpClaimedName}`);
-    try { await onDisconnect(myPresRef).remove(); } catch(e){}
-  }
 
   renderDraft();
   return true;
@@ -3206,10 +4109,18 @@ async function mpDisconnect(){
   if(!mpEnabled) return;
   mpUnsubs.forEach(u => { try { u(); } catch(e){} });
   mpUnsubs = [];
-  // Free our presence slot
-  if(mpRoomId && mpClaimedName && mpFb){
-    try { await mpFb.set(mpFb.ref(mpFb.db, `rooms/${mpRoomId}/presence/${mpClaimedName}`), null); } catch(e){}
+  // Free our claimed-name slot (best-effort)
+  if(mpRoomId && mpClaimedName && mpSb?.client){
+    try {
+      const { data } = await mpSb.client.from('rooms').select('claimed_names').eq('id', mpRoomId).single();
+      const cn = data?.claimed_names || {};
+      if(cn[mpClaimedName] && cn[mpClaimedName].browserId === mpBrowserId){
+        delete cn[mpClaimedName];
+        await mpSb.client.from('rooms').update({ claimed_names: cn }).eq('id', mpRoomId);
+      }
+    } catch(e){}
   }
+  if(mpSb) mpSb.channel = null;
   mpEnabled = false;
   mpRoomId = null;
   mpRole = 'guest';
@@ -3227,7 +4138,7 @@ function mpApplyRemoteState(remote){
   if(sameStarted && localCount === remoteCount && (draftState?.completedAt||0) === (remote.completedAt||0)){
     return;
   }
-  // Normalize: ensure picks is an array (Firebase may turn empty arrays into null)
+  // Normalize
   remote.picks = remote.picks || [];
   remote.names = remote.names || DEFAULT_NAMES.slice();
   remote.pickOrder = remote.pickOrder || remote.names.slice();
@@ -3244,53 +4155,66 @@ function mpApplyRemoteState(remote){
   renderDraft();
 }
 
-// ── Push state to Firebase ───────────────────────────────────────
+// ── Push state to Supabase ───────────────────────────────────────
 async function mpPushState(){
-  if(!mpEnabled || !mpFb || !mpRoomId || !draftState) return;
-  // Sanitize: Firebase chokes on undefined
+  if(!mpEnabled || !mpSb?.client || !mpRoomId || !draftState) return;
   const clean = JSON.parse(JSON.stringify(draftState));
-  // Ensure picks is at least an empty array
   clean.picks = clean.picks || [];
   try {
-    await mpFb.set(mpFb.ref(mpFb.db, `rooms/${mpRoomId}/state`), clean);
+    const { error } = await mpSb.client
+      .from('rooms')
+      .update({ state: clean })
+      .eq('id', mpRoomId);
+    if(error) console.warn('mpPushState error', error);
   } catch(e){
     console.warn('mpPushState failed', e);
   }
 }
 
 // ── Identity claim ───────────────────────────────────────────────
+// Postgrest doesn't expose a true transaction from the client. For a
+// 6-person friend league the race window between read-and-write is fine —
+// the Realtime channel surfaces conflicts within ~100ms and last-writer-wins
+// is acceptable (worst case: two friends both pick "Andrew" within the
+// same second and one of them re-picks).
 async function mpClaimIdentity(name, silent){
-  if(!mpEnabled || !mpFb || !mpRoomId) return false;
-  const { runTransaction, ref, onDisconnect } = mpFb;
-  const slotRef = ref(mpFb.db, `rooms/${mpRoomId}/presence/${name}`);
-  const result = await runTransaction(slotRef, current => {
-    if(current && current.browserId && current.browserId !== mpBrowserId){
-      return; // aborted — someone else has it
-    }
-    return { browserId: mpBrowserId, lastSeen: Date.now() };
-  });
-  if(!result.committed){
+  if(!mpEnabled || !mpSb?.client || !mpRoomId) return false;
+  const sb = mpSb.client;
+  const { data, error } = await sb.from('rooms').select('claimed_names').eq('id', mpRoomId).single();
+  if(error){ if(!silent) alert('Connection error claiming identity.'); return false; }
+  const cn = data?.claimed_names || {};
+  const current = cn[name];
+  if(current && current.browserId && current.browserId !== mpBrowserId){
     if(!silent) alert(`${name} is already claimed on another device.`);
     return false;
   }
+  cn[name] = { browserId: mpBrowserId, lastSeen: Date.now() };
+  const { error: upErr } = await sb.from('rooms').update({ claimed_names: cn }).eq('id', mpRoomId);
+  if(upErr){ if(!silent) alert('Failed to claim — try again.'); console.warn(upErr); return false; }
   mpClaimedName = name;
   pickingAs = name;
   try {
-    localStorage.setItem(MP_CLAIMED_KEY, name);
-    localStorage.setItem(PICKING_AS_KEY, name);
+    localStorage.setItem(_keyClaimedName(), name);
+    localStorage.setItem(_keyPickingAs(), name);
   } catch(e){}
-  try { await onDisconnect(slotRef).remove(); } catch(e){}
   renderDraft();
   return true;
 }
 
 async function mpReleaseIdentity(){
-  if(mpEnabled && mpFb && mpRoomId && mpClaimedName){
-    try { await mpFb.set(mpFb.ref(mpFb.db, `rooms/${mpRoomId}/presence/${mpClaimedName}`), null); } catch(e){}
+  if(mpEnabled && mpSb?.client && mpRoomId && mpClaimedName){
+    try {
+      const { data } = await mpSb.client.from('rooms').select('claimed_names').eq('id', mpRoomId).single();
+      const cn = data?.claimed_names || {};
+      if(cn[mpClaimedName] && cn[mpClaimedName].browserId === mpBrowserId){
+        delete cn[mpClaimedName];
+        await mpSb.client.from('rooms').update({ claimed_names: cn }).eq('id', mpRoomId);
+      }
+    } catch(e){}
   }
   mpClaimedName = null;
   pickingAs = null;
-  try { localStorage.removeItem(MP_CLAIMED_KEY); localStorage.removeItem(PICKING_AS_KEY); } catch(e){}
+  try { localStorage.removeItem(_keyClaimedName()); localStorage.removeItem(_keyPickingAs()); } catch(e){}
   renderDraft();
 }
 
@@ -3329,11 +4253,11 @@ function mpShowTurnToast(){
 // ── Public hooks ─────────────────────────────────────────────────
 async function mpHostNewRoom(){
   if(!MULTIPLAYER_READY){
-    alert('Multiplayer not configured. See setup instructions at the top of the file (FIREBASE_CONFIG).');
+    alert('Multiplayer not configured. See setup instructions at the top of the file (SUPABASE_CONFIG).');
     return null;
   }
   const id = mpNewRoomId();
-  history.replaceState(null, '', '#room=' + id);
+  history.replaceState(null, '', '#league=' + currentLeagueId + '&room=' + id);
   await mpConnectToRoom(id, { seedState: true });
   return id;
 }
@@ -3353,42 +4277,101 @@ async function mpHostForcePickFor(player){
 // ║  - Auto-populates tracker as picks land                     ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-const DRAFT_STORE_KEY = 'wcb-draft-v1';
-const PICKING_AS_KEY = 'wcb-picking-as-v1'; // per-device: who is on THIS laptop, sticky across picks/reloads
-const DRAFT_ROUNDS = 8;
-const DEFAULT_NAMES = ['Thomas','Andrew','Paul','Carson','Rudger','Shaq'];
+// NOTE: DRAFT_STORE_KEY / PICKING_AS_KEY / DRAFT_ROUNDS / DEFAULT_NAMES are now
+// LEAGUE-SCOPED — defined at the top of the script under the LEAGUES block.
+// Use _keyDraftStore() / _keyPickingAs() for storage paths.
 
 // ── DRAFT STATE ───────────────────────────────────────────────────
-// Shape: { names:[6], pickOrder:[6], picks:[{n,player,nation}], startedAt, completedAt, selectedNation, pickingAs }
+// Shape: { names:[N], pickOrder:[N], picks:[{n,player,nation}], startedAt, completedAt, selectedNation, pickingAs }
 let draftState = null;
 let pickingAs = null;          // who owns THIS device (null = unset / view-only). Sticky.
-try { pickingAs = localStorage.getItem(PICKING_AS_KEY) || null; } catch(e){}
+try { pickingAs = localStorage.getItem(_keyPickingAs()) || null; } catch(e){}
 let availSearch = '';
 let availFilter = 'all';       // 'all' | 'A'..'L' | 'CONCACAF' | 'UEFA' | etc.
 let availSort = 'odds';        // 'odds' | 'group' | 'name' | 'conf'
 
-// ── STORAGE ───────────────────────────────────────────────────────
+// ── STORAGE (per-league via _keyDraftStore()) ─────────────────────
 function saveDraftState(){
   if(!draftState) return;
-  try { localStorage.setItem(DRAFT_STORE_KEY, JSON.stringify(draftState)); } catch(e){}
+  try { localStorage.setItem(_keyDraftStore(), JSON.stringify(draftState)); } catch(e){}
 }
 function loadDraftState(){
   try {
-    const raw = localStorage.getItem(DRAFT_STORE_KEY);
+    const raw = localStorage.getItem(_keyDraftStore());
     if(raw){ return JSON.parse(raw); }
   } catch(e){}
   return null;
 }
 function clearDraftState(){
-  try { localStorage.removeItem(DRAFT_STORE_KEY); } catch(e){}
+  try { localStorage.removeItem(_keyDraftStore()); } catch(e){}
   draftState = null;
   resetDraftToDefaults();
 }
 
+// ── LEAGUE SWITCHING ──────────────────────────────────────────────
+// Rewrite the URL hash, preserving other params (#d=..., #room=...).
+function _setHashParam(key, val){
+  const raw = (location.hash || '').replace(/^#/, '');
+  const tokens = raw.split(/[#&]/).filter(Boolean);
+  const filtered = tokens.filter(t => !t.toLowerCase().startsWith(key.toLowerCase() + '='));
+  filtered.push(key + '=' + val);
+  history.replaceState(null, '', location.pathname + '#' + filtered.join('&'));
+}
+
+function switchLeague(id){
+  if(!LEAGUES[id]) return;
+  if(id === currentLeagueId) { updateLeagueSwitcherActive(); return; }
+  // If multiplayer is connected, disconnect cleanly — room is scoped to old league.
+  try { if(typeof mpEnabled !== 'undefined' && mpEnabled) mpDisconnect(); } catch(e){}
+  // Drop any room=... param from hash since rooms don't cross leagues.
+  try {
+    const raw = (location.hash || '').replace(/^#/, '');
+    const tokens = raw.split(/[#&]/).filter(Boolean).filter(t => !/^room=/i.test(t));
+    history.replaceState(null, '', location.pathname + '#' + tokens.join('&'));
+  } catch(e){}
+  // Swap the active league.
+  currentLeagueId = id;
+  try { localStorage.setItem(LEAGUE_KEY, id); } catch(e){}
+  _setHashParam('league', id);
+  applyLeagueGlobals();
+  // Reload this league's draft state + per-device picking identity.
+  draftState = loadDraftState();
+  try { pickingAs = localStorage.getItem(_keyPickingAs()) || null; } catch(e){ pickingAs = null; }
+  try { mpClaimedName = localStorage.getItem(_keyClaimedName()) || null; } catch(e){ mpClaimedName = null; }
+  // Recompute DRAFT from the new league's saved state (or empty roster).
+  applyDraftStateToTracker();
+  // Update header chrome.
+  updateHeaderForLeague();
+  updateLeagueSwitcherActive();
+  // Repaint every dependent view.
+  refreshTrackerAfterDraftChange();
+  try { renderDraft(); } catch(e){}
+}
+
+function updateHeaderForLeague(){
+  const L = getLeague();
+  const subEl = document.getElementById('leagueSub');
+  if(subEl) subEl.textContent = L.sub;
+  // Standings draft-pending banner copy
+  const bannerSub = document.querySelector('#draftPendingBanner .draft-pending-sub');
+  if(bannerSub) bannerSub.textContent = `48 nations · ${L.players.length} players · ${L.nationsPerPlayer} picks each · snake draft`;
+  const bannerP = document.querySelector('#draftPendingBanner p');
+  if(bannerP) bannerP.textContent = `Once you run the snake draft, this tracker will light up with live scores, points, and group stage action for all ${L.players.length} squads.`;
+  // Document title
+  document.title = `${L.name} — FIFA 2026`;
+}
+
+function updateLeagueSwitcherActive(){
+  document.querySelectorAll('.league-pill').forEach(el=>{
+    if(el.dataset.league === currentLeagueId) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+}
+
 // ── DERIVE FROM STATE ─────────────────────────────────────────────
 function isDraftSetup(){ return draftState && draftState.pickOrder && draftState.startedAt; }
-function isDraftDone(s){ s = s || draftState; return s && s.picks && s.picks.length >= DRAFT_ROUNDS * (s.names?.length||6); }
-function totalPicksNeeded(s){ s = s || draftState; return DRAFT_ROUNDS * (s?.names?.length||6); }
+function isDraftDone(s){ s = s || draftState; const N = s?.names?.length || DEFAULT_NAMES.length; return s && s.picks && s.picks.length >= DRAFT_ROUNDS * N; }
+function totalPicksNeeded(s){ s = s || draftState; const N = s?.names?.length || DEFAULT_NAMES.length; return DRAFT_ROUNDS * N; }
 function pickerForPickNum(pickNum, pickOrder){
   // Snake: R1 forward, R2 reverse, R3 forward, ...
   const n = pickOrder.length;
@@ -3444,7 +4427,13 @@ function refreshTrackerAfterDraftChange(){
   try { renderDraftCards(); } catch(e){}
   try { renderNationsPool(); } catch(e){}
   try { if(bracketRendered){ renderGroupsGrid(); renderKnockoutBracket(); } } catch(e){}
-  try { document.getElementById('draftPendingBanner').style.display = DRAFT_COMPLETE ? 'none' : 'block'; } catch(e){}
+  try {
+    const banner = document.getElementById('draftPendingBanner');
+    const showBanner = !DRAFT_COMPLETE;
+    banner.style.display = showBanner ? 'block' : 'none';
+    if(showBanner) startKickoffCountdown();
+    else if(_kcTimer){ clearInterval(_kcTimer); _kcTimer=null; }
+  } catch(e){}
 }
 
 // ── URL HASH SYNC ─────────────────────────────────────────────────
@@ -3479,7 +4468,8 @@ function tryLoadDraftFromHash(){
 function copyShareLink(){
   const h = encodeDraftToHash();
   if(!h) return;
-  const url = location.origin + location.pathname + '#' + h;
+  // Pin the league so opening the link lands the recipient in the right draft.
+  const url = location.origin + location.pathname + '#league=' + currentLeagueId + '&' + h;
   navigator.clipboard.writeText(url).then(()=>{
     const btn = document.getElementById('drShareBtn');
     if(btn){ const orig = btn.innerHTML; btn.innerHTML = '✓ Copied'; setTimeout(()=>{btn.innerHTML = orig;}, 1800); }
@@ -3528,6 +4518,7 @@ function makePick(nation){
   if(mpEnabled) mpPushState();
   refreshTrackerAfterDraftChange();
   renderDraft();
+  vibe(isDraftDone() ? [60, 40, 60, 40, 120] : [40, 30, 60]);
 }
 function undoLastPick(){
   if(!draftState || !draftState.picks?.length) return;
@@ -3544,6 +4535,7 @@ function undoLastPick(){
   if(mpEnabled) mpPushState();
   refreshTrackerAfterDraftChange();
   renderDraft();
+  vibe([20, 30, 20]);
 }
 function resetDraftConfirm(){
   if(mpEnabled && mpRole !== 'host'){
@@ -3559,13 +4551,14 @@ function resetDraftConfirm(){
 function setSelected(nation){
   if(!draftState) return;
   draftState.selectedNation = (draftState.selectedNation === nation) ? null : nation;
+  vibe([8]);
   renderDraft();
 }
 function setPickingAs(name){
   pickingAs = name || null;
   try {
-    if(pickingAs) localStorage.setItem(PICKING_AS_KEY, pickingAs);
-    else          localStorage.removeItem(PICKING_AS_KEY);
+    if(pickingAs) localStorage.setItem(_keyPickingAs(), pickingAs);
+    else          localStorage.removeItem(_keyPickingAs());
   } catch(e){}
   renderDraft();
 }
@@ -3590,6 +4583,8 @@ function renderDraft(){
   if(isDraftDone()) renderDraftComplete(root);
   else if(isDraftSetup()) renderDraftActive(root);
   else renderDraftSetup(root);
+  // Re-decorate inputs (search, name inputs) with mobile keyboard hints.
+  if(typeof initKeyboardHandling === 'function') try { initKeyboardHandling(); } catch(_){}
   // Prepend MP bar (if any) to whatever was rendered
   const bar = mpBarHtml();
   if(bar){
@@ -3674,13 +4669,16 @@ function renderClaimCardHtml(names, order, otc){
 function renderDraftSetup(root){
   const savedNames = draftState?.names || DEFAULT_NAMES;
   const savedOrder = draftState?.pickOrder || null;
+  const L = getLeague();
+  const N = L.players.length;
+  const R = L.nationsPerPlayer;
 
   root.innerHTML = `
     <div class="dr-wrap">
       <div class="dr-hero">
-        <div class="dr-hero-eyebrow">⚽ World Cup Boyz · Snake Draft</div>
+        <div class="dr-hero-eyebrow">⚽ ${L.name} · Snake Draft</div>
         <div class="dr-hero-title">Run Your 2026 Draft</div>
-        <div class="dr-hero-sub">8-round snake draft for 6 players. 48 nations on the board, every team off it. Set your names, randomize the order, and let the picks fly.</div>
+        <div class="dr-hero-sub">${R}-round snake draft for ${N} players. 48 nations on the board, every team off it. Set your names, randomize the order, and let the picks fly.</div>
       </div>
 
       <div class="dr-shell">
@@ -3724,29 +4722,36 @@ function renderDraftSetup(root){
             <div class="mp-setup-cta" style="margin-top:16px;">
               <div class="mp-setup-cta-text">
                 <div class="mp-setup-cta-title">🌐 Want a live multi-device draft?</div>
-                <div class="mp-setup-cta-sub">Each player drafts from their own browser, dropdowns locked to their name, picks sync instantly. Free to set up — paste a Firebase config into the FIREBASE_CONFIG block at the top of the file. Setup takes 5 minutes.</div>
+                <div class="mp-setup-cta-sub">Each player drafts from their own browser, dropdowns locked to their name, picks sync instantly. Free to set up — paste a Supabase project URL + publishable key into the SUPABASE_CONFIG block at the top of the file. Setup takes 5 minutes.</div>
               </div>
             </div>
           ` : ''}
 
-          ${(localStorage.getItem(DRAFT_STORE_KEY))?'<div style="text-align:center;margin-top:10px;"><button class="dr-btn ghost sm" onclick="resetDraftConfirm()">🗑 Clear saved draft</button></div>':''}
+          ${(localStorage.getItem(_keyDraftStore()))?'<div style="text-align:center;margin-top:10px;"><button class="dr-btn ghost sm" onclick="resetDraftConfirm()">🗑 Clear saved draft</button></div>':''}
         </div>
       </div>
     </div>
   `;
 }
 
+// Pull the N name inputs out of the setup screen, where N = active league size.
+function _gatherSetupNames(){
+  const N = DEFAULT_NAMES.length;
+  const names = [];
+  for(let i=0; i<N; i++){
+    const el = document.getElementById('drName'+i);
+    names.push((el?.value || DEFAULT_NAMES[i] || ('Player '+(i+1))).trim() || DEFAULT_NAMES[i] || ('Player '+(i+1)));
+  }
+  return names;
+}
+
 // Host a new live multiplayer room from the setup view.
 async function mpStartLiveRoom(){
-  // Gather names from inputs first so the seeded room has the right roster
-  const names = [];
-  for(let i=0; i<6; i++){
-    const el = document.getElementById('drName'+i);
-    names.push((el?.value || DEFAULT_NAMES[i]).trim() || DEFAULT_NAMES[i]);
-  }
+  const names = _gatherSetupNames();
   const dupes = names.filter((n,i)=>names.indexOf(n)!==i);
   if(dupes.length){ alert('Player names must be unique. Duplicate: '+dupes[0]); return; }
-  const order = (draftState?.pickOrder && draftState.pickOrder.length === 6 && draftState.pickOrder.every(n=>names.includes(n))) ? draftState.pickOrder : names.slice();
+  const N = names.length;
+  const order = (draftState?.pickOrder && draftState.pickOrder.length === N && draftState.pickOrder.every(n=>names.includes(n))) ? draftState.pickOrder : names.slice();
   // Start the draft locally first
   startDraft(names, order);
   // Create a room with the seeded state
@@ -3761,11 +4766,7 @@ async function mpStartLiveRoom(){
 }
 
 function randomizeOrder(){
-  const names = [];
-  for(let i=0; i<6; i++){
-    const el = document.getElementById('drName'+i);
-    names.push((el?.value || DEFAULT_NAMES[i]).trim() || DEFAULT_NAMES[i]);
-  }
+  const names = _gatherSetupNames();
   const order = shuffleArray(names);
   // Stash in draftState so it persists across the setup screen redraws
   draftState = draftState || {};
@@ -3782,15 +4783,12 @@ function randomizeOrder(){
 }
 
 function commitStartDraft(){
-  const names = [];
-  for(let i=0; i<6; i++){
-    const el = document.getElementById('drName'+i);
-    names.push((el?.value || DEFAULT_NAMES[i]).trim() || DEFAULT_NAMES[i]);
-  }
+  const names = _gatherSetupNames();
   const dupes = names.filter((n,i)=>names.indexOf(n)!==i);
   if(dupes.length){ alert('Player names must be unique. Duplicate: '+dupes[0]); return; }
+  const N = names.length;
   // Use existing randomized order if it matches names; otherwise default to entered order
-  let order = (draftState?.pickOrder && draftState.pickOrder.length === 6 && draftState.pickOrder.every(n=>names.includes(n))) ? draftState.pickOrder : names.slice();
+  let order = (draftState?.pickOrder && draftState.pickOrder.length === N && draftState.pickOrder.every(n=>names.includes(n))) ? draftState.pickOrder : names.slice();
   startDraft(names, order);
 }
 
@@ -3919,6 +4917,20 @@ function renderDraftActive(root){
       </div>
     </div>
   `;
+
+  // Mobile: auto-scroll draft board so OTC cell is centered.
+  try {
+    requestAnimationFrame(() => {
+      const wrap = root.querySelector('.dboard-wrap');
+      const otcCell = root.querySelector('.dboard-cell.otc');
+      if (wrap && otcCell && wrap.scrollWidth > wrap.clientWidth) {
+        const wrapRect = wrap.getBoundingClientRect();
+        const cellRect = otcCell.getBoundingClientRect();
+        const target = (cellRect.left - wrapRect.left) + wrap.scrollLeft - (wrap.clientWidth / 2) + (cellRect.width / 2);
+        wrap.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+      }
+    });
+  } catch(_) {}
 }
 
 function renderBoardHtml(otcName){
@@ -4055,7 +5067,7 @@ function renderAvailableGridHtml(){
       </div>
       <div class="avail-bot">
         <span class="avail-rank" title="Rank by odds to win">#${rank}</span>
-        <span class="avail-meta">Grp ${n.group} · ${n.conf}</span>
+        <span class="avail-meta" title="FIFA World Ranking">FIFA #${fifaRank(n.name)} · ${n.conf}</span>
         <span class="avail-impl" title="Implied probability">${fmtImplied(odds)}</span>
       </div>
     </div>`;
@@ -4171,20 +5183,268 @@ async function initMultiplayerOnBoot(){
   const roomId = mpRoomFromHash();
   if(!roomId) return;
   if(!MULTIPLAYER_READY){
-    console.warn('Room ID in URL but Firebase config is missing. See FIREBASE_CONFIG block.');
+    console.warn('Room ID in URL but Supabase config is missing. See SUPABASE_CONFIG block.');
     return;
   }
   try { await mpConnectToRoom(roomId); }
   catch(e){ console.warn('Failed to join room', e); }
 }
 
+// Persist the resolved league back to localStorage so subsequent visits
+// without a #league= hash still land in the right draft.
+try { localStorage.setItem(LEAGUE_KEY, currentLeagueId); } catch(e){}
+
+// React to back/forward navigation between leagues + tab deep-links.
+window.addEventListener('hashchange', () => {
+  const fromHash = _readLeagueIdFromHash();
+  if(fromHash && LEAGUES[fromHash] && fromHash !== currentLeagueId){
+    switchLeague(fromHash);
+  }
+  try { applyTabFromHash(); } catch(_){}
+});
+
+// ═══════════════════════════════════════════════════════════════════
+//  SWIPE BETWEEN TABS — touch-only, threshold-based
+// ═══════════════════════════════════════════════════════════════════
+function initSwipeNav(){
+  if(typeof window === 'undefined') return;
+  if(!('ontouchstart' in window)) return; // touch-only
+  let startX = 0, startY = 0, startT = 0, tracking = false;
+  const main = document.querySelector('.main');
+  if(!main) return;
+
+  // Selectors that own their own horizontal scroll → don't hijack their swipes.
+  const NO_SWIPE = '.dboard-wrap, .bracket-wrap, .ticker-scroll, .dr-order-list, select, input, textarea, button';
+
+  main.addEventListener('touchstart', (e) => {
+    if(e.touches.length !== 1) { tracking = false; return; }
+    const t = e.target;
+    if(t.closest && t.closest(NO_SWIPE)) { tracking = false; return; }
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startT = Date.now();
+    tracking = true;
+  }, {passive:true});
+
+  main.addEventListener('touchend', (e) => {
+    if(!tracking) return;
+    tracking = false;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    const dt = Date.now() - startT;
+    // Horizontal swipe: ≥60px X, ≤45px Y drift, ≤500ms
+    if(Math.abs(dx) < 60 || Math.abs(dy) > 45 || dt > 500) return;
+    const cur = (document.querySelector('.tab-pane.active') || {}).id || 'tab-standings';
+    const id = cur.replace(/^tab-/, '');
+    const i = VALID_TABS.indexOf(id);
+    if(i < 0) return;
+    const nextI = dx < 0 ? (i + 1) % VALID_TABS.length
+                         : (i - 1 + VALID_TABS.length) % VALID_TABS.length;
+    const nextId = VALID_TABS[nextI];
+    switchTab(nextId);
+    // Slide-in animation cue
+    const newPane = document.getElementById('tab-' + nextId);
+    if(newPane){
+      newPane.classList.add(dx < 0 ? 'swipe-in-from-right' : 'swipe-in-from-left');
+      setTimeout(() => newPane.classList.remove('swipe-in-from-right','swipe-in-from-left'), 260);
+    }
+  }, {passive:true});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  PULL-TO-REFRESH — only when at top of page, only during live tournament
+// ═══════════════════════════════════════════════════════════════════
+function initPullToRefresh(){
+  if(typeof window === 'undefined') return;
+  if(!('ontouchstart' in window)) return;
+  const THRESHOLD = 80;
+  const MAX_DISTANCE = 140;
+  let startY = 0, currentY = 0, pulling = false, refreshing = false;
+
+  // Lazy-create indicator
+  let indicator = null;
+  function getIndicator(){
+    if(indicator) return indicator;
+    indicator = document.createElement('div');
+    indicator.className = 'ptr-indicator';
+    indicator.innerHTML = '<span class="ptr-label">↓ Pull to refresh</span>';
+    document.body.appendChild(indicator);
+    return indicator;
+  }
+
+  function isAtTop(){
+    return (window.scrollY || document.documentElement.scrollTop || 0) <= 1;
+  }
+  function shouldRefresh(){
+    // Only when at the top, not in OFFSEASON, and on a tab where data refreshes mean something.
+    if(typeof OFFSEASON !== 'undefined' && OFFSEASON) return false;
+    if(refreshing) return false;
+    return isAtTop();
+  }
+
+  document.addEventListener('touchstart', (e) => {
+    if(!shouldRefresh()) return;
+    if(e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+    currentY = startY;
+    pulling = true;
+  }, {passive:true});
+
+  document.addEventListener('touchmove', (e) => {
+    if(!pulling) return;
+    currentY = e.touches[0].clientY;
+    const dy = currentY - startY;
+    if(dy <= 0){
+      hideIndicator();
+      return;
+    }
+    // Damped pull: feels rubbery
+    const dist = Math.min(MAX_DISTANCE, dy * 0.55);
+    showIndicator(dist);
+  }, {passive:true});
+
+  document.addEventListener('touchend', async () => {
+    if(!pulling) return;
+    pulling = false;
+    const dy = currentY - startY;
+    const dist = Math.min(MAX_DISTANCE, dy * 0.55);
+    if(dist >= THRESHOLD && !refreshing){
+      refreshing = true;
+      showRefreshingState();
+      vibe([15, 25, 15]);
+      try {
+        if(typeof forceRefresh === 'function') await forceRefresh();
+      } catch(_){}
+      // Brief delay so the user sees the spinner
+      setTimeout(() => {
+        hideIndicator();
+        refreshing = false;
+      }, 600);
+    } else {
+      hideIndicator();
+    }
+  }, {passive:true});
+
+  function showIndicator(dist){
+    const el = getIndicator();
+    const ratio = Math.min(1, dist / THRESHOLD);
+    el.style.transform = `translateX(-50%) translateY(${dist}px)`;
+    el.classList.add('visible');
+    el.classList.remove('refreshing');
+    const lbl = el.querySelector('.ptr-label');
+    if(lbl) lbl.textContent = ratio >= 1 ? '↑ Release to refresh' : '↓ Pull to refresh';
+  }
+  function showRefreshingState(){
+    const el = getIndicator();
+    el.style.transform = `translateX(-50%) translateY(${THRESHOLD}px)`;
+    el.classList.add('visible', 'refreshing');
+    el.innerHTML = '<span class="ptr-spin"></span><span>Refreshing scores…</span>';
+  }
+  function hideIndicator(){
+    if(!indicator) return;
+    indicator.classList.remove('visible', 'refreshing');
+    indicator.style.transform = '';
+    indicator.innerHTML = '<span class="ptr-label">↓ Pull to refresh</span>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  KEYBOARD HANDLING — scroll focused inputs above iOS keyboard
+// ═══════════════════════════════════════════════════════════════════
+function initKeyboardHandling(){
+  // Add inputmode + autocomplete hints to known inputs (snappier mobile keyboard)
+  document.querySelectorAll('.avail-search').forEach(el => {
+    el.setAttribute('inputmode', 'search');
+    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocorrect', 'off');
+    el.setAttribute('autocapitalize', 'off');
+    el.setAttribute('spellcheck', 'false');
+    el.setAttribute('enterkeyhint', 'search');
+  });
+  document.querySelectorAll('.dr-name-input').forEach(el => {
+    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocorrect', 'off');
+    el.setAttribute('autocapitalize', 'words');
+    el.setAttribute('spellcheck', 'false');
+    el.setAttribute('enterkeyhint', 'done');
+  });
+
+  // When an input gains focus on mobile, scroll it into view above the
+  // virtual keyboard. visualViewport.height tells us how much screen is left.
+  if(!('visualViewport' in window)) return;
+  document.addEventListener('focusin', (e) => {
+    const el = e.target;
+    if(!el || !el.tagName) return;
+    const tag = el.tagName.toLowerCase();
+    if(tag !== 'input' && tag !== 'textarea' && tag !== 'select') return;
+    // Defer so the keyboard has time to appear and shrink the viewport.
+    setTimeout(() => {
+      try {
+        const rect = el.getBoundingClientRect();
+        const vv = window.visualViewport;
+        if(!vv) return;
+        const visibleBottom = vv.height + vv.offsetTop;
+        // If element is below the visible area, scroll it just above the keyboard.
+        if(rect.bottom > visibleBottom - 12){
+          const delta = rect.bottom - visibleBottom + 80; // 80px padding
+          window.scrollBy({top: delta, behavior:'smooth'});
+        }
+      } catch(_){}
+    }, 280);
+  });
+}
+
 document.addEventListener('DOMContentLoaded',async()=>{
+  initOfflineDetection();
   initDraftOnBoot();
   await initMultiplayerOnBoot();
+  updateHeaderForLeague();
+  updateLeagueSwitcherActive();
   await render();
+  applyTabFromHash();
+  initSwipeNav();
+  initPullToRefresh();
+  initKeyboardHandling();
   setupReveal();
   if(!OFFSEASON) scheduleRefresh();
 });
+</script>
+
+<!-- PWA service worker registration -->
+<script>
+(function(){
+  if (!('serviceWorker' in navigator)) return;
+  // Skip when running from file:// or localhost without https (SW only works over secure contexts).
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { scope: './' })
+      .then((reg) => {
+        // Listen for waiting workers — promote them on next nav.
+        if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version ready in the background; activate it next reload.
+              nw.postMessage('SKIP_WAITING');
+            }
+          });
+        });
+      })
+      .catch((err) => { /* SW is a progressive enhancement — never break the page */ });
+
+    // Reload once when a new SW takes control (so users see the new build).
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloaded) return;
+      reloaded = true;
+      // Defer a tick so any in-flight render finishes.
+      setTimeout(() => location.reload(), 50);
+    });
+  });
+})();
 </script>
 </body>
 </html>

@@ -2,6 +2,18 @@
 
 Rationale behind structural choices. Append-only; see `decisions/adr-log.md` for the timeline.
 
+## Multi-league support (2026-05-22)
+
+Two independent drafts share one HTML file: `main` (6 players × 8 nations) and `squad` (4 players × 12 nations). One canonical 48-team `ALL_NATIONS` pool serves both.
+
+- **Why one file over two URLs:** keeps shared state (ALL_NATIONS, FIFA_RANK, WORLD_CUP_ODDS, ESPN match strip, bracket UI) in lockstep across leagues. Forking into `/main/` and `/squad/` would double maintenance and risk drift. URL hash routing (`#league=squad`) gives the same shareability without the duplication.
+- **Why a header dropdown and URL hash, not separate URLs:** UX is more discoverable (the pill switcher signals "this site has two drafts"), and the hash still gives shareable deep links. Best of both.
+- **Why namespace localStorage keys with `::leagueId`:** each league must be a clean swap — switching leagues should not show another league's picks. The `::` separator keeps human inspection of devtools easy and lets us grep clearly.
+- **Why migrate legacy keys on boot:** the existing single-league user already has `wcb-draft-v1` in localStorage. Auto-migrating to `wcb-draft-v1::main` preserves their state without manual action.
+- **Why scope MP rooms but not MP browser ID:** browser ID identifies the device across leagues (sensible — one human, two leagues). Claimed player name is per-league (Thomas in main is a different "slot" from Thomas in squad). Room IDs prefixed with league in the URL prevent cross-league room collisions, even though they share the Supabase `rooms` table.
+- **Why pin `#league=<id>` to every share link:** without it, sharing a `#d=...` link from squad league would decode into main league's renderer (wrong DRAFT_ROUNDS, wrong roster). Pinning the league removes that footgun entirely.
+- **Tradeoff accepted:** the multi-league config is hardcoded in the `LEAGUES` object — adding a third league means editing source. Acceptable because (a) the file is already direct-edit, (b) league setup is rare (once per friend group per tournament), (c) generalizing further would add complexity that doesn't pay off.
+
 ## Stack
 
 **Vanilla HTML/CSS/JS, single file, no build step.**
@@ -10,10 +22,21 @@ Rationale behind structural choices. Append-only; see `decisions/adr-log.md` for
 - Constraint: keeps deploy trivial — drop two files on any static host.
 - Tradeoff: no module system, no type checks, no tests. Acceptable at this scope.
 
-## No backend, no database
+## ~~No backend, no database~~ → Supabase (added 2026-05-22)
 
-- Why: state is small (6 players × 8 nations), tournament is short, no multi-user editing planned.
-- Implication: draft picks must be hand-edited into `DRAFT` literal until/unless a persistence layer is added.
+- Original stance: state is small (6 players × 8 nations), tournament is short, no multi-user editing planned.
+- Updated: added Supabase Realtime as the multiplayer sync layer so all 6 players can draft from their own browsers with picks syncing live.
+- See "Multiplayer sync — Supabase" below for full rationale.
+
+## Multiplayer sync — Supabase Realtime + Postgres (2026-05-22)
+
+- **Why Supabase over Firebase:** Postgres-native means simpler schema (one `rooms` table holds everything as JSONB), easier to query/inspect, and Supabase Realtime ships row-level postgres_changes streams that are simpler to reason about than Firebase's tree-snapshot model. Also keeps the option open to expand into a "real" backend later without switching providers.
+- **Why not Firebase (initial design):** original plan called for Firebase RTDB; we had the code wired up but never enabled. User explicitly chose Supabase 2026-05-22 when faced with the deploy decision.
+- **Schema:** single `rooms` table — `(id text PK, state jsonb, host_browser_id text, claimed_names jsonb, updated_at timestamptz)`. `state` holds the entire draftState object; `claimed_names` maps playerName → `{browserId, lastSeen}` for sticky name claims.
+- **Auth model:** none. Publishable (anon) key + open RLS policies. Acceptable because: (a) only friends share the 6-char room code, (b) state is low-stakes draft picks, (c) Supabase publishable keys are designed for this. If griefing becomes a problem, swap to a Postgres function that enforces "only the picker for the current pick can mutate state".
+- **Race handling on claim:** read-then-write race window is acceptable for a 6-person friend league. If two players claim the same name simultaneously, the Realtime channel surfaces the conflict within ~100ms and last-writer-wins. Not worth an RPC function for this scope.
+- **Why JSONB for state:** the existing `draftState` object is already JSON-serializable. Storing it whole means no schema migration when we add fields; tradeoff is no Postgres-side queries on draft contents, which we don't need.
+- **Realtime publication:** `alter publication supabase_realtime add table rooms` enables postgres_changes streaming for the rooms table. Subscriptions filter by `id=eq.<roomId>` so each browser only sees its own room.
 
 ## ESPN public scoreboard for live data
 

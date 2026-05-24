@@ -26,3 +26,6 @@ npm-debug.log*
 # Build output (none currently, but reserved)
 dist/
 build/
+palette-options.html
+index.html.bak
+index.html.bak

@@ -1,8 +1,23 @@
 # DEPLOY
 
-## Current state
+## Current state (2026-05-22)
 
-**Not deployed.** No git remote, no domain. Project lives only at `/Users/thomasnendick/Documents/Claude/Projects/World Cup Draft/`.
+- Repo: `nendy55555/world-cup-2026` (public, GitHub)
+- Hosting: GitHub Pages — pending Pages config + DNS CNAME
+- Database: Supabase project `world-cup-2026` (URL: `gyqbvnxybnjaxjqecqud.supabase.co`)
+- Domain: `worldcup.thomasnendick.com` (configured in `CNAME` file, awaiting DNS CNAME at registrar)
+
+## Supabase
+
+| Asset | Value |
+|---|---|
+| Project URL | `https://gyqbvnxybnjaxjqecqud.supabase.co` |
+| Publishable key | `sb_publishable_n3MKjp_X9HGPDZpGHJkNaA_PJYVYDb-` (safe client-side) |
+| Tables | `rooms` (see `reference/data-models.md`) |
+| RLS | Open — anyone can select/insert/update rooms |
+| Realtime | Enabled on `rooms` table via `supabase_realtime` publication |
+
+Both Supabase creds are baked into `index.html` in the `SUPABASE_CONFIG` block. The publishable key is designed for client-side use; access control is enforced by RLS policies. To rotate: regenerate in Supabase dashboard → API Keys, replace the value in `SUPABASE_CONFIG`, commit + push.
 
 ## Target setup (mirror March Madness)
 

@@ -1130,3 +1130,116 @@ const SQUADS = {
 
 function getSquad(name){ return SQUADS[name] || { status:'tba', gk:[], def:[], mid:[], att:[] }; }
 function squadTotal(s){ return (s.gk?.length||0)+(s.def?.length||0)+(s.mid?.length||0)+(s.att?.length||0); }
+
+// ── PROJECTED STARTING XI ────────────────────────────────────────
+// Source: parallel research across BBC, The Athletic, ESPN, Goal, Reuters,
+// federation press, recent friendlies (Mar/Jun 2026 windows), AFCON 2025.
+// Compiled 2026-05-22. xi[] is positional: GK → back line → mids → forwards.
+const PROJECTED_LINEUPS = {
+  // ─ CONMEBOL ─
+  'Argentina':         { formation:'4-3-3',   xi:['Emiliano Martinez','Nahuel Molina','Cristian Romero','Nicolas Otamendi','Nicolas Tagliafico','Rodrigo De Paul','Enzo Fernandez','Alexis Mac Allister','Lionel Messi','Julian Alvarez','Thiago Almada'] },
+  'Brazil':            { formation:'4-2-3-1', xi:['Alisson','Wesley','Marquinhos','Gabriel Magalhaes','Alex Sandro','Casemiro','Bruno Guimaraes','Raphinha','Matheus Cunha','Vinicius Junior','Joao Pedro'] },
+  'Colombia':          { formation:'4-2-3-1', xi:['David Ospina','Daniel Munoz','Davinson Sanchez','Jhon Lucumi','Deiver Machado','Jefferson Lerma','Richard Rios','Jhon Arias','James Rodriguez','Luis Diaz','Jhon Duran'] },
+  'Ecuador':           { formation:'4-4-2',   xi:['Hernan Galindez','Angelo Preciado','Piero Hincapie','Willian Pacho','Pervis Estupinan','Moises Caicedo','Kendry Paez','Nilson Angulo','Alan Franco','Enner Valencia','Gonzalo Plata'] },
+  'Paraguay':          { formation:'4-4-2',   xi:['Roberto Fernandez','Junior Alonso','Gustavo Gomez','Omar Alderete','Damian Bobadilla','Andres Cubas','Diego Gomez','Miguel Almiron','Julio Enciso','Antonio Sanabria','Gustavo Velazquez'] },
+  'Uruguay':           { formation:'4-3-3',   xi:['Sergio Rochet','Nahitan Nandez','Ronald Araujo','Jose Maria Gimenez','Mathias Olivera','Rodrigo Bentancur','Manuel Ugarte','Federico Valverde','Facundo Pellistri','Darwin Nunez','Maximiliano Araujo'] },
+
+  // ─ UEFA ─
+  'Austria':           { formation:'4-3-3',   xi:['Alexander Schlager','Konrad Laimer','Kevin Danso','David Alaba','Phillipp Mwene','Nicolas Seiwald','Marcel Sabitzer','Christoph Baumgartner','Romano Schmid','Marko Arnautovic','Carney Chukwuemeka'] },
+  'Belgium':           { formation:'4-2-3-1', xi:['Thibaut Courtois','Timothy Castagne','Wout Faes','Zeno Debast','Maxim De Cuyper','Youri Tielemans','Amadou Onana','Jeremy Doku','Kevin De Bruyne','Leandro Trossard','Romelu Lukaku'] },
+  'Bosnia-Herzegovina':{ formation:'4-4-2',   xi:['Nikola Vasilj','Nihad Mujakic','Amar Dedic','Dennis Hadzikadunic','Sead Kolasinac','Benjamin Tahirovic','Ivan Basic','Edin Visca','Said Bajraktarevic','Edin Dzeko','Ermedin Demirovic'] },
+  'Croatia':           { formation:'4-2-3-1', xi:['Dominik Livakovic','Josip Stanisic','Josko Gvardiol','Josip Sutalo','Borna Sosa','Luka Modric','Mateo Kovacic','Martin Baturina','Mario Pasalic','Ivan Perisic','Andrej Kramaric'] },
+  'Czechia':           { formation:'3-4-2-1', xi:['Matej Kovar','Tomas Holes','Robin Hranac','Ladislav Krejci','Vladimir Coufal','Tomas Soucek','Vladimir Darida','David Jurasek','Lukas Provod','Adam Hlozek','Patrik Schick'] },
+  'England':           { formation:'4-2-3-1', xi:['Jordan Pickford','Reece James','Marc Guehi','Ezri Konsa',"Nico O'Reilly",'Declan Rice','Elliot Anderson','Bukayo Saka','Jude Bellingham','Marcus Rashford','Harry Kane'] },
+  'France':            { formation:'4-2-3-1', xi:['Mike Maignan','Jules Kounde','William Saliba','Dayot Upamecano','Theo Hernandez','Aurelien Tchouameni','Adrien Rabiot','Michael Olise','Rayan Cherki','Ousmane Dembele','Kylian Mbappe'] },
+  'Germany':           { formation:'4-2-3-1', xi:['Manuel Neuer','Joshua Kimmich','Jonathan Tah','Nico Schlotterbeck','David Raum','Aleksandar Pavlovic','Leon Goretzka','Florian Wirtz','Jamal Musiala','Kai Havertz','Nick Woltemade'] },
+  'Netherlands':       { formation:'4-2-3-1', xi:['Bart Verbruggen','Denzel Dumfries','Virgil van Dijk','Jan Paul van Hecke','Micky van de Ven','Frenkie de Jong','Ryan Gravenberch','Tijjani Reijnders','Cody Gakpo','Donyell Malen','Memphis Depay'] },
+  'Norway':            { formation:'4-3-3',   xi:['Orjan Nyland','Julian Ryerson','Kristoffer Ajer','Leo Ostigard','David Moller Wolfe','Sander Berge','Martin Odegaard','Kristian Thorstvedt','Antonio Nusa','Erling Haaland','Alexander Sorloth'] },
+  'Portugal':          { formation:'4-3-3',   xi:['Diogo Costa','Nelson Semedo','Ruben Dias','Goncalo Inacio','Nuno Mendes','Vitinha','Joao Neves','Bruno Fernandes','Francisco Conceicao','Cristiano Ronaldo','Rafael Leao'] },
+  'Scotland':          { formation:'4-2-3-1', xi:['Craig Gordon','Aaron Hickey','Grant Hanley','Scott McKenna','Andrew Robertson','Lewis Ferguson','John McGinn','Ryan Christie','Scott McTominay','Ben Doak','Lyndon Dykes'] },
+  'Spain':             { formation:'4-3-3',   xi:['Unai Simon','Marcos Llorente','Pau Cubarsi','Aymeric Laporte','Marc Cucurella','Rodri','Pedri','Dani Olmo','Lamine Yamal','Mikel Oyarzabal','Nico Williams'] },
+  'Sweden':            { formation:'3-4-2-1', xi:['Robin Olsen','Isak Hien','Victor Lindelof','Carl Starfelt','Daniel Svensson','Lucas Bergvall','Yasin Ayari','Gabriel Gudmundsson','Anthony Elanga','Alexander Isak','Viktor Gyokeres'] },
+  'Switzerland':       { formation:'4-3-3',   xi:['Gregor Kobel','Silvan Widmer','Manuel Akanji','Nico Elvedi','Ricardo Rodriguez','Remo Freuler','Granit Xhaka','Djibril Sow','Dan Ndoye','Breel Embolo','Ruben Vargas'] },
+  'Türkiye':           { formation:'4-2-3-1', xi:['Ugurcan Cakir','Zeki Celik','Merih Demiral','Abdulkerim Bardakci','Ferdi Kadioglu','Hakan Calhanoglu','Ismail Yuksek','Arda Guler','Kenan Yildiz','Kerem Akturkoglu','Baris Alper Yilmaz'] },
+
+  // ─ AFC ─
+  'Australia':         { formation:'3-4-3',   xi:['Mathew Ryan','Lewis Miller','Alessandro Circati','Harry Souttar','Cameron Burgess','Aziz Behich','Ryan Teague',"Aiden O'Neill",'Martin Boyle','Riley McGree','Mitchell Duke'] },
+  'Iran':              { formation:'4-2-3-1', xi:['Alireza Beiranvand','Saleh Hardani','Shojae Khalilzadeh','Hossein Kanaanizadegan','Milad Mohammadi','Saeid Ezatolahi','Saman Ghoddos','Alireza Jahanbakhsh','Mehdi Ghayedi','Mohammad Mohebi','Mehdi Taremi'] },
+  'Iraq':              { formation:'4-2-3-1', xi:['Jalal Hassan','Merchas Doski','Zaid Tahseen','Rebin Sulaka','Ali Al-Hamadi','Ibrahim Bayesh','Zidane Iqbal','Amir Al-Ammari','Youssef Amyn','Mohanad Ali','Aymen Hussein'] },
+  'Japan':             { formation:'3-4-3',   xi:['Zion Suzuki','Hiroki Ito','Ko Itakura','Takehiro Tomiyasu','Yukinari Sugawara','Wataru Endo','Ao Tanaka','Daichi Kamada','Takefusa Kubo','Ritsu Doan','Keito Nakamura'] },
+  'Jordan':            { formation:'4-3-3',   xi:['Yazeed Abulaila','Ehsan Haddad','Yazan Al-Arab','Abdallah Nasib','Mohammad Abu Hashish','Noor Al-Rawabdeh','Nizar Al-Rashdan','Mahmoud Al-Mardi','Musa Al-Tamari','Ali Olwan','Mousa Suleiman'] },
+  'Qatar':             { formation:'4-2-3-1', xi:['Meshaal Barsham','Pedro Miguel','Boualem Khoukhi','Tarek Salman','Homam Ahmed','Karim Boudiaf','Assim Madibo','Akram Afif','Hassan Al-Haydos','Ismail Mohamad','Almoez Ali'] },
+  'Saudi Arabia':      { formation:'4-3-3',   xi:['Nawaf Al-Aqidi','Saud Abdulhamid','Hassan Tambakti','Ali Al-Bulaihi','Yasser Al-Shahrani','Mohamed Kanno','Nasser Al-Dawsari','Musab Al-Juwayr','Salem Al-Dawsari','Firas Al-Buraikan','Saleh Al-Shehri'] },
+  'South Korea':       { formation:'3-4-3',   xi:['Cho Hyun-woo','Kim Min-jae','Cho Yu-min','Lee Han-beom','Seol Young-woo','Hwang In-beom','Lee Jae-sung','Lee Tae-seok','Son Heung-min','Oh Hyeon-gyu','Lee Kang-in'] },
+  'Uzbekistan':        { formation:'3-4-2-1', xi:['Utkir Yusupov','Abdukodir Khusanov','Rustam Ashurmatov','Umarali Rakhmonaliev','Abbosbek Fayzullaev','Odiljon Hamrobekov','Otabek Shukurov','Jasurbek Yakhshiboev','Jaloliddin Masharipov','Eldor Shomurodov','Oston Urunov'] },
+
+  // ─ CONCACAF ─
+  'Canada':            { formation:'4-4-2',   xi:['Dayne St. Clair','Richie Laryea','Moise Bombito','Derek Cornelius','Alphonso Davies','Tajon Buchanan','Stephen Eustaquio','Ismael Kone','Ali Ahmed','Jonathan David','Cyle Larin'] },
+  'Curacao':           { formation:'4-3-3',   xi:['Eloy Room','Sherel Floranus','Armando Obispo','Roshon van Eijma','Joshua Brenet','Livano Comenencia','Leandro Bacuna','Juninho Bacuna','Tahith Chong','Jurgen Locadia','Gervane Kastaneer'] },
+  'Haiti':             { formation:'4-2-3-1', xi:['Johny Placide','Carlens Arcus','Ricardo Ade','Zechariel Delcroix','Garven Metusala Lacroix','Jean-Ricner Bellegarde','Danley Jean Jacques','Louicius Deedson','Duckens Nazon','Frantzdy Pierrot','Wilson Isidor'] },
+  'Mexico':            { formation:'4-3-3',   xi:['Raul Rangel','Jorge Sanchez','Israel Reyes','Cesar Montes','Jesus Gallardo','Edson Alvarez','Luis Chavez','Gilberto Mora','Alexis Vega','Raul Jimenez','Roberto Alvarado'] },
+  'Panama':            { formation:'3-4-2-1', xi:['Orlando Mosquera','Andres Andrade','Fidel Escobar','Carlos Harvey','Amir Murillo','Anibal Godoy','Adalberto Carrasquilla','Eric Davis','Ismael Diaz','Jose Fajardo','Cecilio Waterman'] },
+  'USA':               { formation:'3-4-2-1', xi:['Matt Freese','Chris Richards','Tim Ream','Antonee Robinson','Sergino Dest','Tyler Adams','Weston McKennie','Timothy Weah','Christian Pulisic','Malik Tillman','Folarin Balogun'] },
+
+  // ─ CAF ─
+  'Algeria':           { formation:'4-3-3',   xi:['Luca Zidane','Mohamed Amine Tougai','Aissa Mandi','Ramy Bensebaini','Rayan Ait-Nouri','Hicham Boudaoui','Ismael Bennacer','Fares Chaibi','Riyad Mahrez','Ibrahim Maza','Mohamed Amoura'] },
+  'Cape Verde':        { formation:'4-2-3-1', xi:['Vozinha','Wagner Pina','Roberto Lopes','Logan Costa','Stopira','Jamiro Monteiro','Kevin Pina','Ryan Mendes','Telmo Arcanjo','Garry Rodrigues','Dailon Livramento'] },
+  'DR Congo':          { formation:'4-3-3',   xi:['Lionel Mpasi','Aaron Wan-Bissaka','Chancel Mbemba','Dylan Batubinsika','Arthur Masuaku','Noah Sadiki','Samuel Moutoussamy','Charles Pickel','Yoane Wissa','Cedric Bakambu','Silas Katompa'] },
+  'Egypt':             { formation:'4-3-3',   xi:['Mohamed El Shenawy','Mohamed Hany','Hossam Abdelmaguid','Ramy Rabia','Ahmed Fattouh','Marwan Attia','Hamdi Fathi','Emam Ashour','Mohamed Salah','Mostafa Mohamed','Omar Marmoush'] },
+  'Ghana':             { formation:'4-3-3',   xi:['Lawrence Ati-Zigi','Alidu Seidu','Mohammed Salisu','Alexander Djiku','Gideon Mensah','Thomas Partey','Salis Abdul Samed','Mohammed Kudus','Abdul Fatawu Issahaku','Jordan Ayew','Antoine Semenyo'] },
+  'Ivory Coast':       { formation:'4-3-3',   xi:['Yahia Fofana','Guela Doue','Odilon Kossounou','Evan Ndicka','Ghislain Konan','Ibrahim Sangare','Franck Kessie','Seko Fofana','Amad Diallo','Sebastien Haller','Yan Diomande'] },
+  'Morocco':           { formation:'4-3-3',   xi:['Yassine Bounou','Achraf Hakimi','Nayef Aguerd','Adam Masina','Noussair Mazraoui','Sofyan Amrabat','Azzedine Ounahi','Bilal El Khannouss','Brahim Diaz','Ayoub El Kaabi','Hakim Ziyech'] },
+  'Senegal':           { formation:'4-3-3',   xi:['Edouard Mendy','Krepin Diatta','Kalidou Koulibaly','Moussa Niakhate','El Hadji Malick Diouf','Habib Diarra','Idrissa Gueye','Pape Matar Sarr','Iliman Ndiaye','Nicolas Jackson','Sadio Mane'] },
+  'South Africa':      { formation:'4-2-3-1', xi:['Ronwen Williams','Khuliso Mudau','Mbekezeli Mbokazi','Siyabonga Ngezana','Aubrey Modiba','Teboho Mokoena','Sphephelo Sithole','Oswin Appollis','Sipho Mbule','Relebohile Mofokeng','Lyle Foster'] },
+  'Tunisia':           { formation:'4-2-3-1', xi:['Aymen Dahmen','Mohamed Drager','Yassine Meriah','Montassar Talbi','Ali Abdi','Ellyes Skhiri','Aissa Laidouni','Hannibal Mejbri','Ferjani Sassi','Youssef Msakni','Hazem Mastouri'] },
+
+  // ─ OFC ─
+  'New Zealand':       { formation:'4-3-3',   xi:['Max Crocombe','Tyler Bindon','Michael Boxall','Finn Surman','Liberato Cacace','Joe Bell','Marko Stamenic','Sarpreet Singh','Elijah Just','Chris Wood','Ben Waine'] }
+};
+
+// Helper: get projected XI for a nation, attempting to enrich with club info
+// from SQUADS where possible. Returns { formation, players:[{name,club,line}] } or null.
+// line ∈ {GK, DEF, MID, FWD} derived from formation buckets.
+function projectedXI(nation){
+  const proj = PROJECTED_LINEUPS[nation];
+  if(!proj || !proj.xi || proj.xi.length !== 11) return null;
+  const sq = getSquad(nation);
+  const allSquad = [
+    ...(sq.gk||[]).map(p=>({...p,line:'GK'})),
+    ...(sq.def||[]).map(p=>({...p,line:'DEF'})),
+    ...(sq.mid||[]).map(p=>({...p,line:'MID'})),
+    ...(sq.att||[]).map(p=>({...p,line:'FWD'}))
+  ];
+  // Derive line counts from formation string. For 3- or 4-part formations
+  // (3-4-3, 4-3-3, 4-4-2, 3-5-2), parts map directly to DEF/MID/FWD.
+  // For 4-part formations (4-2-3-1, 3-4-2-1, 4-3-2-1), group the LAST TWO
+  // parts as the front line so "3-1" or "2-1" reads as 4 forwards in the tip
+  // (matches how fans visualize the front: 3 attacking mids/wingers + a 9).
+  const parts = proj.formation.split('-').map(n=>parseInt(n,10)).filter(n=>!isNaN(n));
+  let defCount = parts[0] || 4;
+  let fwdCount, midCount;
+  if(parts.length >= 4){
+    fwdCount = (parts[parts.length-2] || 0) + (parts[parts.length-1] || 0);
+    midCount = 10 - defCount - fwdCount;
+  } else {
+    fwdCount = parts[parts.length-1] || 3;
+    midCount = 10 - defCount - fwdCount;
+  }
+  if(midCount < 1){ midCount = 3; defCount = 4; fwdCount = 3; }
+
+  const players = proj.xi.map((name, idx)=>{
+    let line;
+    if(idx === 0) line = 'GK';
+    else if(idx <= defCount) line = 'DEF';
+    else if(idx <= defCount + midCount) line = 'MID';
+    else line = 'FWD';
+    // Try to find the player in SQUADS to enrich with club
+    const match = allSquad.find(p =>
+      p.name === name ||
+      p.name.toLowerCase() === name.toLowerCase() ||
+      p.name.replace(/[^a-z]/gi,'').toLowerCase() === name.replace(/[^a-z]/gi,'').toLowerCase()
+    );
+    return { name, club: match?.club || '', line };
+  });
+  return { formation: proj.formation, players };
+}

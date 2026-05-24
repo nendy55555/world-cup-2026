@@ -1,0 +1,54 @@
+{
+  "name": "World Cup Boyz — FIFA 2026",
+  "short_name": "WC Boyz",
+  "description": "Snake-draft tracker for the FIFA 2026 World Cup. Live scores, draft room, leaderboard.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#061a0e",
+  "theme_color": "#061a0e",
+  "categories": ["sports", "entertainment", "utilities"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Draft Room",
+      "short_name": "Draft",
+      "description": "Open the snake draft room",
+      "url": "./index.html#tab=draft",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Standings",
+      "short_name": "Standings",
+      "description": "Live leaderboard",
+      "url": "./index.html#tab=standings",
+      "icons": [{"src": "icon-192.png", "sizes": "192x192"}]
+    }
+  ]
+}
