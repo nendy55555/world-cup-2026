@@ -3975,26 +3975,50 @@ function _positionLineupTip(hdr){
   if (!hdr) return;
   const tip = hdr.querySelector('.nation-lineup-tip');
   if (!tip) return;
-  const TIP_W = 260, GAP = 8, MARGIN = 12;
-  const hdrRect = hdr.getBoundingClientRect();
+  const TIP_W = 260, GAP = 10, MARGIN = 12;
+  // Anchor to the card itself (not just the header) so the tip sits beside the
+  // whole card, including when it's expanded.
+  const card = hdr.closest('.nation-card') || hdr;
+  const r = card.getBoundingClientRect();
   const vw = window.innerWidth, vh = window.innerHeight;
-  // Measure available space above/below the header
-  const spaceBelow = vh - hdrRect.bottom - MARGIN;
-  const spaceAbove = hdrRect.top - MARGIN;
-  const maxH = Math.max(180, Math.min(420, Math.max(spaceBelow, spaceAbove)));
+  // Prefer side placement (right of card). If insufficient room, try left.
+  // Fall back to above/below only if neither side has space.
+  const spaceRight = vw - r.right - MARGIN;
+  const spaceLeft  = r.left - MARGIN;
+  const spaceBelow = vh - r.bottom - MARGIN;
+  const spaceAbove = r.top - MARGIN;
+  // Height: bounded by viewport height (with margins), capped to 420px.
+  const maxH = Math.max(180, Math.min(420, vh - 2 * MARGIN));
   tip.style.maxHeight = maxH + 'px';
-  // Horizontal: center over header, but clamp inside viewport
-  let left = hdrRect.left + hdrRect.width / 2 - TIP_W / 2;
+  // Vertical: try to center vertically on the card, clamp inside viewport.
+  const idealTop = r.top + r.height / 2 - maxH / 2;
+  const topClamped = Math.max(MARGIN, Math.min(vh - MARGIN - maxH, idealTop));
+  let placeSide = null;
+  if (spaceRight >= TIP_W + GAP)      placeSide = 'right';
+  else if (spaceLeft >= TIP_W + GAP)  placeSide = 'left';
+  if (placeSide) {
+    tip.style.top = topClamped + 'px';
+    tip.style.bottom = 'auto';
+    if (placeSide === 'right') {
+      tip.style.left = (r.right + GAP) + 'px';
+      tip.style.right = 'auto';
+    } else {
+      tip.style.left = 'auto';
+      tip.style.right = (vw - r.left + GAP) + 'px';
+    }
+    return;
+  }
+  // Fallback: horizontal center, flip above/below based on which side has room.
+  let left = r.left + r.width / 2 - TIP_W / 2;
   left = Math.max(MARGIN, Math.min(vw - TIP_W - MARGIN, left));
   tip.style.left = left + 'px';
-  // Vertical: prefer below; flip above if more room. Use bottom-anchor for the
-  // "above" case so the tooltip grows upward from above the header.
+  tip.style.right = 'auto';
   if (spaceBelow >= spaceAbove) {
-    tip.style.top = (hdrRect.bottom + GAP) + 'px';
+    tip.style.top = (r.bottom + GAP) + 'px';
     tip.style.bottom = 'auto';
   } else {
     tip.style.top = 'auto';
-    tip.style.bottom = (vh - hdrRect.top + GAP) + 'px';
+    tip.style.bottom = (vh - r.top + GAP) + 'px';
   }
 }
 function installLineupTipPositioner(){
