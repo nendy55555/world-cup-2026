@@ -3967,85 +3967,53 @@ function renderNationsPool(){
   installLineupTipPositioner();
 }
 
-// ── Viewport-aware lineup tooltip positioning ───────────────────
-// Bound once. Flips tip above/below based on actual available space.
+// ── Cursor-anchored lineup tooltip positioning ──────────────────
+// Tooltip floats next to the mouse cursor (right side by default), like a
+// native tooltip. Updated on mousemove via rAF throttle. Falls back to left
+// of cursor if no room on right.
 let _ltpInstalled = false;
-let _ltpLastHdr = null;
-function _positionLineupTip(hdr){
+let _ltpHdr = null, _ltpX = 0, _ltpY = 0, _ltpRaf = 0;
+function _positionLineupTipAtCursor(hdr, x, y){
   if (!hdr) return;
   const tip = hdr.querySelector('.nation-lineup-tip');
   if (!tip) return;
-  const TIP_W = 260, GAP = 10, MARGIN = 12;
-  // Anchor to the card itself (not just the header) so the tip sits beside the
-  // whole card, including when it's expanded.
-  const card = hdr.closest('.nation-card') || hdr;
-  const r = card.getBoundingClientRect();
+  const TIP_W = 260, GAP = 14, MARGIN = 12;
   const vw = window.innerWidth, vh = window.innerHeight;
-  // Prefer side placement (right of card). If insufficient room, try left.
-  // Fall back to above/below only if neither side has space.
-  const spaceRight = vw - r.right - MARGIN;
-  const spaceLeft  = r.left - MARGIN;
-  const spaceBelow = vh - r.bottom - MARGIN;
-  const spaceAbove = r.top - MARGIN;
-  // Height: bounded by viewport height (with margins), capped to 420px.
   const maxH = Math.max(180, Math.min(420, vh - 2 * MARGIN));
   tip.style.maxHeight = maxH + 'px';
-  // Vertical: try to center vertically on the card, clamp inside viewport.
-  const idealTop = r.top + r.height / 2 - maxH / 2;
-  const topClamped = Math.max(MARGIN, Math.min(vh - MARGIN - maxH, idealTop));
-  let placeSide = null;
-  if (spaceRight >= TIP_W + GAP)      placeSide = 'right';
-  else if (spaceLeft >= TIP_W + GAP)  placeSide = 'left';
-  if (placeSide) {
-    tip.style.top = topClamped + 'px';
-    tip.style.bottom = 'auto';
-    if (placeSide === 'right') {
-      tip.style.left = (r.right + GAP) + 'px';
-      tip.style.right = 'auto';
-    } else {
-      tip.style.left = 'auto';
-      tip.style.right = (vw - r.left + GAP) + 'px';
-    }
-    return;
-  }
-  // Fallback: horizontal center, flip above/below based on which side has room.
-  let left = r.left + r.width / 2 - TIP_W / 2;
+  // Horizontal: right of cursor; flip left if no room on the right.
+  const spaceRight = vw - x - MARGIN;
+  let left = (spaceRight >= TIP_W + GAP) ? x + GAP : x - TIP_W - GAP;
   left = Math.max(MARGIN, Math.min(vw - TIP_W - MARGIN, left));
-  tip.style.left = left + 'px';
-  tip.style.right = 'auto';
-  if (spaceBelow >= spaceAbove) {
-    tip.style.top = (r.bottom + GAP) + 'px';
-    tip.style.bottom = 'auto';
-  } else {
-    tip.style.top = 'auto';
-    tip.style.bottom = (vh - r.top + GAP) + 'px';
-  }
+  // Vertical: center on cursor, clamped to viewport.
+  let top = y - maxH / 2;
+  top = Math.max(MARGIN, Math.min(vh - MARGIN - maxH, top));
+  tip.style.left   = left + 'px';
+  tip.style.top    = top  + 'px';
+  tip.style.right  = 'auto';
+  tip.style.bottom = 'auto';
 }
 function installLineupTipPositioner(){
   if (_ltpInstalled) return;
   _ltpInstalled = true;
   const pool = document.getElementById('nationsPool');
   if (!pool) return;
-  // mouseover BUBBLES (mouseenter does not), so it fires on every card we hover —
-  // not just once on entering the pool. We re-position only when the hovered
-  // header actually changes to avoid layout thrash on intra-card moves.
-  pool.addEventListener('mouseover', (e) => {
+  pool.addEventListener('mousemove', (e) => {
     const hdr = e.target.closest && e.target.closest('.nation-card-hdr');
-    if (!hdr || hdr === _ltpLastHdr) return;
-    _ltpLastHdr = hdr;
-    _positionLineupTip(hdr);
+    if (!hdr) { _ltpHdr = null; return; }
+    _ltpHdr = hdr;
+    _ltpX = e.clientX;
+    _ltpY = e.clientY;
+    if (_ltpRaf) return;
+    _ltpRaf = requestAnimationFrame(() => {
+      _ltpRaf = 0;
+      _positionLineupTipAtCursor(_ltpHdr, _ltpX, _ltpY);
+    });
   });
   pool.addEventListener('mouseout', (e) => {
-    // When leaving a header for something outside it, clear the cached anchor
-    // so re-entering re-positions next time.
-    const from = e.target.closest && e.target.closest('.nation-card-hdr');
     const to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.nation-card-hdr');
-    if (from && from !== to) _ltpLastHdr = null;
+    if (!to) _ltpHdr = null;
   });
-  // Re-position the active tip on scroll/resize so it tracks the header.
-  const reflow = () => { if (_ltpLastHdr) _positionLineupTip(_ltpLastHdr); };
-  window.addEventListener('scroll', reflow, {passive:true});
-  window.addEventListener('resize', reflow);
 }
 
 // ── STATUS ────────────────────────────────────────────────────────
