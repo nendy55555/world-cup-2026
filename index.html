@@ -3970,41 +3970,58 @@ function renderNationsPool(){
 // ── Viewport-aware lineup tooltip positioning ───────────────────
 // Bound once. Flips tip above/below based on actual available space.
 let _ltpInstalled = false;
+let _ltpLastHdr = null;
+function _positionLineupTip(hdr){
+  if (!hdr) return;
+  const tip = hdr.querySelector('.nation-lineup-tip');
+  if (!tip) return;
+  const TIP_W = 260, GAP = 8, MARGIN = 12;
+  const hdrRect = hdr.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  // Measure available space above/below the header
+  const spaceBelow = vh - hdrRect.bottom - MARGIN;
+  const spaceAbove = hdrRect.top - MARGIN;
+  const maxH = Math.max(180, Math.min(420, Math.max(spaceBelow, spaceAbove)));
+  tip.style.maxHeight = maxH + 'px';
+  // Horizontal: center over header, but clamp inside viewport
+  let left = hdrRect.left + hdrRect.width / 2 - TIP_W / 2;
+  left = Math.max(MARGIN, Math.min(vw - TIP_W - MARGIN, left));
+  tip.style.left = left + 'px';
+  // Vertical: prefer below; flip above if more room. Use bottom-anchor for the
+  // "above" case so the tooltip grows upward from above the header.
+  if (spaceBelow >= spaceAbove) {
+    tip.style.top = (hdrRect.bottom + GAP) + 'px';
+    tip.style.bottom = 'auto';
+  } else {
+    tip.style.top = 'auto';
+    tip.style.bottom = (vh - hdrRect.top + GAP) + 'px';
+  }
+}
 function installLineupTipPositioner(){
   if (_ltpInstalled) return;
   _ltpInstalled = true;
   const pool = document.getElementById('nationsPool');
   if (!pool) return;
-  pool.addEventListener('mouseenter', (e) => {
-    // Anchor to the header, so tooltip works for both collapsed and expanded cards.
-    // Tooltip is position:fixed (escapes parent stacking contexts like sticky tab-nav),
-    // so we compute viewport-relative top/left here.
+  // mouseover BUBBLES (mouseenter does not), so it fires on every card we hover —
+  // not just once on entering the pool. We re-position only when the hovered
+  // header actually changes to avoid layout thrash on intra-card moves.
+  pool.addEventListener('mouseover', (e) => {
     const hdr = e.target.closest && e.target.closest('.nation-card-hdr');
-    if (!hdr) return;
-    const tip = hdr.querySelector('.nation-lineup-tip');
-    if (!tip) return;
-    const TIP_W = 260, GAP = 8, MARGIN = 12;
-    const hdrRect = hdr.getBoundingClientRect();
-    const vw = window.innerWidth, vh = window.innerHeight;
-    // Measure available space above/below the header
-    const spaceBelow = vh - hdrRect.bottom - MARGIN;
-    const spaceAbove = hdrRect.top - MARGIN;
-    const maxH = Math.max(180, Math.min(420, Math.max(spaceBelow, spaceAbove)));
-    tip.style.maxHeight = maxH + 'px';
-    // Horizontal: center over header, but clamp inside viewport
-    let left = hdrRect.left + hdrRect.width / 2 - TIP_W / 2;
-    left = Math.max(MARGIN, Math.min(vw - TIP_W - MARGIN, left));
-    tip.style.left = left + 'px';
-    // Vertical: prefer below; flip above if more room. Use bottom-anchor for the
-    // "above" case so the tooltip grows upward from above the header.
-    if (spaceBelow >= spaceAbove) {
-      tip.style.top = (hdrRect.bottom + GAP) + 'px';
-      tip.style.bottom = 'auto';
-    } else {
-      tip.style.top = 'auto';
-      tip.style.bottom = (vh - hdrRect.top + GAP) + 'px';
-    }
-  }, true);
+    if (!hdr || hdr === _ltpLastHdr) return;
+    _ltpLastHdr = hdr;
+    _positionLineupTip(hdr);
+  });
+  pool.addEventListener('mouseout', (e) => {
+    // When leaving a header for something outside it, clear the cached anchor
+    // so re-entering re-positions next time.
+    const from = e.target.closest && e.target.closest('.nation-card-hdr');
+    const to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.nation-card-hdr');
+    if (from && from !== to) _ltpLastHdr = null;
+  });
+  // Re-position the active tip on scroll/resize so it tracks the header.
+  const reflow = () => { if (_ltpLastHdr) _positionLineupTip(_ltpLastHdr); };
+  window.addEventListener('scroll', reflow, {passive:true});
+  window.addEventListener('resize', reflow);
 }
 
 // ── STATUS ────────────────────────────────────────────────────────

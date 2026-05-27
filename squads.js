@@ -1,5 +1,5 @@
 // ── SQUADS DATA ───────────────────────────────────────────────────
-// Last updated: May 24, 2026. Sources: federations, ESPN, Wikipedia.
+// Last updated: May 27, 2026. Sources: federations, ESPN, beIN Sports, US Soccer.
 // status: 'official' = final 26 announced, 'provisional' = preliminary list, 'tba' = not yet released
 const SQUADS = {
   // ── 2026 qualifiers added 2026-05-22 (TBA stubs — fill as rosters drop) ──
@@ -7,13 +7,162 @@ const SQUADS = {
   'Bosnia-Herzegovina': { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Cape Verde':         { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Curacao':            { status:'tba', gk:[], def:[], mid:[], att:[] },
-  'Czechia':            { status:'tba', gk:[], def:[], mid:[], att:[] },
-  'Ghana':              { status:'tba', gk:[], def:[], mid:[], att:[] },
+  'Czechia': {
+    status:'provisional', // Announced 2026-05-27 by Miroslav Koubek — 29-man prep roster, will be trimmed to 26 by June 1. Source: beIN Sports.
+    gk:[
+      {name:'Lukas Hornicek',club:'Braga'},
+      {name:'Matej Kovar',club:'PSV'},
+      {name:'Jindrich Stanek',club:'Slavia Praha'}
+    ],
+    def:[
+      {name:'Vladimir Coufal',club:'Hoffenheim'},
+      {name:'David Doudera',club:'Slavia Praha'},
+      {name:'Tomas Holes',club:'Slavia Praha'},
+      {name:'Robin Hranac',club:'Hoffenheim'},
+      {name:'Stepan Chaloupek',club:'Slavia Praha'},
+      {name:'David Jurasek',club:'Slavia Praha'},
+      {name:'Ladislav Krejci',club:'Wolverhampton'},
+      {name:'Jaroslav Zeleny',club:'Sparta Praha'},
+      {name:'David Zima',club:'Slavia Praha'}
+    ],
+    mid:[
+      {name:'Pavel Bucha',club:'FC Cincinnati'},
+      {name:'Lukas Cerv',club:'Viktoria Plzen'},
+      {name:'Vladimir Darida',club:'Hradec Kralove'},
+      {name:'Tomas Ladra',club:'Viktoria Plzen'},
+      {name:'Lukas Provod',club:'Slavia Praha'},
+      {name:'Michal Sadilek',club:'Slavia Praha'},
+      {name:'Hugo Sochurek',club:'Sparta Praha'},
+      {name:'Alexandr Sojka',club:'Viktoria Plzen'},
+      {name:'Tomas Soucek',club:'West Ham'},
+      {name:'Pavel Sulc',club:'Lyon'},
+      {name:'Denis Visinsky',club:'Viktoria Plzen'}
+    ],
+    att:[
+      {name:'Adam Hlozek',club:'Hoffenheim'},
+      {name:'Tomas Chory',club:'Slavia Praha'},
+      {name:'Mojmir Chytil',club:'Slavia Praha'},
+      {name:'Christophe Kabongo',club:'Mlada Boleslav'},
+      {name:'Jan Kuchta',club:'Sparta Praha'},
+      {name:'Patrik Schick',club:'Bayer Leverkusen'}
+    ]
+  },
+  'Ghana': {
+    status:'provisional', // Announced 2026-05-27 by Carlos Queiroz — 28-man prep roster, will be trimmed to 26 by June 1. Source: beIN Sports.
+    gk:[
+      {name:'Benjamin Asare',club:'Hearts of Oak'},
+      {name:'Lawrence Ati-Zigi',club:'St. Gallen'},
+      {name:'Joseph Anang',club:"St Patrick's Athletic"},
+      {name:'Salomon Agbasi',club:'Hearts of Oak'},
+      {name:'Paul Reverson',club:'Ajax'}
+    ],
+    def:[
+      {name:'Baba Abdul Rahman',club:'PAOK'},
+      {name:'Gideon Mensah',club:'Auxerre'},
+      {name:'Marvin Senaya',club:'Auxerre'},
+      {name:'Alidu Seidu',club:'Rennes'},
+      {name:'Abdul Mumin',club:'Rayo Vallecano'},
+      {name:'Jerome Opoku',club:'Istanbul Basaksehir'},
+      {name:'Jonas Adjetey',club:'Wolfsburg'},
+      {name:'Kojo Oppong Preprah',club:'Nice'},
+      {name:'Alexander Djiku',club:'Spartak Moscow'}
+    ],
+    mid:[
+      {name:'Elisha Owusu',club:'Auxerre'},
+      {name:'Thomas Partey',club:'Villarreal'},
+      {name:'Kwasi Sibo',club:'Real Oviedo'},
+      {name:'Augustine Boakye',club:'Saint-Etienne'},
+      {name:'Caleb Yirenkyi',club:'Nordsjaelland'},
+      {name:'Abdul Fatawu Issahaku',club:'Leicester City'},
+      {name:'Kamal Deen Sulemana',club:'Atalanta'}
+    ],
+    att:[
+      {name:'Christopher Bonsu Baah',club:'Al Qadisiah'},
+      {name:'Ernest Nuamah',club:'Lyon'},
+      {name:'Antoine Semenyo',club:'Manchester City'},
+      {name:'Brandon Thomas-Asante',club:'Coventry City'},
+      {name:'Prince Kwabena Adu',club:'Viktoria Plzen'},
+      {name:'Inaki Williams',club:'Athletic Club'},
+      {name:'Jordan Ayew',club:'Leicester City'}
+    ]
+  },
   'Haiti':              { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Norway':             { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Qatar':              { status:'tba', gk:[], def:[], mid:[], att:[] },
-  'Scotland':           { status:'tba', gk:[], def:[], mid:[], att:[] },
-  'Sweden':             { status:'tba', gk:[], def:[], mid:[], att:[] },
+  'Scotland': {
+    status:'official', // Announced 2026-05-19 by Steve Clarke. Source: ESPN/Sky Sports.
+    gk:[
+      {name:'Craig Gordon',club:'Hearts'},
+      {name:'Angus Gunn',club:'Norwich City'},
+      {name:'Liam Kelly',club:'Rangers'}
+    ],
+    def:[
+      {name:'Grant Hanley',club:'Birmingham City'},
+      {name:'Jack Hendry',club:'Al-Ettifaq'},
+      {name:'Aaron Hickey',club:'Brentford'},
+      {name:'Dom Hyam',club:'Blackburn'},
+      {name:'Scott McKenna',club:'Las Palmas'},
+      {name:'Nathan Patterson',club:'Everton'},
+      {name:'Anthony Ralston',club:'Celtic'},
+      {name:'Andy Robertson',club:'Liverpool'},
+      {name:'John Souttar',club:'Rangers'},
+      {name:'Kieran Tierney',club:'Celtic'}
+    ],
+    mid:[
+      {name:'Ryan Christie',club:'Bournemouth'},
+      {name:'Findlay Curtis',club:'Rangers'},
+      {name:'Lewis Ferguson',club:'Bologna'},
+      {name:'Ben Gannon-Doak',club:'Bournemouth'},
+      {name:'Billy Gilmour',club:'Napoli'},
+      {name:'John McGinn',club:'Aston Villa'},
+      {name:'Kenny McLean',club:'Norwich City'},
+      {name:'Scott McTominay',club:'Napoli'}
+    ],
+    att:[
+      {name:'Che Adams',club:'Torino'},
+      {name:'Lyndon Dykes',club:'Birmingham City'},
+      {name:'George Hirst',club:'Ipswich Town'},
+      {name:'Lawrence Shankland',club:'Hearts'},
+      {name:'Ross Stewart',club:'Southampton'}
+    ]
+  },
+  'Sweden': {
+    status:'official', // Announced 2026-05-12 by Graham Potter. Source: beIN Sports.
+    gk:[
+      {name:'Viktor Johansson',club:'Stoke City'},
+      {name:'Kristoffer Nordfeldt',club:'AIK Solna'},
+      {name:'Jacob Widell Zetterstrom',club:'Derby County'}
+    ],
+    def:[
+      {name:'Hjalmar Ekdal',club:'Burnley'},
+      {name:'Gabriel Gudmundsson',club:'Leeds United'},
+      {name:'Isak Hien',club:'Atalanta'},
+      {name:'Emil Holm',club:'Juventus'},
+      {name:'Gustaf Lagerbielke',club:'Braga'},
+      {name:'Victor Lindelof',club:'Aston Villa'},
+      {name:'Eric Smith',club:'St. Pauli'},
+      {name:'Carl Starfelt',club:'Celta Vigo'},
+      {name:'Elliot Stroud',club:'Mjallby'},
+      {name:'Daniel Svensson',club:'Borussia Dortmund'}
+    ],
+    mid:[
+      {name:'Taha Ali',club:'Malmo FF'},
+      {name:'Yasin Ayari',club:'Brighton'},
+      {name:'Lucas Bergvall',club:'Tottenham'},
+      {name:'Alexander Bernhardsson',club:'Holstein Kiel'},
+      {name:'Jesper Karlstrom',club:'Udinese'},
+      {name:'Benjamin Nygren',club:'Celtic'},
+      {name:'Ken Sema',club:'Pafos FC'},
+      {name:'Mattias Svanberg',club:'Wolfsburg'},
+      {name:'Besfort Zeneli',club:'Union SG'}
+    ],
+    att:[
+      {name:'Anthony Elanga',club:'Newcastle'},
+      {name:'Viktor Gyokeres',club:'Arsenal'},
+      {name:'Alexander Isak',club:'Liverpool'},
+      {name:'Gustaf Nilsson',club:'Club Brugge'}
+    ]
+  },
   'Tunisia':            { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Türkiye':            { status:'tba', gk:[], def:[], mid:[], att:[] },   // canonical for ESPN's spelling
   'Argentina': { status:'tba', gk:[], def:[], mid:[], att:[] },
@@ -204,7 +353,7 @@ const SQUADS = {
     ]
   },
   'USA': {
-    status:'provisional', // ESPN-reported 26-man (leak 2026-05-23); Pochettino official announce 2026-05-26 at Pier 17 NYC. Flip to 'official' after.
+    status:'official', // Announced 2026-05-26 by Pochettino at Pier 17 NYC. Matches the pre-announce leak.
     gk:[
       {name:'Matt Freese',club:'New York City FC'},
       {name:'Matt Turner',club:'New England Revolution'},
@@ -241,40 +390,40 @@ const SQUADS = {
     ]
   },
   'Netherlands': {
-    status:'provisional',
+    status:'official', // Announced 2026-05-27 by Koeman. Source: beIN Sports.
     gk:[
-      {name:'Bart Verbruggen',club:'Brighton'},
       {name:'Mark Flekken',club:'Bayer Leverkusen'},
-      {name:'Justin Bijlow',club:'Feyenoord'}
+      {name:'Robin Roefs',club:'Sunderland'},
+      {name:'Bart Verbruggen',club:'Brighton'}
     ],
     def:[
-      {name:'Virgil van Dijk',club:'Liverpool'},
       {name:'Nathan Ake',club:'Manchester City'},
-      {name:'Stefan de Vrij',club:'Inter Milan'},
-      {name:'Micky van de Ven',club:'Tottenham'},
-      {name:'Jan Paul van Hecke',club:'Brighton'},
-      {name:'Jorrel Hato',club:'Chelsea'},
       {name:'Denzel Dumfries',club:'Inter Milan'},
-      {name:'Jeremie Frimpong',club:'Liverpool'},
-      {name:'Lutsharel Geertruida',club:'RB Leipzig'}
+      {name:'Jorrel Hato',club:'Chelsea'},
+      {name:'Jurrien Timber',club:'Arsenal'},
+      {name:'Micky van de Ven',club:'Tottenham'},
+      {name:'Virgil van Dijk',club:'Liverpool'},
+      {name:'Jan Paul van Hecke',club:'Brighton'}
     ],
     mid:[
       {name:'Frenkie de Jong',club:'Barcelona'},
-      {name:'Tijjani Reijnders',club:'Manchester City'},
+      {name:'Marten de Roon',club:'Atalanta'},
       {name:'Ryan Gravenberch',club:'Liverpool'},
-      {name:'Jerdy Schouten',club:'PSV'},
+      {name:'Justin Kluivert',club:'Bournemouth'},
       {name:'Teun Koopmeiners',club:'Juventus'},
-      {name:'Quinten Timber',club:'Feyenoord'},
-      {name:'Kees Smit',club:'AZ Alkmaar'}
+      {name:'Tijjani Reijnders',club:'Manchester City'},
+      {name:'Guus Til',club:'PSV'},
+      {name:'Quinten Timber',club:'Marseille'},
+      {name:'Mats Wieffer',club:'Brighton'}
     ],
     att:[
-      {name:'Cody Gakpo',club:'Liverpool'},
-      {name:'Memphis Depay',club:'Corinthians'},
-      {name:'Donyell Malen',club:'Aston Villa'},
-      {name:'Noa Lang',club:'Napoli'},
       {name:'Brian Brobbey',club:'Sunderland'},
-      {name:'Wout Weghorst',club:'Ajax'},
-      {name:'Justin Kluivert',club:'Bournemouth'}
+      {name:'Memphis Depay',club:'Corinthians'},
+      {name:'Cody Gakpo',club:'Liverpool'},
+      {name:'Noa Lang',club:'Galatasaray'},
+      {name:'Donyell Malen',club:'AS Roma'},
+      {name:'Crysencio Summerville',club:'West Ham'},
+      {name:'Wout Weghorst',club:'Ajax'}
     ]
   },
   'Belgium': {
@@ -676,37 +825,40 @@ const SQUADS = {
     ]
   },
   'Morocco': {
-    status:'provisional',
+    status:'official', // Announced 2026-05-26 by Mohamed Ouahbi. Source: beIN Sports.
     gk:[
-      {name:'Yassine Bounou',club:'Al-Hilal'},
-      {name:'Munir Mohamedi',club:'Al-Wehda'},
-      {name:'Yanis Benchaouch',club:'Monaco'}
+      {name:'Yassine Bono',club:'Al-Hilal'},
+      {name:'Munir El Kajoui',club:'RS Berkane'},
+      {name:'Ahmed Reda Tagnaouti',club:'Raja Casablanca'}
     ],
     def:[
       {name:'Achraf Hakimi',club:'Paris Saint-Germain'},
+      {name:'Nayef Aguerd',club:'Marseille'},
       {name:'Noussair Mazraoui',club:'Manchester United'},
-      {name:'Nayef Aguerd',club:'Real Sociedad'},
-      {name:'Romain Saiss',club:'Al-Shabab'},
-      {name:'Achraf Dari',club:'Brest'},
-      {name:'Issa Diop',club:'Leeds'},
-      {name:'Adam Masina',club:'Torino'}
+      {name:'Anass Salah-Eddine',club:'Twente'},
+      {name:'Chadi Riad',club:'Crystal Palace'},
+      {name:'Youssef Belammari',club:'Al Ahly'},
+      {name:'Issa Diop',club:'Fulham'},
+      {name:'Redouane Hahlal',club:'Mechelen'},
+      {name:'Zakaria El Ouahdi',club:'Genk'}
     ],
     mid:[
       {name:'Sofyan Amrabat',club:'Real Betis'},
-      {name:'Azzedine Ounahi',club:'Girona'},
+      {name:'Ismael Saibari',club:'PSV'},
+      {name:'Neil El Aynaoui',club:'Roma'},
       {name:'Bilal El Khannouss',club:'Stuttgart'},
+      {name:'Azzedine Ounahi',club:'Girona'},
       {name:'Ayyoub Bouaddi',club:'Lille'},
-      {name:'Eliesse Ben Seghir',club:'Bayer Leverkusen'},
-      {name:'Neil El Aynaoui',club:'Roma'}
+      {name:'Samir El Mourabet',club:'Strasbourg'}
     ],
     att:[
       {name:'Brahim Diaz',club:'Real Madrid'},
-      {name:'Hakim Ziyech',club:'Al Duhail'},
-      {name:'Youssef En-Nesyri',club:'Fenerbahce'},
+      {name:'Chemsdine Talbi',club:'Sunderland'},
       {name:'Ayoub El Kaabi',club:'Olympiacos'},
       {name:'Soufiane Rahimi',club:'Al Ain'},
-      {name:'Sofiane Boufal',club:'Al-Rayyan'},
-      {name:'Yassir Zabiri',club:'Famalicao'}
+      {name:'Abde Ezzalzouli',club:'Real Betis'},
+      {name:'Ayoube Amaimouni',club:'Eintracht Frankfurt'},
+      {name:'Yassine Gessime',club:'Strasbourg'}
     ]
   },
   'Senegal': {
@@ -1192,9 +1344,9 @@ const PROJECTED_LINEUPS = {
   'Netherlands':       { formation:'4-2-3-1', xi:['Bart Verbruggen','Denzel Dumfries','Virgil van Dijk','Jan Paul van Hecke','Micky van de Ven','Frenkie de Jong','Ryan Gravenberch','Tijjani Reijnders','Cody Gakpo','Donyell Malen','Memphis Depay'] },
   'Norway':            { formation:'4-3-3',   xi:['Orjan Nyland','Julian Ryerson','Kristoffer Ajer','Leo Ostigard','David Moller Wolfe','Sander Berge','Martin Odegaard','Kristian Thorstvedt','Antonio Nusa','Erling Haaland','Alexander Sorloth'] },
   'Portugal':          { formation:'4-3-3',   xi:['Diogo Costa','Nelson Semedo','Ruben Dias','Goncalo Inacio','Nuno Mendes','Vitinha','Joao Neves','Bruno Fernandes','Francisco Conceicao','Cristiano Ronaldo','Rafael Leao'] },
-  'Scotland':          { formation:'4-2-3-1', xi:['Craig Gordon','Aaron Hickey','Grant Hanley','Scott McKenna','Andrew Robertson','Lewis Ferguson','John McGinn','Ryan Christie','Scott McTominay','Ben Doak','Lyndon Dykes'] },
+  'Scotland':          { formation:'4-2-3-1', xi:['Craig Gordon','Aaron Hickey','Grant Hanley','Scott McKenna','Andy Robertson','Lewis Ferguson','Billy Gilmour','Ryan Christie','Scott McTominay','Ben Gannon-Doak','Che Adams'] },
   'Spain':             { formation:'4-3-3',   xi:['Unai Simon','Marcos Llorente','Pau Cubarsi','Aymeric Laporte','Marc Cucurella','Rodri','Pedri','Dani Olmo','Lamine Yamal','Mikel Oyarzabal','Nico Williams'] },
-  'Sweden':            { formation:'3-4-2-1', xi:['Robin Olsen','Isak Hien','Victor Lindelof','Carl Starfelt','Daniel Svensson','Lucas Bergvall','Yasin Ayari','Gabriel Gudmundsson','Anthony Elanga','Alexander Isak','Viktor Gyokeres'] },
+  'Sweden':            { formation:'3-4-2-1', xi:['Viktor Johansson','Isak Hien','Victor Lindelof','Carl Starfelt','Daniel Svensson','Lucas Bergvall','Yasin Ayari','Gabriel Gudmundsson','Anthony Elanga','Alexander Isak','Viktor Gyokeres'] },
   'Switzerland':       { formation:'4-3-3',   xi:['Gregor Kobel','Silvan Widmer','Manuel Akanji','Nico Elvedi','Ricardo Rodriguez','Remo Freuler','Granit Xhaka','Djibril Sow','Dan Ndoye','Breel Embolo','Ruben Vargas'] },
   'Türkiye':           { formation:'4-2-3-1', xi:['Ugurcan Cakir','Zeki Celik','Merih Demiral','Abdulkerim Bardakci','Ferdi Kadioglu','Hakan Calhanoglu','Ismail Yuksek','Arda Guler','Kenan Yildiz','Kerem Akturkoglu','Baris Alper Yilmaz'] },
 
@@ -1222,9 +1374,9 @@ const PROJECTED_LINEUPS = {
   'Cape Verde':        { formation:'4-2-3-1', xi:['Vozinha','Wagner Pina','Roberto Lopes','Logan Costa','Stopira','Jamiro Monteiro','Kevin Pina','Ryan Mendes','Telmo Arcanjo','Garry Rodrigues','Dailon Livramento'] },
   'DR Congo':          { formation:'4-3-3',   xi:['Lionel Mpasi','Aaron Wan-Bissaka','Chancel Mbemba','Dylan Batubinsika','Arthur Masuaku','Noah Sadiki','Samuel Moutoussamy','Charles Pickel','Yoane Wissa','Cedric Bakambu','Silas Katompa'] },
   'Egypt':             { formation:'4-3-3',   xi:['Mohamed El Shenawy','Mohamed Hany','Hossam Abdelmaguid','Ramy Rabia','Ahmed Fattouh','Marwan Attia','Hamdi Fathi','Emam Ashour','Mohamed Salah','Mostafa Mohamed','Omar Marmoush'] },
-  'Ghana':             { formation:'4-3-3',   xi:['Lawrence Ati-Zigi','Alidu Seidu','Mohammed Salisu','Alexander Djiku','Gideon Mensah','Thomas Partey','Salis Abdul Samed','Mohammed Kudus','Abdul Fatawu Issahaku','Jordan Ayew','Antoine Semenyo'] },
+  'Ghana':             { formation:'4-3-3',   xi:['Lawrence Ati-Zigi','Alidu Seidu','Abdul Mumin','Alexander Djiku','Gideon Mensah','Thomas Partey','Elisha Owusu','Kamal Deen Sulemana','Abdul Fatawu Issahaku','Jordan Ayew','Antoine Semenyo'] },
   'Ivory Coast':       { formation:'4-3-3',   xi:['Yahia Fofana','Guela Doue','Odilon Kossounou','Evan Ndicka','Ghislain Konan','Ibrahim Sangare','Franck Kessie','Seko Fofana','Amad Diallo','Sebastien Haller','Yan Diomande'] },
-  'Morocco':           { formation:'4-3-3',   xi:['Yassine Bounou','Achraf Hakimi','Nayef Aguerd','Adam Masina','Noussair Mazraoui','Sofyan Amrabat','Azzedine Ounahi','Bilal El Khannouss','Brahim Diaz','Ayoub El Kaabi','Hakim Ziyech'] },
+  'Morocco':           { formation:'4-3-3',   xi:['Yassine Bono','Achraf Hakimi','Nayef Aguerd','Chadi Riad','Anass Salah-Eddine','Sofyan Amrabat','Azzedine Ounahi','Bilal El Khannouss','Brahim Diaz','Ayoub El Kaabi','Abde Ezzalzouli'] },
   'Senegal':           { formation:'4-3-3',   xi:['Edouard Mendy','Krepin Diatta','Kalidou Koulibaly','Moussa Niakhate','El Hadji Malick Diouf','Habib Diarra','Idrissa Gueye','Pape Matar Sarr','Iliman Ndiaye','Nicolas Jackson','Sadio Mane'] },
   'South Africa':      { formation:'4-2-3-1', xi:['Ronwen Williams','Khuliso Mudau','Mbekezeli Mbokazi','Siyabonga Ngezana','Aubrey Modiba','Teboho Mokoena','Sphephelo Sithole','Oswin Appollis','Sipho Mbule','Relebohile Mofokeng','Lyle Foster'] },
   'Tunisia':           { formation:'4-2-3-1', xi:['Aymen Dahmen','Mohamed Drager','Yassine Meriah','Montassar Talbi','Ali Abdi','Ellyes Skhiri','Aissa Laidouni','Hannibal Mejbri','Ferjani Sassi','Youssef Msakni','Hazem Mastouri'] },
