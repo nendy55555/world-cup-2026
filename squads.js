@@ -1,5 +1,5 @@
 // ── SQUADS DATA ───────────────────────────────────────────────────
-// Last updated: May 22, 2026. Sources: federations, ESPN, Wikipedia.
+// Last updated: May 24, 2026. Sources: federations, ESPN, Wikipedia.
 // status: 'official' = final 26 announced, 'provisional' = preliminary list, 'tba' = not yet released
 const SQUADS = {
   // ── 2026 qualifiers added 2026-05-22 (TBA stubs — fill as rosters drop) ──
@@ -203,7 +203,43 @@ const SQUADS = {
       {name:'Maximilian Beier',club:'Borussia Dortmund'}
     ]
   },
-  'USA': { status:'tba', gk:[], def:[], mid:[], att:[] },
+  'USA': {
+    status:'provisional', // ESPN-reported 26-man (leak 2026-05-23); Pochettino official announce 2026-05-26 at Pier 17 NYC. Flip to 'official' after.
+    gk:[
+      {name:'Matt Freese',club:'New York City FC'},
+      {name:'Matt Turner',club:'New England Revolution'},
+      {name:'Chris Brady',club:'Chicago Fire'}
+    ],
+    def:[
+      {name:'Sergino Dest',club:'PSV'},
+      {name:'Antonee Robinson',club:'Fulham'},
+      {name:'Chris Richards',club:'Crystal Palace'},
+      {name:'Tim Ream',club:'Charlotte FC'},
+      {name:'Miles Robinson',club:'FC Cincinnati'},
+      {name:'Mark McKenzie',club:'Toulouse'},
+      {name:'Joe Scally',club:'Borussia Monchengladbach'},
+      {name:'Auston Trusty',club:'Celtic'},
+      {name:'Max Arfsten',club:'Columbus Crew'},
+      {name:'Alex Freeman',club:'Villarreal'}
+    ],
+    mid:[
+      {name:'Tyler Adams',club:'Bournemouth'},
+      {name:'Weston McKennie',club:'Juventus'},
+      {name:'Sebastian Berhalter',club:'Vancouver Whitecaps'},
+      {name:'Cristian Roldan',club:'Seattle Sounders'}
+    ],
+    att:[
+      {name:'Christian Pulisic',club:'AC Milan'},
+      {name:'Timothy Weah',club:'Marseille'},
+      {name:'Gio Reyna',club:'Borussia Monchengladbach'},
+      {name:'Malik Tillman',club:'Bayer Leverkusen'},
+      {name:'Brenden Aaronson',club:'Leeds United'},
+      {name:'Alejandro Zendejas',club:'Club America'},
+      {name:'Folarin Balogun',club:'Monaco'},
+      {name:'Ricardo Pepi',club:'PSV'},
+      {name:'Haji Wright',club:'Coventry City'}
+    ]
+  },
   'Netherlands': {
     status:'provisional',
     gk:[
