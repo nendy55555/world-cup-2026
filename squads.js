@@ -369,6 +369,7 @@ const SQUADS = {
 };
 
 function getSquad(name){ return SQUADS[name] || { status:'tba', gk:[], def:[], mid:[], att:[] }; }
+function squadTotal(s){ return (s.gk?.length||0)+(s.def?.length||0)+(s.mid?.length||0)+(s.att?.length||0); }
 
 // ── PROJECTED STARTING XI ────────────────────────────────────────
 // Source: parallel research across BBC, The Athletic, ESPN, Goal, Reuters,
