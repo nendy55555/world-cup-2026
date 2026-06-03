@@ -13,7 +13,7 @@
  * Bump CACHE_VERSION on any breaking SW change to evict old caches.
  */
 
-const CACHE_VERSION  = 'wcb-v1-2026-05-22';
+const CACHE_VERSION  = 'wcb-v2-2026-06-03';
 const STATIC_CACHE   = `${CACHE_VERSION}-static`;
 const EXTERNAL_CACHE = `${CACHE_VERSION}-external`;
 
@@ -101,6 +101,14 @@ self.addEventListener('fetch', (event) => {
 
   // ── HTML / navigation → network-first ──────────────────────────────
   if (isSameOrigin(url) && isHtmlRequest(req)) {
+    event.respondWith(networkFirst(req, STATIC_CACHE));
+    return;
+  }
+
+  // ── squads.js → network-first ──────────────────────────────────────
+  // Squad data changes meaningfully (roster updates) and must appear on the
+  // next reload after a deploy, so prefer the network and fall back to cache.
+  if (isSameOrigin(url) && url.pathname.endsWith('squads.js')) {
     event.respondWith(networkFirst(req, STATIC_CACHE));
     return;
   }
