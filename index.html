@@ -1881,6 +1881,144 @@ function setHapticsEnabled(on){
   try { localStorage.setItem(HAPTICS_KEY, on ? '1' : '0'); } catch(_){}
 }
 
+// ── SOUND FX (Web Audio, synthesized — no files, no copyright) ─────
+// World Cup themed: pick = ball-strike thump + confirm ping,
+// draft start = crowd swell + stadium horn + brass kickoff fanfare,
+// draft complete = full-time triple whistle + roar.
+const SOUND_KEY = 'wcb-sound-enabled';
+function soundEnabled(){
+  try { return localStorage.getItem(SOUND_KEY) !== '0'; } catch(_){ return true; }
+}
+function setSoundEnabled(on){
+  try { localStorage.setItem(SOUND_KEY, on ? '1' : '0'); } catch(_){}
+}
+let _actx = null, _masterGain = null, _noiseBuf = null;
+function _getCtx(){
+  if(_actx) return _actx;
+  try { _actx = new (window.AudioContext || window.webkitAudioContext)(); }
+  catch(_){ return null; }
+  _masterGain = _actx.createGain();
+  _masterGain.gain.value = 0.85;
+  _masterGain.connect(_actx.destination);
+  return _actx;
+}
+function _unlockAudio(){
+  const c = _getCtx();
+  if(c && c.state === 'suspended'){ c.resume().catch(()=>{}); }
+}
+// Browsers start the AudioContext suspended until a user gesture — resume on first interaction.
+['pointerdown','touchstart','keydown','click'].forEach(ev =>
+  window.addEventListener(ev, _unlockAudio, { passive:true }));
+function _noise(ctx){
+  if(_noiseBuf) return _noiseBuf;
+  const len = ctx.sampleRate * 2;
+  const b = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d = b.getChannelData(0);
+  for(let i=0;i<len;i++) d[i] = Math.random()*2 - 1;
+  _noiseBuf = b; return b;
+}
+function _crowd(ctx, t0, dur, peak){
+  const src = ctx.createBufferSource(); src.buffer = _noise(ctx); src.loop = true;
+  const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1100; bp.Q.value=0.6;
+  const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=450;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(peak, t0 + dur*0.35);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(bp); bp.connect(hp); hp.connect(g); g.connect(_masterGain);
+  src.start(t0); src.stop(t0 + dur + 0.05);
+}
+function _brass(ctx, freq, t0, dur){
+  [[1,0.22],[2,0.09],[1.5,0.11]].forEach(([mult,peak],i)=>{
+    const o = ctx.createOscillator(); o.type='sawtooth';
+    o.frequency.value = freq*mult*(1 + i*0.002);
+    const lp = ctx.createBiquadFilter(); lp.type='lowpass';
+    lp.frequency.setValueAtTime(700, t0);
+    lp.frequency.exponentialRampToValueAtTime(3600, t0 + 0.08);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.05);
+    g.gain.setValueAtTime(peak*0.8, t0 + dur*0.6);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(lp); lp.connect(g); g.connect(_masterGain);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+  });
+}
+function _horn(ctx, t0, dur, freq){
+  const o = ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+  const vib = ctx.createOscillator(); vib.type='sine'; vib.frequency.value=6;
+  const vg = ctx.createGain(); vg.gain.value=3; vib.connect(vg); vg.connect(o.frequency);
+  const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1600;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.15, t0 + 0.06);
+  g.gain.setValueAtTime(0.15, t0 + dur - 0.12);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(lp); lp.connect(g); g.connect(_masterGain);
+  o.start(t0); vib.start(t0); o.stop(t0 + dur + 0.05); vib.stop(t0 + dur + 0.05);
+}
+function _whistle(ctx, t0, dur){
+  const o = ctx.createOscillator(); o.type='sine'; o.frequency.value=2250;
+  const lfo = ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=23;
+  const lfoG = ctx.createGain(); lfoG.gain.value=130; lfo.connect(lfoG); lfoG.connect(o.frequency);
+  const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2300; bp.Q.value=5;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.42, t0 + 0.02);
+  g.gain.setValueAtTime(0.42, t0 + dur - 0.05);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  const n = ctx.createBufferSource(); n.buffer=_noise(ctx); n.loop=true;
+  const nbp = ctx.createBiquadFilter(); nbp.type='bandpass'; nbp.frequency.value=2300; nbp.Q.value=2;
+  const ng = ctx.createGain(); ng.gain.value=0.035;
+  n.connect(nbp); nbp.connect(ng); ng.connect(_masterGain);
+  o.connect(bp); bp.connect(g); g.connect(_masterGain);
+  o.start(t0); lfo.start(t0); n.start(t0);
+  o.stop(t0 + dur + 0.05); lfo.stop(t0 + dur + 0.05); n.stop(t0 + dur + 0.05);
+}
+function sfxPick(){
+  if(!soundEnabled()) return; const ctx = _getCtx(); if(!ctx) return; _unlockAudio();
+  const t = ctx.currentTime + 0.001;
+  const o = ctx.createOscillator(); o.type='sine';
+  o.frequency.setValueAtTime(180, t); o.frequency.exponentialRampToValueAtTime(60, t + 0.12);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.6, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+  o.connect(g); g.connect(_masterGain); o.start(t); o.stop(t + 0.2);
+  _tone(ctx, 880, t + 0.04, 0.12, 'triangle', 0.24);
+  _tone(ctx, 1320, t + 0.10, 0.16, 'triangle', 0.20);
+}
+function _tone(ctx, freq, t0, dur, type, peak){
+  const o = ctx.createOscillator(); o.type = type || 'triangle'; o.frequency.value = freq;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(peak, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(_masterGain); o.start(t0); o.stop(t0 + dur + 0.05);
+}
+function sfxDraftStart(){
+  if(!soundEnabled()) return; const ctx = _getCtx(); if(!ctx) return; _unlockAudio();
+  const t = ctx.currentTime + 0.02;
+  _crowd(ctx, t, 2.6, 0.26);
+  _horn(ctx, t + 0.05, 1.1, 233.08);
+  [[392,0.0,0.22],[523.25,0.22,0.22],[659.25,0.44,0.22],[783.99,0.66,0.75]]
+    .forEach(([f,off,d]) => _brass(ctx, f, t + 0.55 + off, d));
+}
+function sfxDraftComplete(){
+  if(!soundEnabled()) return; const ctx = _getCtx(); if(!ctx) return; _unlockAudio();
+  const t = ctx.currentTime + 0.02;
+  _whistle(ctx, t, 0.18); _whistle(ctx, t + 0.26, 0.18); _whistle(ctx, t + 0.52, 0.6);
+  _crowd(ctx, t + 0.5, 2.6, 0.32);
+  [[523.25,0.0,0.2],[659.25,0.18,0.2],[783.99,0.36,0.8]]
+    .forEach(([f,off,d]) => _brass(ctx, f, t + 0.72 + off, d));
+}
+function toggleSound(){
+  const on = !soundEnabled();
+  setSoundEnabled(on);
+  if(on) sfxPick();
+  try { renderDraft(); } catch(_){}
+}
+
 // ── OFFLINE / ONLINE TOAST ────────────────────────────────────────
 let _offlineBannerEl = null;
 function ensureOfflineBanner(){
@@ -4369,6 +4507,8 @@ async function mpDisconnect(){
 // ── Apply remote state ───────────────────────────────────────────
 function mpApplyRemoteState(remote){
   if(!remote) return;
+  const wasInit = !draftState;
+  const prevStarted = draftState?.startedAt || 0;
   // Ignore if equivalent (shallow check on pick count + completedAt)
   const localCount = draftState?.picks?.length || 0;
   const remoteCount = remote.picks?.length || 0;
@@ -4390,6 +4530,14 @@ function mpApplyRemoteState(remote){
     mpShowTurnToast();
   }
   mpLastTurnPlayer = otc;
+  // Audio cues for changes pushed by OTHER players (skip the initial room load).
+  if(!wasInit){
+    if(remote.startedAt && remote.startedAt !== prevStarted && remoteCount === 0){
+      sfxDraftStart();
+    } else if(remoteCount > localCount){
+      if(remote.completedAt) sfxDraftComplete(); else sfxPick();
+    }
+  }
   renderDraft();
 }
 
@@ -4732,6 +4880,7 @@ function startDraft(names, pickOrder){
   if(mpEnabled) mpPushState();
   renderDraft();
   refreshTrackerAfterDraftChange();
+  sfxDraftStart();
 }
 function makePick(nation){
   if(!draftState || isDraftDone()) return;
@@ -4757,6 +4906,7 @@ function makePick(nation){
   refreshTrackerAfterDraftChange();
   renderDraft();
   vibe(isDraftDone() ? [60, 40, 60, 40, 120] : [40, 30, 60]);
+  if(isDraftDone()) sfxDraftComplete(); else sfxPick();
 }
 function undoLastPick(){
   if(!draftState || !draftState.picks?.length) return;
@@ -5149,6 +5299,7 @@ function renderDraftActive(root){
         <div class="dr-admin-info">draft started ${draftState.startedAt ? new Date(draftState.startedAt).toLocaleString() : '—'}</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="dr-btn ghost sm" id="drShareBtn" onclick="copyShareLink()">🔗 Copy Share Link</button>
+          <button class="dr-btn ghost sm" onclick="toggleSound()">${soundEnabled()?'🔊 Sound: On':'🔇 Sound: Off'}</button>
           <button class="dr-btn sm" onclick="undoLastPick()" ${(draftState.picks?.length||0)===0?'disabled':''}>↶ Undo Pick</button>
           <button class="dr-btn danger sm" onclick="resetDraftConfirm()">🗑 Reset Draft</button>
         </div>
