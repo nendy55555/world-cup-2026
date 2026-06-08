@@ -4750,7 +4750,7 @@ function switchLeague(id){
   _setHashParam('league', id);
   applyLeagueGlobals();
   // Reload this league's draft state + per-device picking identity.
-  draftState = loadDraftState() || embeddedDraftFor(currentLeagueId);
+  draftState = reconcileDraftState(loadDraftState(), currentLeagueId);
   try { pickingAs = localStorage.getItem(_keyPickingAs()) || null; } catch(e){ pickingAs = null; }
   try { mpClaimedName = localStorage.getItem(_keyClaimedName()) || null; } catch(e){ mpClaimedName = null; }
   // Recompute DRAFT from the new league's saved state (or empty roster).
@@ -5650,6 +5650,16 @@ function embeddedDraftFor(id){
   const d = EMBEDDED_DRAFTS[id || currentLeagueId];
   return d ? JSON.parse(JSON.stringify(d)) : null;
 }
+// Pick the most-complete draft so a stale/partial localStorage state can't
+// shadow a finished embedded (baked-in) draft. Fixes friends seeing "Draft
+// Pending" because their device saved an incomplete draftState mid-MP-session.
+function _draftPickCount(s){ return (s && Array.isArray(s.picks)) ? s.picks.length : -1; }
+function reconcileDraftState(localState, leagueId){
+  const emb = embeddedDraftFor(leagueId || currentLeagueId);
+  // Prefer whichever has more picks; ties keep the user's local state.
+  if(_draftPickCount(emb) > _draftPickCount(localState)) return emb;
+  return localState || emb;
+}
 
 // ── BOOT ─────────────────────────────────────────────────────────
 function initDraftOnBoot(){
@@ -5659,7 +5669,7 @@ function initDraftOnBoot(){
     draftState = fromHash;
     saveDraftState();
   } else {
-    draftState = loadDraftState() || embeddedDraftFor(currentLeagueId);
+    draftState = reconcileDraftState(loadDraftState(), currentLeagueId);
   }
   if(draftState) applyDraftStateToTracker();
 }
