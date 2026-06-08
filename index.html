@@ -2471,6 +2471,10 @@ let allGames=[], todayGames=[], currentRound='', totalCompleted=0;
 let bracketResolved = {};
 
 const PTS_WIN=3, PTS_DRAW=1;
+// Knockout (R32 onward): a game decided in regulation is win 3 / loss 0.
+// If it goes to extra time OR penalties, each side banks 1 and the winner
+// adds 2 more → winner 3, loser 1. PTS_KO_ET_LOSS is that consolation point.
+const PTS_KO_ET_LOSS=1;
 function getTeamPoints(n){ return nationPoints[n]||0; }
 function getTeamWins(n)  { return nationWins[n]||0; }
 function getTeamDraws(n) { return nationDraws[n]||0; }
@@ -2728,29 +2732,46 @@ function getMockGames(){
       odds:{home:-115, draw:+255, away:+295, line:'URU -0.5 (+115)'}},
   ];
 }
+// Tally one FINISHED game's points + goals into the nation* tables.
+// homeN/awayN are the resolved nation names (mock passes the raw team names,
+// ESPN passes matchNation()'d names). Single source of truth for scoring so
+// the mock path and the live ESPN path can never drift apart.
+//   Group stage:  win 3 / draw 1 / loss 0  + goals for GD tiebreakers
+//   Knockout:     win 3; loser 0 if decided in regulation, 1 if ET/penalties
+function tallyFinishedGame(g, homeN, awayN){
+  const hs=g.homeScore, as=g.awayScore;
+  if(hs===null||as===null) return;
+  const isGroupRound=(g.round||'').toLowerCase().includes('group');
+  if(isGroupRound){
+    if(homeN){nationGF[homeN]=(nationGF[homeN]||0)+hs;nationGA[homeN]=(nationGA[homeN]||0)+as;}
+    if(awayN){nationGF[awayN]=(nationGF[awayN]||0)+as;nationGA[awayN]=(nationGA[awayN]||0)+hs;}
+    if(hs===as){
+      if(homeN){nationPoints[homeN]=(nationPoints[homeN]||0)+PTS_DRAW;nationDraws[homeN]=(nationDraws[homeN]||0)+1;}
+      if(awayN){nationPoints[awayN]=(nationPoints[awayN]||0)+PTS_DRAW;nationDraws[awayN]=(nationDraws[awayN]||0)+1;}
+    } else {
+      const winner=hs>as?homeN:awayN;
+      if(winner){nationPoints[winner]=(nationPoints[winner]||0)+PTS_WIN;nationWins[winner]=(nationWins[winner]||0)+1;}
+    }
+    return;
+  }
+  // ── KNOCKOUT (Round of 32 onward) ──
+  let winner=null, loser=null;
+  if(hs>as){ winner=homeN; loser=awayN; }
+  else if(as>hs){ winner=awayN; loser=homeN; }
+  else if(g.shootoutWinner){ winner=g.shootoutWinner; loser=(g.shootoutWinner===homeN?awayN:homeN); }
+  if(winner){ nationPoints[winner]=(nationPoints[winner]||0)+PTS_WIN; nationWins[winner]=(nationWins[winner]||0)+1; }
+  // Loser banks a point only if the match went past 90 (extra time or pens).
+  // A KO game level at full time can only have been decided by a shootout,
+  // so treat any tied final score as wentExtra even if the flag is missing.
+  if(loser && (g.wentExtra || hs===as)){ nationPoints[loser]=(nationPoints[loser]||0)+PTS_KO_ET_LOSS; }
+}
+
 function applyMockGames(games){
   nationPoints={}; nationWins={}; nationDraws={}; nationElim={};
   nationGF={}; nationGA={};
   for(const g of games){
     if(g.upcoming) continue;
-    // Tally goals (group stage only — KO goals don't count toward GD tiebreakers)
-    const isGroup=(g.round||'').toLowerCase().startsWith('group');
-    if(isGroup && g.homeScore!==null && g.awayScore!==null){
-      nationGF[g.homeTeam]=(nationGF[g.homeTeam]||0)+g.homeScore;
-      nationGA[g.homeTeam]=(nationGA[g.homeTeam]||0)+g.awayScore;
-      nationGF[g.awayTeam]=(nationGF[g.awayTeam]||0)+g.awayScore;
-      nationGA[g.awayTeam]=(nationGA[g.awayTeam]||0)+g.homeScore;
-    }
-    if(g.isDraw){
-      nationPoints[g.homeTeam]=(nationPoints[g.homeTeam]||0)+PTS_DRAW;
-      nationPoints[g.awayTeam]=(nationPoints[g.awayTeam]||0)+PTS_DRAW;
-      nationDraws[g.homeTeam] =(nationDraws[g.homeTeam]||0)+1;
-      nationDraws[g.awayTeam] =(nationDraws[g.awayTeam]||0)+1;
-    } else if(g.homeScore!==null){
-      const winner=g.homeScore>g.awayScore?g.homeTeam:g.awayTeam;
-      nationPoints[winner]=(nationPoints[winner]||0)+PTS_WIN;
-      nationWins[winner]  =(nationWins[winner]||0)+1;
-    }
+    if(!g.live) tallyFinishedGame(g, g.homeTeam, g.awayTeam);
     if(g.live){
       nationLive[g.homeTeam]={hs:g.homeScore,as:g.awayScore};
       nationLive[g.awayTeam]={hs:g.awayScore,as:g.homeScore};
@@ -2849,6 +2870,19 @@ async function fetchESPN(){
       const broadcasts=_extractBroadcasts(comp);
       const odds=upcoming?_extractOdds(comp):null;
 
+      // Extra-time / penalty detection (knockout scoring). Reliable signals:
+      //   1. shootoutScore present on a competitor  → went to penalties
+      //   2. status.period past regulation (>2)     → went to extra time
+      //   3. status detail text says AET / penalties / extra time
+      const stDetail=`${comp.status?.type?.detail||''} ${comp.status?.type?.shortDetail||''} ${comp.status?.type?.description||''}`.toLowerCase();
+      const period=comp.status?.period||0;
+      const hShoot=(home.shootoutScore!=null)?parseInt(home.shootoutScore):null;
+      const aShoot=(away.shootoutScore!=null)?parseInt(away.shootoutScore):null;
+      const hasShootout=(hShoot!=null&&aShoot!=null);
+      const wentExtra=hasShootout || period>2 || /extra|a\.?e\.?t|penal|shoot/.test(stDetail);
+      let shootoutWinner=null;
+      if(hasShootout && hShoot!==aShoot) shootoutWinner=(hShoot>aShoot?homeN:awayN);
+
       const g={
         id:ev.id, date:dateStr.slice(0,8), kickoff,
         homeTeam:homeN||home.team?.displayName||'?',
@@ -2862,6 +2896,8 @@ async function fetchESPN(){
         status:live?`LIVE ${clockStr}`:finished?'Final':clockStr,
         round, isDraw:finished&&hs===as, live, upcoming,
         venue, city, broadcasts, odds,
+        wentExtra, shootoutWinner,
+        homeShootout:hShoot, awayShootout:aShoot,
       };
       allGames.push(g);
       if(live || (kickoff && kickoff.startsWith(todayStr))) todayGames.push(g);
@@ -2869,18 +2905,7 @@ async function fetchESPN(){
       if(finished){
         totalCompleted++;
         currentRound=round;
-        const isGroupRound=(round||'').toLowerCase().includes('group');
-        if(isGroupRound){
-          if(homeN){nationGF[homeN]=(nationGF[homeN]||0)+hs;nationGA[homeN]=(nationGA[homeN]||0)+as;}
-          if(awayN){nationGF[awayN]=(nationGF[awayN]||0)+as;nationGA[awayN]=(nationGA[awayN]||0)+hs;}
-        }
-        if(hs===as){
-          if(homeN){nationPoints[homeN]=(nationPoints[homeN]||0)+PTS_DRAW;nationDraws[homeN]=(nationDraws[homeN]||0)+1;}
-          if(awayN){nationPoints[awayN]=(nationPoints[awayN]||0)+PTS_DRAW;nationDraws[awayN]=(nationDraws[awayN]||0)+1;}
-        } else {
-          const winner=hs>as?homeN:awayN;
-          if(winner){nationPoints[winner]=(nationPoints[winner]||0)+PTS_WIN;nationWins[winner]=(nationWins[winner]||0)+1;}
-        }
+        tallyFinishedGame(g, homeN, awayN);
       }
       if(live){
         if(homeN) nationLive[homeN]={hs,as};
