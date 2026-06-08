@@ -1,6 +1,22 @@
 # SESSION-STATE
 
-_Last updated: 2026-05-23_
+_Last updated: 2026-06-07_
+
+## 2026-06-07 — Projected XI refresh (final pre-tournament friendlies)
+
+**Goal:** re-review all 48 `PROJECTED_LINEUPS` in `squads.js` against each team's final pre-WC friendly (June 3-9 window) + beat-writer projected-XI articles, and refresh the team tooltips. WC kicks off June 11.
+
+**Method:** 6 parallel research agents (8 teams each) blended last-friendly XIs with preview articles. Many teams rotated heavily in their last friendly, so those XIs were weighted against previews, not taken literally. Every proposed name validated against the 26-man `SQUADS` roster before writing — names not in-squad were corrected to the squad spelling or reverted to baseline (caught: Qatar Al-Oui→Al-Alawi / Ahmed→Al-Amin, Sweden Filip→Gustaf Lagerbielke + Hugo Larsson→Karlstrom, Jordan Fakhoury→Al-Fakhouri).
+
+**Changed (14 of 48):** Mexico (Vasquez/Fidalgo/Quinones in, Edson Alvarez & S.Gimenez out), Canada (→4-4-2, Laryea/Ali Ahmed), Qatar (→4-3-3, Al-Haydos/Madibo/Hatem out), Brazil (Wesley RB for Danilo), Turkiye (Deniz Gul 9 for Kerem Akturkoglu), Ecuador (Hincapie for Felix Torres), Sweden (→3-4-2-1 under Potter, Nordfeldt GK, Isak+Gyokeres together), Spain (Ferran Torres+Olmo for injured Yamal+Nico Williams), France (Upamecano for injured Saliba), Senegal (Sadio Mane in for Ismaila Sarr), Norway (Heggem for Ostigard), Argentina (Otamendi for Lisandro Martinez), Jordan (Obaid/Abu Taha/Al-Fakhouri), DR Congo (Moutoussamy+Bakambu). **Other 34 re-confirmed unchanged.**
+
+**Flags (low/medium confidence — revisit if news firms up):** Spain (Yamal/N.Williams fitness), France (Saliba may return), Canada (Davies hamstring doubt for opener), Sweden (Potter shape unsettled), Qatar formation, Morocco (new coach Ouahbi, 4-2-3-1 — left at baseline), Ghana (new coach Queiroz trialing 3-4-3 — left at baseline), Haiti/Croatia (thin data — baseline kept).
+
+**Files changed:** `squads.js` (14 XIs + `PROJECTED_LINEUPS_UPDATED='2026-06-07'` const), `sw.js` (CACHE_VERSION v5→v6). Validation: all 48 pass `projectedXI()` with 11 in-squad players, no dupes.
+
+**Next session start:** if more June friendlies/team-news land before June 11, re-run the same agent pass; re-examine the baseline-kept flags above. Deploy = push to github.com/nendy55555/world-cup-2026 (live worldcup.thomasnendick.com).
+
+---
 
 ## 2026-05-23 — Mobile-native upgrades pass (latest)
 
