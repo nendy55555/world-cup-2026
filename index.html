@@ -4418,9 +4418,13 @@ async function mpConnectToRoom(roomId, opts={}){
     .eq('id', roomId)
     .maybeSingle();
   if(selErr){
-    console.warn('mpConnect: select error', selErr);
+    // Backend unreachable (e.g. Supabase free-tier project paused/offline).
+    // The draft is already baked into the file, so degrade gracefully:
+    // keep whatever draft is loaded (embedded/local) and stay in view-only
+    // mode instead of throwing a blocking error at the user.
+    console.warn('mpConnect: select error — falling back to offline/embedded draft', selErr);
     mpEnabled = false; mpRoomId = null;
-    alert('Could not connect to room — Supabase select error. Check console.');
+    try { renderDraft(); } catch(e){}
     return false;
   }
 
@@ -4721,7 +4725,7 @@ function switchLeague(id){
   _setHashParam('league', id);
   applyLeagueGlobals();
   // Reload this league's draft state + per-device picking identity.
-  draftState = loadDraftState();
+  draftState = loadDraftState() || embeddedDraftFor(currentLeagueId);
   try { pickingAs = localStorage.getItem(_keyPickingAs()) || null; } catch(e){ pickingAs = null; }
   try { mpClaimedName = localStorage.getItem(_keyClaimedName()) || null; } catch(e){ mpClaimedName = null; }
   // Recompute DRAFT from the new league's saved state (or empty roster).
@@ -5554,15 +5558,83 @@ function renderDraftComplete(root){
   `;
 }
 
+// ── EMBEDDED (BAKED-IN) COMPLETED DRAFTS ─────────────────────────
+// Final draft results shipped with the file so EVERY visitor sees the
+// board with zero backend — no Supabase, no localStorage, no share link
+// needed. This is the source of truth once a league's draft is done.
+// To embed a future league's final draft, drop its draftState here.
+const EMBEDDED_DRAFTS = {
+  main: {
+    names: ["Thomas","Andrew","Paul","Carson","Rudger","Shaq"],
+    pickOrder: ["Rudger","Thomas","Paul","Andrew","Shaq","Carson"],
+    startedAt: 1780887733637,
+    completedAt: 1780889644436,
+    picks: [
+      {n:1,round:1,player:"Rudger",nation:"Spain"},
+      {n:2,round:1,player:"Thomas",nation:"France"},
+      {n:3,round:1,player:"Paul",nation:"Brazil"},
+      {n:4,round:1,player:"Andrew",nation:"Portugal"},
+      {n:5,round:1,player:"Shaq",nation:"England"},
+      {n:6,round:1,player:"Carson",nation:"Argentina"},
+      {n:7,round:2,player:"Carson",nation:"Netherlands"},
+      {n:8,round:2,player:"Shaq",nation:"Germany"},
+      {n:9,round:2,player:"Andrew",nation:"Belgium"},
+      {n:10,round:2,player:"Paul",nation:"Colombia"},
+      {n:11,round:2,player:"Thomas",nation:"Morocco"},
+      {n:12,round:2,player:"Rudger",nation:"Norway"},
+      {n:13,round:3,player:"Rudger",nation:"Japan"},
+      {n:14,round:3,player:"Thomas",nation:"Türkiye"},
+      {n:15,round:3,player:"Paul",nation:"Ecuador"},
+      {n:16,round:3,player:"Andrew",nation:"Switzerland"},
+      {n:17,round:3,player:"Shaq",nation:"Croatia"},
+      {n:18,round:3,player:"Carson",nation:"USA"},
+      {n:19,round:4,player:"Carson",nation:"Uruguay"},
+      {n:20,round:4,player:"Shaq",nation:"Senegal"},
+      {n:21,round:4,player:"Andrew",nation:"Mexico"},
+      {n:22,round:4,player:"Paul",nation:"Canada"},
+      {n:23,round:4,player:"Thomas",nation:"Egypt"},
+      {n:24,round:4,player:"Rudger",nation:"Austria"},
+      {n:25,round:5,player:"Rudger",nation:"Ivory Coast"},
+      {n:26,round:5,player:"Thomas",nation:"Sweden"},
+      {n:27,round:5,player:"Paul",nation:"South Korea"},
+      {n:28,round:5,player:"Andrew",nation:"Czechia"},
+      {n:29,round:5,player:"Shaq",nation:"Scotland"},
+      {n:30,round:5,player:"Carson",nation:"Saudi Arabia"},
+      {n:31,round:6,player:"Carson",nation:"Algeria"},
+      {n:32,round:6,player:"Shaq",nation:"Australia"},
+      {n:33,round:6,player:"Andrew",nation:"Ghana"},
+      {n:34,round:6,player:"Paul",nation:"Iran"},
+      {n:35,round:6,player:"Thomas",nation:"Bosnia-Herzegovina"},
+      {n:36,round:6,player:"Rudger",nation:"Paraguay"},
+      {n:37,round:7,player:"Rudger",nation:"South Africa"},
+      {n:38,round:7,player:"Thomas",nation:"Tunisia"},
+      {n:39,round:7,player:"Paul",nation:"DR Congo"},
+      {n:40,round:7,player:"Andrew",nation:"Panama"},
+      {n:41,round:7,player:"Shaq",nation:"New Zealand"},
+      {n:42,round:7,player:"Carson",nation:"Qatar"},
+      {n:43,round:8,player:"Carson",nation:"Jordan"},
+      {n:44,round:8,player:"Shaq",nation:"Uzbekistan"},
+      {n:45,round:8,player:"Andrew",nation:"Iraq"},
+      {n:46,round:8,player:"Paul",nation:"Cape Verde"},
+      {n:47,round:8,player:"Thomas",nation:"Haiti"},
+      {n:48,round:8,player:"Rudger",nation:"Curacao"},
+    ],
+  },
+};
+function embeddedDraftFor(id){
+  const d = EMBEDDED_DRAFTS[id || currentLeagueId];
+  return d ? JSON.parse(JSON.stringify(d)) : null;
+}
+
 // ── BOOT ─────────────────────────────────────────────────────────
 function initDraftOnBoot(){
-  // Priority: URL hash > localStorage > none
+  // Priority: URL hash > localStorage > embedded (baked-in) draft > none
   const fromHash = tryLoadDraftFromHash();
   if(fromHash){
     draftState = fromHash;
     saveDraftState();
   } else {
-    draftState = loadDraftState();
+    draftState = loadDraftState() || embeddedDraftFor(currentLeagueId);
   }
   if(draftState) applyDraftStateToTracker();
 }
