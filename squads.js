@@ -98,7 +98,7 @@ const SQUADS = {
     mid:[{name:'Miguel Almiron',club:'Atlanta United'}, {name:'Kaku',club:'Al-Ain'}, {name:'Andres Cubas',club:'Vancouver Whitecaps'}, {name:'Ramon Sosa',club:'Palmeiras'}, {name:'Diego Gomez',club:'Brighton'}, {name:'Damian Bobadilla',club:'Sao Paulo'}, {name:'Braian Ojeda',club:'Orlando City'}, {name:'Matias Galarza',club:'Atlanta United'}, {name:'Mauricio',club:'Palmeiras'}],
     att:[{name:'Antonio Sanabria',club:'Cremonese'}, {name:'Julio Enciso',club:'Strasbourg'}, {name:'Gabriel Avalos',club:'Independiente'}, {name:'Alex Arce',club:'Independiente Rivadavia'}, {name:'Isidro Pitta',club:'Red Bull Bragantino'}, {name:'Gustavo Caballero',club:'Portsmouth'}]
   },
-  'Turkiye': {
+  'Türkiye': {
     status:'official', // Final 26 (Montella). Source: USA Today / FIFA, 2026-06-02. Qualified via March 2026 playoff.
     gk:[{name:'Altay Bayindir',club:'Manchester United'}, {name:'Mert Gunok',club:'Fenerbahce'}, {name:'Ugurcan Cakir',club:'Galatasaray'}],
     def:[{name:'Abdulkerim Bardakci',club:'Galatasaray'}, {name:'Caglar Soyuncu',club:'Fenerbahce'}, {name:'Eren Elmali',club:'Galatasaray'}, {name:'Ferdi Kadioglu',club:'Brighton'}, {name:'Merih Demiral',club:'Al Ahli'}, {name:'Mert Muldur',club:'Fenerbahce'}, {name:'Ozan Kabak',club:'Hoffenheim'}, {name:'Samet Akaydin',club:'Caykur Rizespor'}, {name:'Zeki Celik',club:'Roma'}],
@@ -363,7 +363,6 @@ const SQUADS = {
   'Cameroon': { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Mali': { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Indonesia': { status:'tba', gk:[], def:[], mid:[], att:[] },
-  'Turkey': { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Serbia': { status:'tba', gk:[], def:[], mid:[], att:[] },
   'Romania': { status:'tba', gk:[], def:[], mid:[], att:[] }
 };
@@ -390,7 +389,7 @@ const PROJECTED_LINEUPS = {
   'Haiti':               { formation:'4-3-3',    xi:['Johny Placide', 'Carlens Arcus', 'Jean-Kevin Duverne', 'Hannes Delcroix', 'Wilguens Paugain', 'Jeanricner Bellegarde', 'Dominique Simon', 'Leverton Pierre', 'Derrick Etienne Jr.', 'Frantzdy Pierrot', 'Wilson Isidor'] },
   'Morocco':             { formation:'4-3-3',    xi:['Yassine Bounou', 'Achraf Hakimi', 'Nayef Aguerd', 'Chadi Riad', 'Noussair Mazraoui', 'Sofyan Amrabat', 'Bilal El Khannouss', 'Azzedine Ounahi', 'Brahim Diaz', 'Ayoub El Kaabi', 'Soufiane Rahimi'] },
   'Paraguay':            { formation:'4-4-2',    xi:['Gatito Fernandez', 'Juan Jose Caceres', 'Gustavo Gomez', 'Omar Alderete', 'Junior Alonso', 'Miguel Almiron', 'Andres Cubas', 'Diego Gomez', 'Ramon Sosa', 'Antonio Sanabria', 'Julio Enciso'] },
-  'Turkiye':             { formation:'4-2-3-1',  xi:['Ugurcan Cakir', 'Zeki Celik', 'Merih Demiral', 'Abdulkerim Bardakci', 'Ferdi Kadioglu', 'Hakan Calhanoglu', 'Salih Ozcan', 'Arda Guler', 'Kenan Yildiz', 'Kerem Akturkoglu', 'Baris Alper Yilmaz'] },
+  'Türkiye':             { formation:'4-2-3-1',  xi:['Ugurcan Cakir', 'Zeki Celik', 'Merih Demiral', 'Abdulkerim Bardakci', 'Ferdi Kadioglu', 'Hakan Calhanoglu', 'Salih Ozcan', 'Arda Guler', 'Kenan Yildiz', 'Kerem Akturkoglu', 'Baris Alper Yilmaz'] },
   'Australia':           { formation:'4-3-3',    xi:['Mathew Ryan', 'Jason Geria', 'Harry Souttar', 'Alessandro Circati', 'Jordan Bos', 'Aiden ONeill', 'Jackson Irvine', 'Connor Metcalfe', 'Mathew Leckie', 'Mohamed Toure', 'Awer Mabil'] },
   'USA':                 { formation:'4-3-3',    xi:['Matt Turner', 'Sergino Dest', 'Chris Richards', 'Tim Ream', 'Antonee Robinson', 'Tyler Adams', 'Weston McKennie', 'Malik Tillman', 'Timothy Weah', 'Folarin Balogun', 'Christian Pulisic'] },
   'Ecuador':             { formation:'4-3-3',    xi:['Hernan Galindez', 'Angelo Preciado', 'Willian Pacho', 'Felix Torres', 'Pervis Estupinan', 'Moises Caicedo', 'Alan Franco', 'Kendry Paez', 'Gonzalo Plata', 'Enner Valencia', 'Nilson Angulo'] },
