@@ -497,6 +497,12 @@ a:hover{color:var(--orange);}
 .lbinfo{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .lbname-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .lbname{font-family:var(--font-display);font-size:1.25rem;font-weight:400;letter-spacing:0;line-height:1;white-space:nowrap;text-transform:uppercase;}
+/* Rename pencil — subtle until row hover/focus */
+.lb-edit{background:none;border:none;cursor:pointer;color:var(--text3);font-size:.85rem;line-height:1;padding:2px 4px;border-radius:5px;opacity:0;transition:opacity .15s,color .15s,background .15s;flex-shrink:0;}
+.lbrow:hover .lb-edit,.lb-edit:focus-visible{opacity:.65;}
+.lb-edit:hover{opacity:1;color:var(--gold,#c9b284);background:rgba(255,255,255,.07);}
+.lb-rename-input{font-family:var(--font-display);font-size:1.25rem;font-weight:400;text-transform:uppercase;line-height:1;color:var(--pc,#fff);background:rgba(255,255,255,.06);border:1px solid var(--gold,#c9b284);border-radius:6px;padding:2px 8px;max-width:min(60vw,260px);outline:none;}
+.lbrow.pending .lb-rename-input{font-size:1.1rem;}
 /* Pre-draft / "pending" simplified card */
 .lbrow.pending{grid-template-columns:36px 1fr;min-height:auto;padding:14px 18px;}
 .lbrow.pending .lbname{font-size:1.1rem;}
@@ -561,6 +567,8 @@ a:hover{color:var(--orange);}
 .dcard-accent{height:3px;}
 .dcard-hdr{padding:12px 14px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:10px;}
 .dcard-hdr-left{display:flex;flex-direction:column;gap:3px;}
+.dcard-name-row{display:flex;align-items:center;gap:6px;}
+.dcard:hover .lb-edit,.dcard .lb-edit:focus-visible{opacity:.65;}
 .dcard-name{font-family:var(--font-display);font-size:1.55rem;font-weight:400;letter-spacing:0;line-height:1;text-transform:uppercase;}
 .dcard-career{font-size:var(--fs-caption);color:var(--text3);font-family:'JetBrains Mono',monospace;}
 .dcard-hdr-right{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;}
@@ -2111,6 +2119,7 @@ function getLeague(){ return LEAGUES[currentLeagueId] || LEAGUES[DEFAULT_LEAGUE_
 function _keyDraftStore(id){ return 'wcb-draft-v1::' + (id || currentLeagueId); }
 function _keyPickingAs(id){ return 'wcb-picking-as-v1::' + (id || currentLeagueId); }
 function _keyClaimedName(id){ return 'wcb-mp-claimed-name-v1::' + (id || currentLeagueId); }
+function _keyTeamLabels(id){ return 'wcb-team-names-v1::' + (id || currentLeagueId); }
 
 // One-time migration: legacy unscoped keys → main-league scoped (idempotent)
 (function _migrateLegacyLeagueStorage(){
@@ -3117,7 +3126,8 @@ function renderTicker(){
     const ownerTag=p=>{
       if(!p||!DRAFT_COMPLETE) return '';
       const c=COLORS[DRAFT[p].ci];
-      return `<span class="tteam-owner" style="background:${c}22;color:${c}" title="${p}'s pick">${p[0]}</span>`;
+      const lbl=teamLabel(p);
+      return `<span class="tteam-owner" style="background:${c}22;color:${c}" title="${lbl}'s pick">${lbl.slice(0,5)}</span>`;
     };
 
     // +3/+1 pts note for completed owned games
@@ -3210,6 +3220,70 @@ function renderTicker(){
   }).join('');
 }
 
+// ── TEAM NAME OVERLAY ─────────────────────────────────────────────
+// Display-only custom labels per player slot, keyed by the canonical
+// DRAFT key (the original player/team name). Lets people rename their
+// team in the Standings tab without disturbing draft data, picks, or
+// multiplayer state. Scoped per league via _keyTeamLabels().
+let TEAM_LABELS = {};
+function loadTeamLabels(){
+  try { TEAM_LABELS = JSON.parse(localStorage.getItem(_keyTeamLabels()) || '{}') || {}; }
+  catch(e){ TEAM_LABELS = {}; }
+}
+function saveTeamLabels(){
+  try {
+    if(Object.keys(TEAM_LABELS).length) localStorage.setItem(_keyTeamLabels(), JSON.stringify(TEAM_LABELS));
+    else localStorage.removeItem(_keyTeamLabels());
+  } catch(e){}
+}
+// Resolve the display label for a canonical player key.
+function teamLabel(key){
+  const v = TEAM_LABELS[key];
+  return (v && String(v).trim()) ? String(v).trim() : key;
+}
+// Persist a rename, then refresh every view that shows team names.
+function setTeamLabel(key, label){
+  label = (label || '').trim().slice(0, 24);
+  if(!label || label === key) delete TEAM_LABELS[key];
+  else TEAM_LABELS[key] = label;
+  saveTeamLabels();
+  try { renderLeaderboard(); }  catch(e){}
+  try { renderBarChart(); }     catch(e){}
+  try { renderDraftCards(); }   catch(e){}
+  try { renderDestinyChips(); } catch(e){}
+  try { renderNationsPool(); }  catch(e){}
+}
+// Inline rename, triggered by a pencil button next to any editable team name
+// (Standings rows and Draft Cards). The button carries data-key (canonical
+// player key); the name element is marked .editable-team-name within scope.
+function startTeamRename(ev){
+  ev.stopPropagation();
+  const btn = ev.currentTarget;
+  const key = btn.dataset.key;
+  if(!key) return;
+  const scope = btn.closest('.lbname-row, .dcard-name-row') || btn.parentElement;
+  const nameEl = scope.querySelector('.editable-team-name');
+  if(!nameEl || scope.querySelector('.lb-rename-input')) return;
+  const input = document.createElement('input');
+  input.className = 'lb-rename-input ' + nameEl.className;
+  input.value = teamLabel(key);
+  input.maxLength = 24;
+  input.setAttribute('aria-label', 'Team name');
+  let done = false;
+  const finish = (save)=>{
+    if(done) return; done = true;
+    if(save) setTeamLabel(key, input.value);
+    else { try{ renderLeaderboard(); }catch(e){} try{ renderDraftCards(); }catch(e){} }
+  };
+  input.addEventListener('keydown', e=>{
+    if(e.key === 'Enter'){ e.preventDefault(); finish(true); }
+    else if(e.key === 'Escape'){ e.preventDefault(); finish(false); }
+  });
+  input.addEventListener('blur', ()=>finish(true));
+  nameEl.replaceWith(input);
+  input.focus(); input.select();
+}
+
 // ── RENDER: LEADERBOARD ───────────────────────────────────────────
 // Track previous player scores so we can pulse rows when they increment.
 let _prevPlayerPts = {};
@@ -3231,7 +3305,7 @@ function renderLeaderboard(){
         }).join('')
       :Array(8).fill('<span class="flag-empty"></span>').join('');
 
-    const aliveTag=DRAFT_COMPLETE&&p.alive>0?`<span class="lbalive">${p.alive}/8 alive</span>`:'';
+    const aliveTag=DRAFT_COMPLETE&&p.alive>0?`<span class="lbalive">${p.alive}/${DRAFT_ROUNDS} alive</span>`:'';
     const draftTag=!DRAFT_COMPLETE?`<span class="lbdraft">Draft Pending</span>`:'';
 
     const chipsHtml=DRAFT_COMPLETE
@@ -3256,7 +3330,8 @@ function renderLeaderboard(){
         <div class="lbrank">${i+1}</div>
         <div class="lbinfo">
           <div class="lbname-row">
-            <span class="lbname pc${p.data.ci}">${p.name}</span>
+            <span class="lbname editable-team-name pc${p.data.ci}">${teamLabel(p.name)}</span>
+            <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
             ${draftTag}${gap}
           </div>
         </div>
@@ -3266,7 +3341,8 @@ function renderLeaderboard(){
       <div class="lbrank">${i===0&&p.name!=='Andrew'?'⭐':(i+1)}</div>
       <div class="lbinfo">
         <div class="lbname-row">
-          <span class="lbname pc${p.data.ci}">${p.name}</span>
+          <span class="lbname editable-team-name pc${p.data.ci}">${teamLabel(p.name)}</span>
+          <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
           ${aliveTag}${draftTag}${gap}
         </div>
         <div class="lbflags">${flagsHtml}</div>
@@ -3331,7 +3407,7 @@ function renderBarChart(){
           :`<div class="sbc-vbar-empty"></div>`}
       </div>
       <div class="sbc-vfoot">
-        <span class="sbc-vname" style="color:${color}">${p.name}</span>
+        <span class="sbc-vname" style="color:${color}">${teamLabel(p.name)}</span>
         <span class="sbc-vscore" style="color:${color}">${p.pts}</span>
         <span class="sbc-pill ${pill}">${i===0?'1ST':pill==='tied'?'TIE':`-${players[0].pts-p.pts}`}</span>
       </div>
@@ -3368,7 +3444,10 @@ function renderDraftCards(){
       <div class="dcard-accent" style="background:${color}"></div>
       <div class="dcard-hdr">
         <div class="dcard-hdr-left">
-          <span class="dcard-name" style="color:${color}">${p.name}</span>
+          <div class="dcard-name-row">
+            <span class="dcard-name editable-team-name" style="color:${color}">${teamLabel(p.name)}</span>
+            <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
+          </div>
           <span class="dcard-career">${p.data.nations.length||'–'} nations · ${p.data.trophies||0} trophies</span>
         </div>
         <div class="dcard-hdr-right">
@@ -3722,12 +3801,12 @@ function renderDestinyChips(){
     const active = DESTINY_PLAYER===p.name ? 'active' : '';
     const alive = getPlayerAlive(p.name);
     const aliveTxt = DRAFT_COMPLETE
-      ? (alive>0 ? `<span class="dchip-alive">${alive}/8 alive</span>` : `<span class="dchip-elim">eliminated</span>`)
+      ? (alive>0 ? `<span class="dchip-alive">${alive}/${DRAFT_ROUNDS} alive</span>` : `<span class="dchip-elim">eliminated</span>`)
       : `<span class="dchip-elim">draft pending</span>`;
     return `<button type="button" class="dchip ${active}" style="--dc-color:${c}"
               onclick="selectDestinyPlayer('${p.name}')">
       <div class="dchip-row">
-        <span class="dchip-name">${p.name}</span>
+        <span class="dchip-name">${teamLabel(p.name)}</span>
         <span class="dchip-pts">${p.pts}</span>
       </div>
       <div class="dchip-meta">
@@ -3770,7 +3849,7 @@ function renderDestinyStats(){
     </div>
     <div class="dstat">
       <div class="dstat-label">Alive</div>
-      <div class="dstat-val" style="color:${d.aliveCount>0?'#00ff88':'var(--text3)'}">${d.aliveCount}<span style="font-size:.65rem;color:var(--text3)">/8</span></div>
+      <div class="dstat-val" style="color:${d.aliveCount>0?'#00ff88':'var(--text3)'}">${d.aliveCount}<span style="font-size:.65rem;color:var(--text3)">/${DRAFT_ROUNDS}</span></div>
     </div>
   `;
 }
@@ -4172,7 +4251,7 @@ function renderNationsPool(){
               <div class="nation-card-info">
                 <div class="nation-name">${n.name}${n.host?' 🏟️':''}</div>
                 <div class="nation-group">${
-                  owner?`<span style="color:${oc};font-weight:700">${owner}</span>`:`Grp ${n.group||'?'}`
+                  owner?`<span style="color:${oc};font-weight:700">${teamLabel(owner)}</span>`:`Grp ${n.group||'?'}`
                 }</div>
               </div>
               ${statusBadgeHtml(n.name)}
@@ -4753,6 +4832,7 @@ function switchLeague(id){
   draftState = reconcileDraftState(loadDraftState(), currentLeagueId);
   try { pickingAs = localStorage.getItem(_keyPickingAs()) || null; } catch(e){ pickingAs = null; }
   try { mpClaimedName = localStorage.getItem(_keyClaimedName()) || null; } catch(e){ mpClaimedName = null; }
+  loadTeamLabels();
   // Recompute DRAFT from the new league's saved state (or empty roster).
   applyDraftStateToTracker();
   // Update header chrome.
@@ -4837,6 +4917,7 @@ function applyDraftStateToTracker(){
 function refreshTrackerAfterDraftChange(){
   applyDraftStateToTracker();
   // Re-render tracker views that depend on DRAFT
+  try { renderTicker(); } catch(e){}
   try { renderLeaderboard(); } catch(e){}
   try { renderBarChart(); } catch(e){}
   try { renderDraftCards(); } catch(e){}
@@ -5374,9 +5455,9 @@ function renderBoardHtml(otcName){
   order.forEach((nm)=>{
     const ci = names.indexOf(nm);
     const isOtc = nm === otcName;
-    html += `<div class="dboard-player-hdr${isOtc?' is-otc':''}" title="${isOtc?nm+' is on the clock':nm}">
+    html += `<div class="dboard-player-hdr${isOtc?' is-otc':''}" title="${isOtc?teamLabel(nm)+' is on the clock':teamLabel(nm)}">
       ${isOtc?'<span class="dboard-otc-dot" aria-label="on the clock"></span>':''}
-      <div class="dboard-player-hdr-name" style="color:${COLORS[ci]}">${nm}</div>
+      <div class="dboard-player-hdr-name" style="color:${COLORS[ci]}">${teamLabel(nm)}</div>
       <div class="dboard-player-hdr-bar" style="background:${COLORS[ci]}"></div>
     </div>`;
   });
@@ -5532,7 +5613,7 @@ function renderRecentPicksHtml(){
       <span class="recent-pick">${p.round}.${((p.n-1)%draftState.names.length)+1}</span>
       ${nat?`<img class="recent-flag" src="${flag(nat.code,40)}" loading="lazy">`:''}
       <span class="recent-nation">${p.nation}</span>
-      <span class="recent-player" style="color:${COLORS[ci]||'#fff'}">${p.player}</span>
+      <span class="recent-player" style="color:${COLORS[ci]||'#fff'}">${teamLabel(p.player)}</span>
     </div>`;
   }).join('')}</div>`;
 }
@@ -5663,6 +5744,7 @@ function reconcileDraftState(localState, leagueId){
 
 // ── BOOT ─────────────────────────────────────────────────────────
 function initDraftOnBoot(){
+  loadTeamLabels();
   // Priority: URL hash > localStorage > embedded (baked-in) draft > none
   const fromHash = tryLoadDraftFromHash();
   if(fromHash){
