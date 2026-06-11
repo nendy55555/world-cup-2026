@@ -94,3 +94,15 @@ fetch(`${ESPN_SB}?dates=20260611&limit=100`).then(r=>r.json()).then(console.log)
 **Verified:** jsdom harness (`/tmp/debug_test_mexico_points.js`) runs the real page against live ESPN: `{pts:3, wins:1, gf:2, ga:0, gfko:null, round:"Group A"}` → PASS. SW cache bumped v14→v15.
 
 **Pattern:** never trust ESPN `status.type.name` string matching across sports — use `completed` / `state`. Never trust `notes[]` to be populated on the live scoreboard feed.
+
+---
+
+## 2026-06-11 — Audit: live refresh + standings (verified, one gap patched)
+
+**Verified working (jsdom harness `/tmp/debug_test_live_refresh.js`, 7/7 PASS):**
+- Boot chain: `DOMContentLoaded → render() → fetchESPN()` (33 date queries) `→ scheduleRefresh()` — loop armed.
+- Poll loop: 30s while any game live, 120s idle; reschedules itself even when fetch throws; each cycle re-renders ticker, leaderboard, bar chart, draft cards, recap (+bracket if open).
+- Standings live: leaderboard sorts on `getPlayerPointsLive` (banked + provisional); live game injection swung Andrew (+Mexico) by +3 with `-live` classes in DOM.
+- SW bypasses `site.api.espn.com` — polls never hit cache. `online` event → forceRefresh.
+
+**Gap patched:** no `visibilitychange` handler — mobile browsers freeze timers in background, so reopening the app mid-match showed stale scores until the suspended timer fired. Added foreground catch-up: refresh immediately when tab becomes visible and data is >25s old (`_lastFetchMs` stamped in fetchESPN). Also null-guarded `rBtn` in forceRefresh. SW v15→v16.

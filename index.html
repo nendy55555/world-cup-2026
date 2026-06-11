@@ -3195,6 +3195,7 @@ function _extractOdds(comp){
 }
 
 async function fetchESPN(){
+  if(typeof _lastFetchMs!=='undefined') _lastFetchMs=Date.now();
   if(MOCK_MODE){
     applyMockGames(getMockGames());
     const mb=document.getElementById('mockBanner'); if(mb) mb.style.display='block';
@@ -4888,6 +4889,7 @@ function applyEmptyStateVisibility(){
 
 // ── REFRESH ───────────────────────────────────────────────────────
 let refreshTimer=null;
+let _lastFetchMs=0;   // stamp of the last ESPN fetch — used for foreground catch-up
 function scheduleRefresh(){
   if(OFFSEASON||refreshTimer) return;
   const live=allGames.some(g=>g.live);
@@ -4906,9 +4908,17 @@ function scheduleRefresh(){
     scheduleRefresh();
   },live?30000:120000);   // 30s while games run so the live swing feels responsive
 }
+// Foreground catch-up: mobile browsers freeze setTimeout while the app is
+// backgrounded, so a user returning mid-match would see stale scores until
+// the suspended timer fired. Refresh immediately if data is >25s old.
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible'||OFFSEASON) return;
+  if(Date.now()-_lastFetchMs<25000) return;
+  try{ forceRefresh(); }catch(_){}
+});
 async function forceRefresh(){
   const btn=document.getElementById('rBtn');
-  btn.disabled=true;
+  if(btn) btn.disabled=true;
   updateStatus('Refreshing…','loading');
   await fetchESPN();
   computeBracketResolved();
@@ -4918,7 +4928,7 @@ async function forceRefresh(){
   if(bracketRendered){ renderGroupsGrid(); renderKnockoutBracket(); }
   updateStatus(OFFSEASON?'Pre-Tournament · Draft Pending':'Refreshed',OFFSEASON?'draft':'idle');
   updateGameCount();
-  setTimeout(()=>{btn.disabled=false;},3000);
+  setTimeout(()=>{if(btn) btn.disabled=false;},3000);
 }
 
 // ╔══════════════════════════════════════════════════════════════╗

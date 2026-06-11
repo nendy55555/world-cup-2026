@@ -2,6 +2,12 @@
 
 _Last updated: 2026-06-11_
 
+## 2026-06-11 — Live refresh audit + foreground catch-up
+
+Verified end-to-end (jsdom, 7/7): boot arms 30s/120s poll loop, standings re-render each cycle with live provisional points, SW never caches ESPN. Patched the one gap: `visibilitychange` foreground catch-up (mobile timers freeze in background; now refetches on return if data >25s old). `sw.js` v15→v16. Details in DEBUG.md.
+
+---
+
 ## 2026-06-11 — FIX: live scoring never tallied (first real match day)
 
 Mexico 2-0 South Africa (FT) showed as upcoming, 0 pts. Two bugs in `fetchESPN`: (1) finished-check used `STATUS_FINAL` but ESPN soccer sends `STATUS_FULL_TIME` — now uses `status.type.completed`/`state`; (2) empty `notes[]` made `round` fall back to the matchup string, which would mis-route group games to KO scoring — now derives `Group <X>` from `season.slug`/GROUP_DATES. Verified with jsdom harness against live ESPN (PASS: 3 pts, Group A, group GF/GA buckets). `sw.js` v14→v15. Details in DEBUG.md.
