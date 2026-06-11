@@ -3237,12 +3237,30 @@ async function fetchESPN(){
       const homeN=matchNation(home.team?.displayName);
       const awayN=matchNation(away.team?.displayName);
       const hs=parseInt(home.score||'0'), as=parseInt(away.score||'0');
-      const st=comp.status?.type?.name||'';
-      const finished=st==='STATUS_FINAL';
-      const live=['STATUS_IN_PROGRESS','STATUS_HALFTIME','STATUS_EXTRA_TIME','STATUS_PENALTY'].includes(st);
+      const stType=comp.status?.type||{};
+      const st=stType.name||'';
+      // ESPN soccer marks finished games STATUS_FULL_TIME (US sports use
+      // STATUS_FINAL). Trust the completed flag instead of the name so every
+      // finished variant tallies; state==='in' covers all live phases
+      // (1H/HT/2H/ET/pens). Postponed/canceled stay !finished (completed:false).
+      const finished=stType.completed===true;
+      const live=stType.state==='in';
       const upcoming=!finished&&!live;
       const clockStr=comp.status?.displayClock||comp.status?.type?.description||'';
-      const round=comp.notes?.[0]?.headline||ev.name||'';
+      // Round: ESPN's notes[] is often empty and ev.name is just the matchup
+      // ("South Africa at Mexico"). tallyFinishedGame routes on the word
+      // "group", so derive a real stage label instead of falling back to the
+      // matchup string (which would mis-route group games to KO scoring).
+      const isGroupStage=(ev.season?.slug||'')==='group-stage'||GROUP_DATES.includes(dateStr);
+      let round=comp.notes?.[0]?.headline||'';
+      if(!round||/\s+at\s+/i.test(round)){
+        if(isGroupStage){
+          const n=getNation(homeN)||getNation(awayN);
+          round=n?.group?`Group ${n.group}`:'Group Stage';
+        } else {
+          round=ev.name||'';
+        }
+      }
       const kickoff=ev.date||comp.date||null;          // ISO 8601
       const venue=comp.venue?.fullName||'';
       const city=comp.venue?.address?.city||comp.venue?.address?.country||'';
@@ -6197,6 +6215,62 @@ const EMBEDDED_DRAFTS = {
       {n:46,round:8,player:"Paul",nation:"Cape Verde"},
       {n:47,round:8,player:"Thomas",nation:"Haiti"},
       {n:48,round:8,player:"Rudger",nation:"Curacao"},
+    ],
+  },
+  squad: {
+    names: ["Thomas", "Tiny", "Mia's Fiance", "doyersbeast"],
+    pickOrder: ["doyersbeast", "Mia's Fiance", "Thomas", "Tiny"],
+    startedAt: 1780969912803,
+    completedAt: 1780970815000,
+    picks: [
+      {n:1,round:1,player:"doyersbeast",nation:"France"},
+      {n:2,round:1,player:"Mia's Fiance",nation:"Spain"},
+      {n:3,round:1,player:"Thomas",nation:"England"},
+      {n:4,round:1,player:"Tiny",nation:"Brazil"},
+      {n:5,round:2,player:"Tiny",nation:"Portugal"},
+      {n:6,round:2,player:"Thomas",nation:"Argentina"},
+      {n:7,round:2,player:"Mia's Fiance",nation:"Germany"},
+      {n:8,round:2,player:"doyersbeast",nation:"Belgium"},
+      {n:9,round:3,player:"doyersbeast",nation:"Colombia"},
+      {n:10,round:3,player:"Mia's Fiance",nation:"Netherlands"},
+      {n:11,round:3,player:"Thomas",nation:"Morocco"},
+      {n:12,round:3,player:"Tiny",nation:"USA"},
+      {n:13,round:4,player:"Tiny",nation:"Uruguay"},
+      {n:14,round:4,player:"Thomas",nation:"Ecuador"},
+      {n:15,round:4,player:"Mia's Fiance",nation:"Norway"},
+      {n:16,round:4,player:"doyersbeast",nation:"Switzerland"},
+      {n:17,round:5,player:"doyersbeast",nation:"Japan"},
+      {n:18,round:5,player:"Mia's Fiance",nation:"Senegal"},
+      {n:19,round:5,player:"Thomas",nation:"Türkiye"},
+      {n:20,round:5,player:"Tiny",nation:"Austria"},
+      {n:21,round:6,player:"Tiny",nation:"Croatia"},
+      {n:22,round:6,player:"Thomas",nation:"Mexico"},
+      {n:23,round:6,player:"Mia's Fiance",nation:"Iran"},
+      {n:24,round:6,player:"doyersbeast",nation:"Ivory Coast"},
+      {n:25,round:7,player:"doyersbeast",nation:"Canada"},
+      {n:26,round:7,player:"Mia's Fiance",nation:"South Korea"},
+      {n:27,round:7,player:"Thomas",nation:"Sweden"},
+      {n:28,round:7,player:"Tiny",nation:"Australia"},
+      {n:29,round:8,player:"Tiny",nation:"Egypt"},
+      {n:30,round:8,player:"Thomas",nation:"Scotland"},
+      {n:31,round:8,player:"Mia's Fiance",nation:"Czechia"},
+      {n:32,round:8,player:"doyersbeast",nation:"Bosnia-Herzegovina"},
+      {n:33,round:9,player:"doyersbeast",nation:"Paraguay"},
+      {n:34,round:9,player:"Mia's Fiance",nation:"Ghana"},
+      {n:35,round:9,player:"Thomas",nation:"Saudi Arabia"},
+      {n:36,round:9,player:"Tiny",nation:"South Africa"},
+      {n:37,round:10,player:"Tiny",nation:"Algeria"},
+      {n:38,round:10,player:"Thomas",nation:"Tunisia"},
+      {n:39,round:10,player:"Mia's Fiance",nation:"Iraq"},
+      {n:40,round:10,player:"doyersbeast",nation:"Panama"},
+      {n:41,round:11,player:"doyersbeast",nation:"DR Congo"},
+      {n:42,round:11,player:"Mia's Fiance",nation:"Cape Verde"},
+      {n:43,round:11,player:"Thomas",nation:"Qatar"},
+      {n:44,round:11,player:"Tiny",nation:"Uzbekistan"},
+      {n:45,round:12,player:"Tiny",nation:"Haiti"},
+      {n:46,round:12,player:"Thomas",nation:"New Zealand"},
+      {n:47,round:12,player:"Mia's Fiance",nation:"Jordan"},
+      {n:48,round:12,player:"doyersbeast",nation:"Curacao"},
     ],
   },
 };

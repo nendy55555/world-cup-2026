@@ -1,6 +1,46 @@
 # SESSION-STATE
 
-_Last updated: 2026-06-07_
+_Last updated: 2026-06-11_
+
+## 2026-06-08 — Daily Recap Digest (Standings)
+
+**Goal:** auto-posted "what happened yesterday" card at the top of Standings — biggest point movers, eliminations, lead changes — hideable, matching the warm-forest aesthetic. Plus a scheduled morning push.
+
+**Card (`index.html`):**
+- New `#recapCard` slot is the first child of `#tab-standings` (above the draft-pending banner). Stays `display:none` until finished games exist, so it's invisible pre-kickoff and pre-draft.
+- `buildDailyRecap()` finds the most-recent local calendar day with a finished game, then diffs standings **entering** vs **after** that day. Diff is derived purely from finished games (no persisted snapshots): `_standingsAsOf(cutoffMs)` saves the live nation maps, replays `tallyFinishedGame` over games with `kickoff < cutoff`, runs `computeBracketResolved()` for the elim set at that cutoff, reads per-player pts/GD, then **restores** all globals. Single-source-of-truth scoring + elimination, no logic duplication.
+- Surfaces: biggest movers (player chip + `+N` + nations that played, winners highlighted), eliminations attributed to owners (`findOwner`), lead change (`_leaderOf` before vs after). Headline mimics the spec: "Thomas +6 (Spain, Brazil) · Shaq's France crashed out · new leader Paul."
+- **Hideable:** `✕` → `dismissRecap()` stores recap day-key in `wcb-recap-collapsed-v1::<leagueId>` and collapses to a slim "📅 Daily Recap · <date> ▾" pill; `expandRecap()` clears it. Per-day so a NEW game day's recap reappears fresh, reversible in one tap (no dead-end). Hard kill-switch: `const RECAP_ENABLED`.
+- CSS `.recap-card` (before `.sec-lbl`): bg3→bg2 gradient, gold→terracotta→wine left rail, Anton title, sage deltas, wine elim strip, gold crown lead line, collapsed-pill variant, reduced-motion-aware entrance.
+- `renderDailyRecap()` wired into `render()`, `scheduleRefresh()`, `forceRefresh()` right after `computeBracketResolved()`. `sw.js` v11→v12.
+
+**Verification:** node harness extracted the REAL shipped functions and ran them over 3-day mock games (group + KO crossing the day boundary): 11/11 pass — +6 mover, winning nations flagged, idle player excluded, two owner-attributed eliminations, lead change Thomas→Paul, correct recap day, globals fully restored. Both inline `<script>` blocks still parse.
+
+**Scheduled task `wc-daily-recap`** (daily 08:05 local, `0 8 * * *`): self-contained prompt fetches yesterday's ESPN finals, attributes to owners from `EMBEDDED_DRAFTS`, applies the scoring rules, delivers a punchy recap to Thomas; outputs a single "no matches finished yesterday" line on off-days → covers "every morning in group stage, game days only after." Emits the no-recap line June 8–10 until kickoff.
+
+**Open follow-up:** scheduled digest reaches Thomas in Cowork only (no group push to friends' phones / live-site notification — needs the deferred Supabase edge function + VAPID work).
+
+---
+
+## 2026-06-08 — Live points swing (in-flight scoring)
+
+**Goal:** leaderboard total swings live as goals go in. A nation winning a live game banks a provisional +3 ("if it ended now"); the board re-tallies every poll and animates the change.
+
+**What shipped (index.html + sw.js):**
+- `nationPtsLive={}` map (sibling to `nationPoints`). `provisionalPts(my,opp)` = win 3 / draw 1 / loss 0. Populated in the live branch of BOTH `applyMockGames` + `fetchESPN` (reset alongside the other nation* maps).
+- Getters: `getTeamPointsLive(n)` = banked + in-play, `getTeamLivePts(n)` = in-play only, `getPlayerPointsLive` / `getPlayerLivePts`.
+- **Display layer switched to live points:** leaderboard (sort + `.lbscore` + nation chips), bar chart (totals + segments), draft cards. **Untouched / still finished-only:** `compareGroupStanding`, `computeBracketResolved`, group standings tables, destiny projections — seeding must not be polluted by live games.
+- Leaderboard row: new `▲ +N live` pulsing pill (`.lb-live`) on the name row when a player has in-play points; `.lbscore.has-live` tints the total green; live chip pts green via `.nc-pts-live` / `.dteam-pts-live`.
+- Swing animation: `_prevPlayerPts` now tracks the LIVE total so a goal that flips a result fires it. Gain → green `.scored` pulse + `vibe([40,30,60])`; loss → red `.scored-down` dip (new `scoreDip` keyframe). `_animateCountUp()` counts the big number up/down over 650ms (easeOutCubic).
+- Live refresh cadence 60s→30s while games run (`scheduleRefresh`).
+- Empty-state (`applyEmptyStateVisibility`): bar chart now appears once a live game has provisional points, not just finished ones.
+- sw.js CACHE_VERSION v10→**v11**-2026-06-08.
+
+**Verified:** all 3 inline `<script>` blocks `node --check` clean; sw.js clean; 10/10 provisional-point unit tests pass (banked+live layering, win/draw/loss, player aggregation, equalizer swing 6→4). Browser smoke test skipped (Playwright not installed locally) — change is additive/display-only.
+
+**Note for KO rounds (June 27+):** a live KO game level at the whistle shows provisional 1 each (`provisionalPts` draw case). Fine for group stage; revisit if you want live KO draws to read differently.
+
+---
 
 ## 2026-06-07 — Projected XI refresh (final pre-tournament friendlies)
 
@@ -225,3 +265,11 @@ Added a second draft on the same single-page app. Two leagues coexist with full 
 2. **End-to-end multiplayer smoke test** — host a room in one browser, join from another, confirm picks sync within ~500ms.
 3. **Phase 4 cleanup** — fix `nationElim` derivation so alive count works once group stage ends.
 4. **Squads.js maintenance** — fill the remaining ~18 `tba` nations as final 26-player lists drop (FIFA deadline Jun 4, 2026).
+
+## 2026-06-11 — Go-live fix
+- **Bug:** box scores not updating live. Root cause: `OFFSEASON = true` (index.html ~line 2294) made `scheduleRefresh()` early-return, so no auto-polling ever started.
+- **Fix:** `OFFSEASON = false`; sw.js CACHE_VERSION → wcb-v14-2026-06-11. Auto-refresh now: 30s when a game is live, 120s otherwise. Pull-to-refresh gate also unblocked.
+- **Verified:** node --check on both inline scripts; ESPN scoreboard confirms June 11 slate (MEX 2-0 RSA FT).
+- **Commit 8b36aab** also swept in previously uncommitted Daily Recap work from the working tree.
+- **PUSH PENDING:** sandbox has no GitHub creds — Thomas must `git push` from Mac.
+- **Deploy note (2026-06-11):** commit `8b36aab` could not be pushed from the sandbox (no GitHub creds) — Thomas pushes manually from his Mac. Live site stays on the pre-tournament build until `git push origin main` runs.
