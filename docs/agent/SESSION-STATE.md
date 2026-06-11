@@ -2,6 +2,12 @@
 
 _Last updated: 2026-06-11_
 
+## 2026-06-11 — FIX: live scoring never tallied (first real match day)
+
+Mexico 2-0 South Africa (FT) showed as upcoming, 0 pts. Two bugs in `fetchESPN`: (1) finished-check used `STATUS_FINAL` but ESPN soccer sends `STATUS_FULL_TIME` — now uses `status.type.completed`/`state`; (2) empty `notes[]` made `round` fall back to the matchup string, which would mis-route group games to KO scoring — now derives `Group <X>` from `season.slug`/GROUP_DATES. Verified with jsdom harness against live ESPN (PASS: 3 pts, Group A, group GF/GA buckets). `sw.js` v14→v15. Details in DEBUG.md.
+
+---
+
 ## 2026-06-08 — Daily Recap Digest (Standings)
 
 **Goal:** auto-posted "what happened yesterday" card at the top of Standings — biggest point movers, eliminations, lead changes — hideable, matching the warm-forest aesthetic. Plus a scheduled morning push.

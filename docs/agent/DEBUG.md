@@ -76,3 +76,21 @@ fetch(`${ESPN_SB}?dates=20260611&limit=100`).then(r=>r.json()).then(console.log)
 2. Check `OFFSEASON` and `MOCK_MODE` flags (lines 1046–1048).
 3. Confirm `squads.js` loaded — `typeof SQUADS === 'object'` in console.
 4. Confirm no nation name typos — `Object.keys(SQUADS).length === 48` should hold.
+
+---
+
+## 2026-06-11 — Mexico opener win not scored (ESPN status + round parsing)
+
+**Symptom:** Mexico beat South Africa 2-0 (tournament opener, FT) but banked 0 points; game rendered as upcoming.
+
+**Root cause (two bugs in `fetchESPN` parse loop, index.html ~3240):**
+1. `finished` required `status.type.name === 'STATUS_FINAL'`. ESPN **soccer** returns `STATUS_FULL_TIME` (STATUS_FINAL is US sports). So no soccer game could ever tally.
+2. `round` fell back to `ev.name` ("South Africa at Mexico") because `comp.notes` is empty in the live feed. `tallyFinishedGame` routes on the substring "group" → group games would have hit the KNOCKOUT branch (wrong GF/GA buckets, wrong draw scoring).
+
+**Fix:**
+1. `finished = status.type.completed === true`; `live = status.type.state === 'in'` (covers 1H/HT/2H/ET/pens; postponed stays not-finished).
+2. When notes are empty or look like a matchup (`/\s+at\s+/`), derive round from `ev.season.slug === 'group-stage'` (or GROUP_DATES) → `Group <letter>` via `getNation()`, else `ev.name`.
+
+**Verified:** jsdom harness (`/tmp/debug_test_mexico_points.js`) runs the real page against live ESPN: `{pts:3, wins:1, gf:2, ga:0, gfko:null, round:"Group A"}` → PASS. SW cache bumped v14→v15.
+
+**Pattern:** never trust ESPN `status.type.name` string matching across sports — use `completed` / `state`. Never trust `notes[]` to be populated on the live scoreboard feed.
