@@ -319,6 +319,103 @@ a:hover{color:var(--orange);}
 
 /* ═══ MAIN ═══ */
 .main{max-width:1280px;margin:0 auto;padding:22px 20px 60px;}
+/* ═══ DAILY RECAP DIGEST ═══ */
+.recap-card{
+  position:relative;
+  background:
+    radial-gradient(ellipse 420px 180px at 0% 0%, rgba(201,178,132,0.12), transparent 70%),
+    linear-gradient(160deg, var(--bg3) 0%, var(--bg2) 100%);
+  border:1px solid var(--border2);
+  border-radius:14px;padding:16px 18px 15px;margin-bottom:22px;
+  box-shadow:0 8px 26px rgba(0,0,0,0.32), inset 0 0 0 1px rgba(245,237,216,0.03);
+  overflow:hidden;
+}
+.recap-card::before{
+  content:'';position:absolute;top:0;left:0;width:4px;height:100%;
+  background:linear-gradient(180deg, var(--gold), var(--orange) 55%, var(--red));
+}
+.recap-hdr{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.recap-hdr .recap-cal{font-size:1rem;line-height:1;filter:saturate(.85);}
+.recap-title{
+  font-family:var(--font-display);font-size:1.15rem;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--text);line-height:1;
+}
+.recap-date{
+  font-family:var(--font-mono);font-size:.66rem;letter-spacing:.04em;
+  color:var(--text2);margin-left:2px;align-self:center;
+}
+.recap-dismiss{
+  margin-left:auto;background:rgba(245,237,216,0.05);border:1px solid var(--border);
+  color:var(--text3);width:24px;height:24px;border-radius:7px;cursor:pointer;
+  font-size:.85rem;line-height:1;display:flex;align-items:center;justify-content:center;
+  transition:all .15s ease;flex-shrink:0;
+}
+.recap-dismiss:hover{background:rgba(180,58,46,0.18);border-color:var(--red);color:var(--cream);}
+.recap-headline{
+  font-size:.86rem;line-height:1.45;color:var(--cream);margin-bottom:12px;
+  font-weight:500;
+}
+.recap-headline b{color:var(--gold);font-weight:700;}
+.recap-movers{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
+.recap-mover{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  padding:6px 9px;background:rgba(245,237,216,0.025);
+  border:1px solid var(--border);border-radius:9px;
+}
+.recap-chip{
+  font-family:var(--font-display);font-size:.82rem;letter-spacing:.03em;
+  text-transform:uppercase;padding:2px 9px;border-radius:var(--r-pill);
+  border:1px solid;line-height:1.3;white-space:nowrap;
+}
+.recap-delta{
+  font-family:var(--font-mono);font-size:.82rem;font-weight:700;
+  color:var(--green2);font-variant-numeric:tabular-nums;min-width:30px;
+}
+.recap-delta.zero{color:var(--text3);}
+.recap-nats{font-size:.72rem;color:var(--text3);letter-spacing:.01em;}
+.recap-nats .won{color:var(--green2);}
+.recap-elim{
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+  margin-top:9px;padding:7px 10px;border-radius:9px;
+  background:rgba(180,58,46,0.10);border:1px solid rgba(180,58,46,0.35);
+  font-size:.78rem;color:var(--cream);
+}
+.recap-elim .rx{color:var(--red2);font-size:.8rem;}
+.recap-elim b{color:var(--red2);font-weight:700;}
+.recap-lead{
+  display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;
+  border-top:1px dashed var(--border);font-size:.8rem;color:var(--text2);
+}
+.recap-lead .crown{font-size:.9rem;}
+.recap-lead b{color:var(--gold);font-weight:700;font-family:var(--font-display);
+  letter-spacing:.03em;text-transform:uppercase;}
+.recap-lead .lead-tag{
+  font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:1px 7px;border-radius:var(--r-pill);margin-left:2px;
+  background:rgba(201,178,132,0.16);color:var(--gold);border:1px solid var(--border2);
+}
+.recap-lead .lead-tag.changed{background:rgba(196,97,46,0.20);color:var(--orange2);border-color:rgba(196,97,46,0.45);}
+.recap-quiet{font-size:.8rem;color:var(--text3);font-style:italic;}
+/* collapsed pill */
+.recap-card.recap-collapsed{padding:0;border-color:var(--border);background:var(--bg2);}
+.recap-card.recap-collapsed::before{display:none;}
+.recap-reexpand{
+  width:100%;background:transparent;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:8px;padding:9px 14px;
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--text2);transition:color .15s ease;
+}
+.recap-reexpand:hover{color:var(--gold);}
+.recap-reexpand .recap-caret{margin-left:auto;font-size:.7rem;}
+@media (max-width:640px){
+  .recap-title{font-size:1.02rem;}
+  .recap-headline{font-size:.8rem;}
+}
+@media (prefers-reduced-motion:no-preference){
+  .recap-card:not(.recap-collapsed){animation:recapIn .4s ease both;}
+}
+@keyframes recapIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+
 .sec-lbl{
   font-size:.72rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;
   color:#C9B284;margin-bottom:14px;display:flex;align-items:center;gap:10px;
@@ -998,6 +1095,31 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 }
 .lbrow.scored{ animation: scoreJump 1.4s cubic-bezier(.25,.46,.45,.94); }
 .lbrow.scored .lbscore{ animation: scoreDigitPop .9s ease-out; }
+/* Points swung DOWN (a goal flipped a live result against this player) — red dip. */
+@keyframes scoreDip{
+  0%   { box-shadow: inset 3px 0 0 0 var(--pc, var(--gold)), 0 0 0 0 transparent; }
+  20%  { box-shadow: inset 6px 0 0 0 #C4612E, -6px 0 24px -2px rgba(196,97,46,.7); }
+  100% { box-shadow: inset 3px 0 0 0 var(--pc, var(--gold)), 0 0 0 0 transparent; }
+}
+.lbrow.scored-down{ animation: scoreDip 1.2s cubic-bezier(.25,.46,.45,.94); }
+.lbrow.scored-down .lbscore{ animation: scoreDigitPop .9s ease-out; }
+/* In-play "+N live" pill on the name row — pulses while games are running. */
+.lb-live{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:.6rem;font-weight:800;letter-spacing:.02em;
+  padding:1px 7px;border-radius:999px;
+  color:#0c2415;background:var(--green);
+  box-shadow:0 0 0 0 rgba(122,170,106,.55);
+  animation:lbLivePulse 1.8s ease-in-out infinite;
+}
+@keyframes lbLivePulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(122,170,106,.5);  filter:brightness(1); }
+  50%    { box-shadow:0 0 0 5px rgba(122,170,106,0); filter:brightness(1.12); }
+}
+/* Score total + chip pts tinted while they carry in-play points. */
+.lbscore.has-live{ color:var(--green) !important; }
+.nc-pts.nc-pts-live, .dteam-pts.dteam-pts-live{ color:var(--green); font-weight:800; }
+@media (prefers-reduced-motion: reduce){ .lb-live{ animation:none !important; } }
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 ::-webkit-scrollbar{width:4px;height:4px;}
@@ -1342,7 +1464,9 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
   .dgrid{grid-template-columns:1fr;gap:10px;margin-bottom:22px;}
 
   /* ── NATIONS POOL ─────────────────────────────────────────────── */
+  /* 480-640px: two columns fit. Narrower phones collapse to one (see <=480 below) */
   .pool-conf-grid{grid-template-columns:repeat(2,1fr);gap:6px;}
+  .nation-name{min-width:0;flex:1;}
 
   /* ════════════════════════════════════════════════════════════════ */
   /*  DRAFT ROOM — mobile-first overrides                            */
@@ -1458,6 +1582,11 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
 
   /* Footer needs clearance from bottom tab */
   .footer{padding:18px 14px 18px;}
+}
+
+/* Narrow phones: Nations pool to a single column so long names + badge fit (no h-scroll) */
+@media(max-width:480px){
+  .pool-conf-grid{grid-template-columns:1fr;}
 }
 
 /* Extra-small phones (iPhone SE etc) */
@@ -1752,6 +1881,9 @@ body{ overscroll-behavior-y:contain; }
 
   <!-- ═══ STANDINGS TAB ═══ -->
   <div id="tab-standings" class="tab-pane active">
+
+    <!-- Daily Recap Digest (auto-posts at top once games finish; hideable) -->
+    <div id="recapCard" class="recap-card reveal" style="display:none"></div>
 
     <!-- Draft Pending Banner -->
     <div id="draftPendingBanner" class="draft-pending reveal" style="display:none">
@@ -2158,8 +2290,8 @@ DEFAULT_NAMES.forEach((nm,i)=>{ DRAFT[nm] = { nations:[], picks:[], trophies:0, 
 let DRAFT_COMPLETE = false;
 
 // ── MODE FLAGS ────────────────────────────────────────────────────
-// ▶ Flip OFFSEASON to false on June 11 when the tournament starts.
-const OFFSEASON = true;
+// ▶ Flipped to false on June 11, 2026 — tournament is LIVE.
+const OFFSEASON = false;
 // ▶ Set MOCK_MODE to true to preview with simulated data.
 const MOCK_MODE = false;
 
@@ -2469,6 +2601,11 @@ function findOwner(nationName){
 
 // ── GAME STATE ────────────────────────────────────────────────────
 let nationPoints={}, nationWins={}, nationDraws={}, nationElim={}, nationLive={};
+// Provisional points from IN-FLIGHT games ("if it ended right now"). Layered on
+// top of nationPoints for the leaderboard scoreboard so totals swing live as
+// goals go in. NEVER fed into bracket seeding / group tables (those use the
+// finished-only getTeamPoints). Reset + repopulated every fetch.
+let nationPtsLive={};
 let nationGF={}, nationGA={};
 // Knockout goals tracked SEPARATELY so they don't pollute group-stage GF/GA
 // (which the bracket seeder relies on). Used only for tournament-wide GD.
@@ -2493,6 +2630,16 @@ const PTS_WIN=3, PTS_DRAW=1;
 // adds 2 more → winner 3, loser 1. PTS_KO_ET_LOSS is that consolation point.
 const PTS_KO_ET_LOSS=1;
 function getTeamPoints(n){ return nationPoints[n]||0; }
+// ── LIVE / PROVISIONAL POINTS ──
+// provisionalPts: what a side banks if a live game froze on its current
+// scoreline. win 3 / draw 1 / loss 0 — same intuition for group + KO.
+function provisionalPts(myScore, oppScore){
+  if(myScore>oppScore) return PTS_WIN;
+  if(myScore===oppScore) return PTS_DRAW;
+  return 0;
+}
+function getTeamLivePts(n){ return nationPtsLive[n]||0; }              // in-play delta only
+function getTeamPointsLive(n){ return (nationPoints[n]||0)+(nationPtsLive[n]||0); } // banked + in-play
 function getTeamWins(n)  { return nationWins[n]||0; }
 function getTeamDraws(n) { return nationDraws[n]||0; }
 function getTeamGF(n)    { return nationGF[n]||0; }
@@ -2504,6 +2651,16 @@ function isElim(n)       { return nationElim[n]||false; }
 function getPlayerPoints(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.reduce((s,n)=>s+getTeamPoints(n),0);
+}
+// Banked + in-play total — what the leaderboard shows during live games.
+function getPlayerPointsLive(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+getTeamPointsLive(n),0);
+}
+// Just the in-play swing (sum of provisional points across a player's nations).
+function getPlayerLivePts(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+getTeamLivePts(n),0);
 }
 // Aggregate goal differential across ALL of a player's nations (group + KO).
 // Used as the standings tiebreaker after points.
@@ -2688,6 +2845,197 @@ function computeBracketResolved(){
   });
 }
 
+// ── DAILY RECAP DIGEST ────────────────────────────────────────────
+// "What happened yesterday" card auto-posted at the top of Standings.
+// Standings are diffed across a calendar day, derived PURELY from finished
+// games (no persisted snapshots) by replaying the existing scoring engine up
+// to two cutoffs — so movers / lead changes / eliminations stay single-source
+// with tallyFinishedGame + computeBracketResolved. Hideable per-day.
+const RECAP_ENABLED = true;          // hard kill-switch if the league hates it
+let _lastRecap = null;               // cache so dismiss/expand don't recompute
+
+function _recapDayKey(ms){
+  const x = new Date(ms);
+  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
+}
+function _keyRecapCollapsed(){ return `wcb-recap-collapsed-v1::${currentLeagueId}`; }
+function _fmtRecapDate(ms){
+  return new Date(ms).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+}
+
+// Replay finished games with kickoff < cutoff into the live globals, read the
+// resulting per-player standings + elimination set, then restore everything.
+function _standingsAsOf(cutoffMs){
+  const save={nationPoints,nationWins,nationDraws,nationGF,nationGA,nationGFko,nationGAko,nationElim,bracketResolved,allGames};
+  const subset=save.allGames.filter(g=>{
+    if(g.upcoming||g.live) return false;
+    if(g.homeScore===null||g.awayScore===null) return false;
+    const t=g.kickoff?Date.parse(g.kickoff):NaN;
+    return isNaN(t) ? true : (cutoffMs===null || t<cutoffMs);
+  });
+  nationPoints={};nationWins={};nationDraws={};nationGF={};nationGA={};nationGFko={};nationGAko={};nationElim={};
+  allGames=subset;
+  for(const g of subset) tallyFinishedGame(g, g.homeTeam, g.awayTeam);
+  computeBracketResolved();                 // populates nationElim at this cutoff
+  const players={};
+  for(const name of Object.keys(DRAFT)) players[name]={pts:getPlayerPoints(name), gd:getPlayerGD(name)};
+  const elim={};
+  for(const k in nationElim) if(nationElim[k]) elim[k]=true;
+  // restore
+  nationPoints=save.nationPoints;nationWins=save.nationWins;nationDraws=save.nationDraws;
+  nationGF=save.nationGF;nationGA=save.nationGA;nationGFko=save.nationGFko;nationGAko=save.nationGAko;
+  nationElim=save.nationElim;bracketResolved=save.bracketResolved;allGames=save.allGames;
+  return {players,elim};
+}
+function _leaderOf(players){
+  const arr=Object.entries(players).map(([name,v])=>({name,pts:v.pts,gd:v.gd}))
+    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||a.name.localeCompare(b.name));
+  return (arr.length && arr[0].pts>0) ? arr[0].name : null;
+}
+// How a nation fared in its game(s) on the recap day (for flavor chips).
+function _natDayResult(n, dayGames){
+  let won=false, played=false;
+  for(const g of dayGames){
+    if(g.homeTeam!==n && g.awayTeam!==n) continue;
+    played=true;
+    const isHome=g.homeTeam===n;
+    const my=isHome?g.homeScore:g.awayScore, opp=isHome?g.awayScore:g.homeScore;
+    const grp=(g.round||'').toLowerCase().includes('group');
+    if(my>opp) won=true;
+    else if(my===opp && !grp && g.shootoutWinner===n) won=true;
+  }
+  return {won,played};
+}
+
+function buildDailyRecap(){
+  if(!RECAP_ENABLED || !DRAFT_COMPLETE) return null;
+  const finished=allGames.filter(g=>!g.upcoming&&!g.live&&g.homeScore!==null&&g.awayScore!==null&&g.kickoff);
+  if(!finished.length) return null;
+  // recap day = most recent LOCAL calendar day that had a finished game
+  const days=[...new Set(finished.map(g=>_recapDayKey(Date.parse(g.kickoff))))].sort();
+  const recapDayKey=days[days.length-1];
+  const [Y,M,D]=recapDayKey.split('-').map(Number);
+  const dayStart=new Date(Y,M-1,D,0,0,0,0).getTime();
+  const dayEnd  =new Date(Y,M-1,D,23,59,59,999).getTime();
+  const before=_standingsAsOf(dayStart);     // entering the day
+  const after =_standingsAsOf(dayEnd+1);      // after the day
+  const dayGames=finished.filter(g=>_recapDayKey(Date.parse(g.kickoff))===recapDayKey);
+
+  // per-player point delta + which of their nations played that day
+  const movers=[];
+  for(const name of Object.keys(DRAFT)){
+    const delta=(after.players[name]?.pts||0)-(before.players[name]?.pts||0);
+    const nats=DRAFT[name].nations
+      .map(n=>({n, ...(_natDayResult(n,dayGames))}))
+      .filter(x=>x.played)
+      .map(x=>({abbr:ABBR[x.n]||x.n, won:x.won}));
+    if(delta>0 || nats.length) movers.push({name,delta,nats});
+  }
+  movers.sort((a,b)=>b.delta-a.delta||a.name.localeCompare(b.name));
+
+  // eliminations newly locked in on the recap day, attributed to owners
+  const elimByOwner=[];
+  for(const n in after.elim){
+    if(before.elim[n]) continue;
+    const o=findOwner(n);
+    if(o) elimByOwner.push({owner:o,nation:n});
+  }
+
+  // lead change across the day
+  const leaderBefore=_leaderOf(before.players);
+  const leaderAfter =_leaderOf(after.players);
+
+  return {recapDayKey,dayStart,dayGameCount:dayGames.length,movers,elimByOwner,
+          leaderBefore,leaderAfter,leadChanged:!!leaderAfter && leaderBefore!==leaderAfter};
+}
+
+function _recapHeadlineHtml(r){
+  const parts=[];
+  r.movers.filter(m=>m.delta>0).slice(0,2).forEach(m=>{
+    const wins=m.nats.filter(x=>x.won).map(x=>x.abbr);
+    const tag=wins.length?` (${wins.join(', ')})`:'';
+    parts.push(`<b>${teamLabel(m.name)}</b> +${m.delta}${tag}`);
+  });
+  r.elimByOwner.slice(0,2).forEach(e=>{
+    parts.push(`${teamLabel(e.owner)}'s ${e.nation} crashed out`);
+  });
+  if(r.leadChanged) parts.push(`new leader <b>${teamLabel(r.leaderAfter)}</b>`);
+  if(!parts.length) return `A quiet day — no points changed hands.`;
+  return parts.join(' · ') + '.';
+}
+
+function renderDailyRecap(){
+  const el=document.getElementById('recapCard');
+  if(!el) return;
+  const r=buildDailyRecap();
+  _lastRecap=r;
+  if(!r){ el.style.display='none'; el.innerHTML=''; return; }
+  el.style.display='';
+
+  if(localStorage.getItem(_keyRecapCollapsed())===r.recapDayKey){
+    el.className='recap-card recap-collapsed reveal';
+    el.innerHTML=`<button class="recap-reexpand" onclick="expandRecap()" aria-label="Show daily recap">
+      <span class="recap-cal">📅</span> Daily Recap · ${_fmtRecapDate(r.dayStart)}
+      <span class="recap-caret">▾</span></button>`;
+    return;
+  }
+  el.className='recap-card reveal';
+
+  const moversHtml=r.movers.filter(m=>m.delta>0).slice(0,6).map(m=>{
+    const color=COLORS[DRAFT[m.name].ci];
+    const natTxt=m.nats.length
+      ? `<span class="recap-nats">${m.nats.map(x=>`<span class="${x.won?'won':''}">${x.abbr}</span>`).join(', ')}</span>`
+      : '';
+    return `<div class="recap-mover">
+      <span class="recap-chip" style="background:${color}1f;border-color:${color}66;color:${color}">${teamLabel(m.name)}</span>
+      <span class="recap-delta">+${m.delta}</span>
+      ${natTxt}
+    </div>`;
+  }).join('');
+
+  const elimHtml=r.elimByOwner.length
+    ? `<div class="recap-elim"><span class="rx">✖</span>${
+        r.elimByOwner.map(e=>`<span><b>${e.nation}</b> out <span style="opacity:.7">(${teamLabel(e.owner)})</span></span>`).join('<span style="opacity:.4">·</span>')
+      }</div>`
+    : '';
+
+  let leadHtml='';
+  if(r.leaderAfter){
+    const tag=r.leadChanged
+      ? `<span class="lead-tag changed">New&nbsp;Leader</span>`
+      : `<span class="lead-tag">Holds&nbsp;Lead</span>`;
+    leadHtml=`<div class="recap-lead"><span class="crown">👑</span><b>${teamLabel(r.leaderAfter)}</b>${tag}</div>`;
+  }
+
+  const body = r.movers.some(m=>m.delta>0)
+    ? `<div class="recap-movers">${moversHtml}</div>`
+    : `<div class="recap-quiet">No owned nations banked points on this day.</div>`;
+
+  el.innerHTML=`
+    <div class="recap-hdr">
+      <span class="recap-cal">📅</span>
+      <span class="recap-title">Daily Recap</span>
+      <span class="recap-date">${_fmtRecapDate(r.dayStart)} · ${r.dayGameCount} match${r.dayGameCount===1?'':'es'}</span>
+      <button class="recap-dismiss" onclick="dismissRecap()" title="Hide recap" aria-label="Hide daily recap">✕</button>
+    </div>
+    <div class="recap-headline">${_recapHeadlineHtml(r)}</div>
+    ${body}
+    ${elimHtml}
+    ${leadHtml}`;
+}
+
+function dismissRecap(){
+  const r=_lastRecap||buildDailyRecap();
+  if(r) localStorage.setItem(_keyRecapCollapsed(), r.recapDayKey);
+  renderDailyRecap();
+  try{ vibe([8]); }catch(_){}
+}
+function expandRecap(){
+  localStorage.removeItem(_keyRecapCollapsed());
+  renderDailyRecap();
+  try{ vibe([8]); }catch(_){}
+}
+
 // ── ESPN API ──────────────────────────────────────────────────────
 // ▼▼▼ Live soccer scoreboard — ready to go once OFFSEASON=false ▼▼▼
 const ESPN_SB  = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
@@ -2797,13 +3145,15 @@ function tallyFinishedGame(g, homeN, awayN){
 
 function applyMockGames(games){
   nationPoints={}; nationWins={}; nationDraws={}; nationElim={};
-  nationGF={}; nationGA={}; nationGFko={}; nationGAko={};
+  nationGF={}; nationGA={}; nationGFko={}; nationGAko={}; nationPtsLive={};
   for(const g of games){
     if(g.upcoming) continue;
     if(!g.live) tallyFinishedGame(g, g.homeTeam, g.awayTeam);
     if(g.live){
       nationLive[g.homeTeam]={hs:g.homeScore,as:g.awayScore};
       nationLive[g.awayTeam]={hs:g.awayScore,as:g.homeScore};
+      nationPtsLive[g.homeTeam]=(nationPtsLive[g.homeTeam]||0)+provisionalPts(g.homeScore,g.awayScore);
+      nationPtsLive[g.awayTeam]=(nationPtsLive[g.awayTeam]||0)+provisionalPts(g.awayScore,g.homeScore);
     }
   }
   allGames=games;
@@ -2864,7 +3214,7 @@ async function fetchESPN(){
   const results=await Promise.allSettled(requests);
 
   nationPoints={}; nationWins={}; nationDraws={}; nationElim={};
-  nationGF={}; nationGA={}; nationGFko={}; nationGAko={};
+  nationGF={}; nationGA={}; nationGFko={}; nationGAko={}; nationPtsLive={};
   nationLive={}; allGames=[]; todayGames=[]; totalCompleted=0;
 
   const todayStr=new Date().toISOString().slice(0,10);
@@ -2937,8 +3287,8 @@ async function fetchESPN(){
         tallyFinishedGame(g, homeN, awayN);
       }
       if(live){
-        if(homeN) nationLive[homeN]={hs,as};
-        if(awayN) nationLive[awayN]={hs,as};
+        if(homeN){ nationLive[homeN]={hs,as}; nationPtsLive[homeN]=(nationPtsLive[homeN]||0)+provisionalPts(hs,as); }
+        if(awayN){ nationLive[awayN]={hs,as}; nationPtsLive[awayN]=(nationPtsLive[awayN]||0)+provisionalPts(as,hs); }
       }
     }
   });
@@ -3147,7 +3497,7 @@ function renderTicker(){
       if(!p||!DRAFT_COMPLETE) return '';
       const c=COLORS[DRAFT[p].ci];
       const lbl=teamLabel(p);
-      return `<span class="tteam-owner" style="background:${c}22;color:${c}" title="${lbl}'s pick">${lbl.slice(0,5)}</span>`;
+      return `<span class="tteam-owner" style="background:${c}22;color:${c}" title="${lbl}'s pick">${lbl.slice(0,6)}</span>`;
     };
 
     // +3/+1 pts note for completed owned games
@@ -3379,8 +3729,11 @@ function startTeamRename(ev){
 // Track previous player scores so we can pulse rows when they increment.
 let _prevPlayerPts = {};
 function renderLeaderboard(){
+  // pts = banked + in-play (live games count provisionally so the board swings
+  // with every goal). livePts = just the in-play portion, shown as a "+N live" pill.
   const players=Object.entries(DRAFT).map(([name,data])=>({
-    name,data,pts:getPlayerPoints(name),alive:getPlayerAlive(name),gd:getPlayerGD(name),
+    name,data,pts:getPlayerPointsLive(name),banked:getPlayerPoints(name),
+    livePts:getPlayerLivePts(name),alive:getPlayerAlive(name),gd:getPlayerGD(name),
   })).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||a.name.localeCompare(b.name));
 
   document.getElementById('lboard').innerHTML=players.map((p,i)=>{
@@ -3401,17 +3754,21 @@ function renderLeaderboard(){
 
     const aliveTag=DRAFT_COMPLETE&&p.alive>0?`<span class="lbalive">${p.alive}/${DRAFT_ROUNDS} alive</span>`:'';
     const draftTag=!DRAFT_COMPLETE?`<span class="lbdraft">Draft Pending</span>`:'';
+    // In-play swing pill — pulses while any of this player's nations are mid-game.
+    const liveTag=DRAFT_COMPLETE&&p.livePts>0?`<span class="lb-live" title="Points in play from live games">▲ +${p.livePts} live</span>`:'';
 
     const chipsHtml=DRAFT_COMPLETE
       ?`<div class="nation-chips">${p.data.nations.map(n=>{
           const nd=getNation(n);
           if(!nd) return `<div class="nc"><span style="opacity:.2;font-size:.5rem">TBD</span></div>`;
           const e=isElim(n)?' elim':'', lv=nationLive[n]?' live-now':'';
+          // While live, show the provisional total so the chip matches the swinging board.
+          const ptsShown=getTeamPointsLive(n), ptsCls=nationLive[n]?' nc-pts-live':'';
           // Subtle player-color tint ties each chip back to its owner
           return `<div class="nc${e}${lv}" style="background:${color}14;border-color:${color}33">
             <img class="nc-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="this.style.opacity='.15'">
             <span class="nc-abbr">${ABBR[n]||n.slice(0,3).toUpperCase()}</span>
-            <span class="nc-pts">${getTeamPoints(n)}pt</span>
+            <span class="nc-pts${ptsCls}">${ptsShown}pt</span>
             ${nationLive[n]?'<span class="nc-live-pip"></span>':''}
           </div>`;
         }).join('')}</div>`
@@ -3437,38 +3794,55 @@ function renderLeaderboard(){
         <div class="lbname-row">
           <span class="lbname editable-team-name pc${p.data.ci}">${teamLabel(p.name)}</span>
           <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
-          ${aliveTag}${draftTag}${gdPill}
+          ${aliveTag}${liveTag}${draftTag}${gdPill}
         </div>
         <div class="lbflags">${flagsHtml}</div>
       </div>
       ${chipsHtml}
-      <div class="lbscore pc${p.data.ci}">${p.pts}</div>
+      <div class="lbscore pc${p.data.ci}${p.livePts>0?' has-live':''}">${p.pts}</div>
     </div>`;
   }).join('');
 
-  // After DOM is in place: pulse any row whose player gained points since last render
+  // After DOM is in place: animate any row whose live total moved since last render.
+  // Points swing both ways now (a goal can flip a 3 into a 0), so we pulse green
+  // on a gain and dip red on a loss, count the big number up/down, and buzz on gains.
   requestAnimationFrame(()=>{
     players.forEach(p=>{
       const prev = _prevPlayerPts[p.name];
-      if(prev!==undefined && p.pts > prev){
-        const row = document.querySelector(`.lbrow[data-player="${CSS.escape(p.name)}"]`);
-        if(row){
-          row.classList.remove('scored');
-          // Force reflow so re-adding the class restarts the animation
-          void row.offsetWidth;
-          row.classList.add('scored');
-          setTimeout(()=>row.classList.remove('scored'), 1500);
-        }
+      const row = document.querySelector(`.lbrow[data-player="${CSS.escape(p.name)}"]`);
+      if(row && prev!==undefined && p.pts!==prev){
+        const gained = p.pts > prev;
+        const cls = gained ? 'scored' : 'scored-down';
+        row.classList.remove('scored','scored-down');
+        void row.offsetWidth;                 // reflow → restart animation
+        row.classList.add(cls);
+        setTimeout(()=>row.classList.remove(cls), 1500);
+        const scoreEl = row.querySelector('.lbscore');
+        if(scoreEl) _animateCountUp(scoreEl, prev, p.pts);
+        if(gained) vibe([40,30,60]);          // same buzz as a draft pick landing
       }
       _prevPlayerPts[p.name] = p.pts;
     });
   });
 }
 
+// Count the leaderboard total from one value to another over ~650ms.
+function _animateCountUp(el, from, to){
+  if(from===to){ el.textContent=to; return; }
+  const dur=650, t0=performance.now();
+  const step=(now)=>{
+    const k=Math.min(1,(now-t0)/dur);
+    const eased=1-Math.pow(1-k,3);            // easeOutCubic
+    el.textContent=Math.round(from+(to-from)*eased);
+    if(k<1) requestAnimationFrame(step); else el.textContent=to;
+  };
+  requestAnimationFrame(step);
+}
+
 // ── RENDER: BAR CHART ─────────────────────────────────────────────
 function renderBarChart(){
   const players=Object.entries(DRAFT).map(([name,data])=>({
-    name,data,pts:getPlayerPoints(name),
+    name,data,pts:getPlayerPointsLive(name),
   })).sort((a,b)=>b.pts-a.pts||getPlayerGD(b.name)-getPlayerGD(a.name));
   const maxPts=Math.max(...players.map(p=>p.pts),1);
   const BAR_H=240;
@@ -3482,9 +3856,9 @@ function renderBarChart(){
       // Segments share the owning player's color. Subtle opacity ramp
       // gives each contributing nation a faint slice without breaking the
       // visual tie to the leaderboard.
-      const contributing = p.data.nations.filter(n=>getTeamPoints(n)>0);
+      const contributing = p.data.nations.filter(n=>getTeamPointsLive(n)>0);
       contributing.forEach((n, idx)=>{
-        const pts=getTeamPoints(n);
+        const pts=getTeamPointsLive(n);
         const nd=getNation(n);
         const segH=Math.round((pts/maxPts)*BAR_H);
         // Opacity ramp 1.0 → 0.55 over up to 8 segments
@@ -3511,20 +3885,20 @@ function renderBarChart(){
 
 // ── RENDER: DRAFT CARDS ───────────────────────────────────────────
 function renderDraftCards(){
-  const players=Object.entries(DRAFT).map(([name,data])=>({name,data,pts:getPlayerPoints(name)})).sort((a,b)=>b.pts-a.pts||getPlayerGD(b.name)-getPlayerGD(a.name));
+  const players=Object.entries(DRAFT).map(([name,data])=>({name,data,pts:getPlayerPointsLive(name)})).sort((a,b)=>b.pts-a.pts||getPlayerGD(b.name)-getPlayerGD(a.name));
   document.getElementById('dgrid').innerHTML=players.map(p=>{
     const color=COLORS[p.data.ci];
     const alive=p.data.nations.filter(n=>!isElim(n));
     const dead=p.data.nations.filter(n=>isElim(n));
     const nationRow=(n,pick)=>{
       const nd=getNation(n); if(!nd) return '';
-      const pts=getTeamPoints(n), el=isElim(n);
+      const pts=getTeamPointsLive(n), el=isElim(n), lv=nationLive[n];
       return `<div class="dteam-row${el?' elim':''}">
         <img class="dteam-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="this.style.opacity='.12'">
         <span class="dteam-name">${n}</span>
         <span class="dteam-group">Grp ${nd.group||'?'}</span>
         ${pick?`<span class="dteam-pick">#${pick}</span>`:''}
-        <span class="dteam-pts">${pts}</span>
+        <span class="dteam-pts${lv?' dteam-pts-live':''}">${pts}</span>
       </div>`;
     };
     const teamsHtml=DRAFT_COMPLETE
@@ -4463,6 +4837,7 @@ async function render(){
   }
 
   computeBracketResolved();
+  renderDailyRecap();
   renderLeaderboard();
   renderBarChart();
   renderDraftCards();
@@ -4479,7 +4854,8 @@ async function render(){
 // Bar chart stays hidden until at least one match has produced points
 // (empty bars carry no signal).
 function applyEmptyStateVisibility(){
-  const anyPoints = Object.values(nationPoints||{}).some(v=>v>0);
+  const anyPoints = Object.values(nationPoints||{}).some(v=>v>0)
+                 || Object.values(nationPtsLive||{}).some(v=>v>0);
   const setVis = (id, show) => {
     const el = document.getElementById(id);
     if(el) el.style.display = show ? '' : 'none';
@@ -4503,13 +4879,14 @@ function scheduleRefresh(){
     try{
       await fetchESPN();
       computeBracketResolved();
+      renderDailyRecap();
       renderTicker(); renderLeaderboard(); renderBarChart(); renderDraftCards();
       applyEmptyStateVisibility();
       if(bracketRendered){ renderGroupsGrid(); renderKnockoutBracket(); }
       updateStatus('Live','live'); updateGameCount();
     }catch(e){}
     scheduleRefresh();
-  },live?60000:120000);
+  },live?30000:120000);   // 30s while games run so the live swing feels responsive
 }
 async function forceRefresh(){
   const btn=document.getElementById('rBtn');
@@ -4517,6 +4894,7 @@ async function forceRefresh(){
   updateStatus('Refreshing…','loading');
   await fetchESPN();
   computeBracketResolved();
+  renderDailyRecap();
   renderTicker(); renderLeaderboard(); renderBarChart(); renderDraftCards();
   applyEmptyStateVisibility();
   if(bracketRendered){ renderGroupsGrid(); renderKnockoutBracket(); }
