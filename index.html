@@ -5456,6 +5456,7 @@ function applyDraftStateToTracker(){
 function refreshTrackerAfterDraftChange(){
   applyDraftStateToTracker();
   // Re-render tracker views that depend on DRAFT
+  try { renderDailyRecap(); } catch(e){}   // recap movers/leader are per-league
   try { renderTicker(); } catch(e){}
   try { renderLeaderboard(); } catch(e){}
   try { renderBarChart(); } catch(e){}
