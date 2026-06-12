@@ -376,10 +376,11 @@ function squadTotal(s){ return (s.gk?.length||0)+(s.def?.length||0)+(s.mid?.leng
 // Compiled 2026-05-22. xi[] is positional: GK → back line → mids → forwards.
 // Regenerated 2026-06-03 to match final squads. xi[] positional: GK -> back line -> mids -> forwards.
 const PROJECTED_LINEUPS = {
-  'Mexico':              { formation:'4-3-3',    xi:['Raul Rangel', 'Israel Reyes', 'Cesar Montes', 'Johan Vasquez', 'Jesus Gallardo', 'Alvaro Fidalgo', 'Erik Lira', 'Gilberto Mora', 'Roberto Alvarado', 'Raul Jimenez', 'Julian Quinones'] },
-  'Czechia':             { formation:'3-4-2-1',  xi:['Jindrich Stanek', 'Robin Hranac', 'Ladislav Krejci', 'David Zima', 'Vladimir Coufal', 'Tomas Soucek', 'Lukas Provod', 'David Jurasek', 'Pavel Sulc', 'Patrik Schick', 'Adam Hlozek'] },
-  'South Korea':         { formation:'4-2-3-1',  xi:['Jo Hyeon-woo', 'Seol Young-woo', 'Kim Min-jae', 'Cho Yu-min', 'Lee Han-beom', 'Hwang In-beom', 'Lee Jae-sung', 'Lee Kang-in', 'Hwang Hee-chan', 'Son Heung-min', 'Oh Hyeon-gyu'] },
-  'South Africa':        { formation:'3-4-3',    xi:['Ronwen Williams', 'Nkosinathi Sibisi', 'Khulumani Ndamane', 'Ime Okon', 'Aubrey Modiba', 'Teboho Mokoena', 'Jayden Adams', 'Oswin Appollis', 'Relebohile Mofokeng', 'Lyle Foster', 'Iqraam Rayners'] },
+  // ACTUAL starting XIs from Matchday 1 (June 11, 2026) via ESPN summary rosters:
+  'Mexico':              { formation:'4-1-4-1',  xi:['Raul Rangel', 'Jesus Gallardo', 'Johan Vasquez', 'Cesar Montes', 'Israel Reyes', 'Erik Lira', 'Julian Quinones', 'Alvaro Fidalgo', 'Brian Gutierrez', 'Roberto Alvarado', 'Raul Jimenez'] },
+  'Czechia':             { formation:'3-4-2-1',  xi:['Matej Kovar', 'Ladislav Krejci', 'Robin Hranac', 'Stepan Chaloupek', 'Jaroslav Zeleny', 'Alexandr Sojka', 'Tomas Soucek', 'Vladimir Coufal', 'Pavel Sulc', 'Lukas Provod', 'Patrik Schick'] },
+  'South Korea':         { formation:'3-4-2-1',  xi:['Kim Seung-gyu', 'Lee Ki-hyuk', 'Kim Min-jae', 'Lee Han-beom', 'Lee Tae-seok', 'Paik Seung-ho', 'Hwang In-beom', 'Seol Young-woo', 'Lee Jae-sung', 'Lee Kang-in', 'Son Heung-min'] },
+  'South Africa':        { formation:'5-3-2',    xi:['Ronwen Williams', 'Aubrey Modiba', 'Mbekezeli Mbokazi', 'Ime Okon', 'Nkosinathi Sibisi', 'Khuliso Mudau', 'Jayden Adams', 'Sphephelo Sithole', 'Teboho Mokoena', 'Lyle Foster', 'Iqraam Rayners'] },
   'Canada':              { formation:'4-4-2',    xi:['Dayne St. Clair', 'Richie Laryea', 'Moise Bombito', 'Derek Cornelius', 'Alphonso Davies', 'Tajon Buchanan', 'Ismael Kone', 'Stephen Eustaquio', 'Ali Ahmed', 'Jonathan David', 'Cyle Larin'] },
   'Bosnia-Herzegovina':  { formation:'4-2-3-1',  xi:['Nikola Vasilj', 'Amar Dedic', 'Nikola Katic', 'Sead Kolasinac', 'Nidal Celik', 'Amir Hadziahmetovic', 'Benjamin Tahirovic', 'Esmir Bajraktarevic', 'Ermedin Demirovic', 'Haris Tabakovic', 'Edin Dzeko'] },
   'Switzerland':         { formation:'4-2-3-1',  xi:['Gregor Kobel', 'Silvan Widmer', 'Manuel Akanji', 'Nico Elvedi', 'Ricardo Rodriguez', 'Granit Xhaka', 'Remo Freuler', 'Ruben Vargas', 'Ardon Jashari', 'Dan Ndoye', 'Breel Embolo'] },
@@ -430,13 +431,18 @@ const PROJECTED_LINEUPS = {
 // (June 3-9 2026 window) + beat-writer projected-XI articles. Changed this pass:
 // Mexico, Canada(->4-4-2), Qatar(->4-3-3), Brazil, Turkiye, Ecuador, Sweden(->3-4-2-1),
 // Spain, France, Senegal, Norway, Argentina, Jordan, DR Congo. Other 34 re-confirmed.
-const PROJECTED_LINEUPS_UPDATED = '2026-06-07';
+// 2026-06-11 (Matchday 1): Mexico, South Africa, South Korea, Czechia replaced
+// with their ACTUAL opening-match starting XIs (ESPN summary rosters). From here
+// on, index.html auto-overrides these with each team's latest real XI at runtime.
+const PROJECTED_LINEUPS_UPDATED = '2026-06-11';
 
 // Helper: get projected XI for a nation, attempting to enrich with club info
 // from SQUADS where possible. Returns { formation, players:[{name,club,line}] } or null.
 // line ∈ {GK, DEF, MID, FWD} derived from formation buckets.
-function projectedXI(nation){
-  const proj = PROJECTED_LINEUPS[nation];
+// `override` (optional): {formation, xi} — used by index.html to render a team's
+// latest ACTUAL starting XI (from ESPN) instead of the static projection.
+function projectedXI(nation, override){
+  const proj = override || PROJECTED_LINEUPS[nation];
   if(!proj || !proj.xi || proj.xi.length !== 11) return null;
   const sq = getSquad(nation);
   const allSquad = [

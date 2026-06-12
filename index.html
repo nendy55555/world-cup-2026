@@ -708,6 +708,7 @@ a:hover{color:var(--orange);}
 @media (max-width:720px){.nation-lineup-tip{display:none !important;}}
 .nlt-hdr{display:flex;justify-content:space-between;align-items:center;font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:.11em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08);}
 .nlt-hdr-lbl{font-weight:700;}
+.nlt-hdr-sub{font-weight:600;color:#8090b8;letter-spacing:.06em;text-transform:none;}
 .nlt-formation{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:800;color:#D86E66;letter-spacing:.06em;text-shadow:0 0 12px rgba(255,107,130,.4);}
 .nlt-line{margin-bottom:6px;}
 .nlt-line:last-child{margin-bottom:0;}
@@ -3352,6 +3353,9 @@ async function fetchESPN(){
   });
   // Coverage check — warn if any team in the box score has no flag mapping.
   _logUnknownTeams();
+  // Pull real starting XIs for newly played games (fire-and-forget; re-renders
+  // the Nations pool itself when a lineup lands).
+  try{ refreshActualLineups(); }catch(e){}
 }
 
 // ── TAB SWITCHING ─────────────────────────────────────────────────
@@ -4676,10 +4680,139 @@ function lineLastName(fullName){
   return last;
 }
 
+// ── ACTUAL STARTING XI AUTO-REFRESH ──────────────────────────────
+// Once a game kicks off, ESPN's summary endpoint publishes the real starting
+// XI + formation. We pull those for every played game (one fetch per event,
+// cached in localStorage) so the Nations-tab tooltip always shows each team's
+// LATEST ACTUAL XI. PROJECTED_LINEUPS stays the fallback for unplayed teams.
+const ACTUAL_XI_LS_KEY='wcb-actual-xi-v1'; // global — nation data isn't league-scoped
+let ACTUAL_XI=(()=>{ try{const j=JSON.parse(localStorage.getItem(ACTUAL_XI_LS_KEY)); if(j&&j.nations&&j.events) return j;}catch(e){} return {nations:{},events:{}}; })();
+function _saveActualXI(){ try{localStorage.setItem(ACTUAL_XI_LS_KEY,JSON.stringify(ACTUAL_XI));}catch(e){} }
+function _axiNameKey(s){ return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,''); }
+
+// Map an ESPN athlete name onto our squads.js spelling (ASCII convention) so
+// club enrichment + pitch labels stay consistent. Falls back to the ESPN name.
+function _squadNameFor(nation, espnName){
+  if(typeof getSquad!=='function') return espnName;
+  const sq=getSquad(nation)||{};
+  const all=[...(sq.gk||[]),...(sq.def||[]),...(sq.mid||[]),...(sq.att||[])];
+  const key=_axiNameKey(espnName);
+  const exact=all.find(p=>_axiNameKey(p.name)===key);
+  if(exact) return exact.name;
+  const last=_axiNameKey(espnName.trim().split(/\s+/).pop());
+  const cand=all.filter(p=>_axiNameKey(p.name.trim().split(/\s+/).pop())===last);
+  if(cand.length===1) return cand[0].name;
+  // Romanization drift fallback (e.g. ESPN "Lee Gi-Hyuk" vs our "Lee Ki-hyuk"):
+  // accept a UNIQUE squad name within edit distance 2 of the full key.
+  const fuzz=all.filter(p=>_axiEditDist(_axiNameKey(p.name),key)<=2);
+  return fuzz.length===1 ? fuzz[0].name : espnName;
+}
+function _axiEditDist(a,b){
+  if(Math.abs(a.length-b.length)>2) return 9;
+  const m=a.length,n=b.length,row=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){
+    let prev=row[0]; row[0]=i;
+    for(let j=1;j<=n;j++){
+      const t=row[j];
+      row[j]=Math.min(row[j]+1, row[j-1]+1, prev+(a[i-1]===b[j-1]?0:1));
+      prev=t;
+    }
+  }
+  return row[n];
+}
+
+// Sort ESPN position abbreviations (G, CD-L, LB, DM, CM-R, LM, AM, CF-L, F …)
+// into our positional xi[] order: GK, then back line → front, L→R per line.
+function _axiPosBand(ab){
+  ab=(ab||'').toUpperCase(); const base=ab.split('-')[0];
+  if(base==='G'||base==='GK') return 0;
+  if(['CD','LB','RB','D','WB','SW'].includes(base)) return 1;
+  if(base==='DM') return 2;
+  if(['CM','LM','RM','M'].includes(base)) return 3;
+  if(base==='AM') return 4;
+  if(['LW','RW','W'].includes(base)) return 4.5;
+  if(['CF','SS'].includes(base)) return 4.8;
+  return 5; // F / ST / unknown attackers
+}
+function _axiPosLR(ab){
+  ab=(ab||'').toUpperCase();
+  if(/^(LB|LM|LW)/.test(ab)) return 0;
+  if(/-L$/.test(ab)) return 1;
+  if(/^(RB|RM|RW)/.test(ab)) return 4;
+  if(/-R$/.test(ab)) return 3;
+  return 2;
+}
+function _espnSideToXI(side){
+  const starters=(side.roster||[]).filter(p=>p.starter&&p.athlete);
+  if(starters.length!==11 || !side.formation) return null;
+  const parts=String(side.formation).split('-').map(n=>parseInt(n,10)).filter(n=>!isNaN(n));
+  if(parts.reduce((a,b)=>a+b,0)!==10) return null;
+  const tagged=starters.map(p=>{
+    const ab=(p.position&&p.position.abbreviation)||'';
+    return {name:p.athlete.displayName, band:_axiPosBand(ab), lr:_axiPosLR(ab), fp:parseInt(p.formationPlace||'99',10)||99};
+  });
+  const gk=tagged.find(t=>t.band===0);
+  if(!gk) return null;
+  const out=tagged.filter(t=>t.band>0).sort((a,b)=>a.band-b.band||a.fp-b.fp);
+  const xi=[gk.name]; let i=0;
+  for(const count of parts){
+    out.slice(i,i+count).sort((a,b)=>a.lr-b.lr||a.fp-b.fp).forEach(t=>xi.push(t.name));
+    i+=count;
+  }
+  return {formation:String(side.formation), xi};
+}
+
+let _axiInFlight=false;
+async function refreshActualLineups(){
+  if(typeof MOCK_MODE!=='undefined'&&MOCK_MODE) return;
+  if(_axiInFlight || typeof allGames==='undefined' || !allGames.length) return;
+  // Games that have kicked off and whose lineups we haven't ingested yet.
+  const pending=allGames
+    .filter(g=>!g.upcoming&&g.id&&!ACTUAL_XI.events[g.id])
+    .sort((a,b)=>new Date(b.kickoff||0)-new Date(a.kickoff||0))
+    .slice(0,8); // cap per cycle; the 30s refresh loop catches the rest up
+  if(!pending.length) return;
+  _axiInFlight=true; let changed=false;
+  try{
+    await Promise.allSettled(pending.map(async g=>{
+      let j=null;
+      try{
+        const r=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event=${g.id}`);
+        if(r.ok) j=await r.json();
+      }catch(e){}
+      const rosters=j&&j.rosters;
+      if(!rosters||!rosters.length){
+        if(!g.live) ACTUAL_XI.events[g.id]=1; // finished w/o rosters: stop retrying; live: retry next cycle
+        return;
+      }
+      let ok=true;
+      for(const side of rosters){
+        const nation=matchNation(side.team&&side.team.displayName);
+        const conv=nation?_espnSideToXI(side):null;
+        if(!conv){ ok=false; continue; }
+        conv.xi=conv.xi.map(n=>_squadNameFor(nation,n));
+        const kt=new Date(g.kickoff||0).getTime()||0;
+        const prev=ACTUAL_XI.nations[nation];
+        if(!prev || kt>=(prev.kickoffMs||0)){
+          const opp=(side.homeAway==='home')?g.awayTeam:g.homeTeam;
+          ACTUAL_XI.nations[nation]={formation:conv.formation, xi:conv.xi, opp, kickoffMs:kt, eventId:g.id};
+          changed=true;
+        }
+      }
+      if(ok||!g.live) ACTUAL_XI.events[g.id]=1; // lineups don't change after kickoff
+    }));
+  } finally { _axiInFlight=false; }
+  if(changed){
+    _saveActualXI();
+    try{ renderNationsPool(); }catch(e){}
+  }
+}
+
 // Hover tooltip: 2D pitch + roster grouped by line.
 function lineupTipHtml(name){
   if(typeof PROJECTED_LINEUPS==='undefined' || typeof projectedXI!=='function') return '';
-  const proj = projectedXI(name);
+  const actual=(typeof ACTUAL_XI!=='undefined'&&ACTUAL_XI.nations)?ACTUAL_XI.nations[name]:null;
+  const proj = projectedXI(name, actual||undefined);
   if(!proj){
     return `<div class="nation-lineup-tip">
       <div class="nlt-hdr"><span class="nlt-hdr-lbl">Projected XI</span></div>
@@ -4736,9 +4869,16 @@ function lineupTipHtml(name){
     <div class="nlt-line-lbl">${lbl}</div>
     ${arr.map(p=>`<div class="nlt-player"><span class="nlt-player-name">${p.name}</span>${p.club?`<span class="nlt-player-club">${p.club}</span>`:''}</div>`).join('')}
   </div>` : '';
+  // Header: actual XI shows opponent + date; unplayed teams keep the projection label.
+  let hdrLbl='Projected XI';
+  if(actual){
+    const d=actual.kickoffMs?new Date(actual.kickoffMs).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
+    const oppAb=(typeof ABBR!=='undefined'&&ABBR[actual.opp])||actual.opp||'';
+    hdrLbl=`Starting XI <span class="nlt-hdr-sub">vs ${oppAb}${d?` · ${d}`:''}</span>`;
+  }
   return `<div class="nation-lineup-tip">
     <div class="nlt-hdr">
-      <span class="nlt-hdr-lbl">Projected XI</span>
+      <span class="nlt-hdr-lbl">${hdrLbl}</span>
       <span class="nlt-formation">${proj.formation}</span>
     </div>
     ${pitch}

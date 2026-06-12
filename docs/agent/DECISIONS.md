@@ -89,3 +89,5 @@ Two independent drafts share one HTML file: `main` (6 players × 8 nations) and 
 - **Build tools** (Vite, esbuild, webpack) — same.
 - **Auth / multi-user editing** — out of scope; if needed later, replace `DRAFT` constant with a fetched JSON.
 - **Local file save dialog for picks** — possible later if persistence becomes a need.
+
+- 2026-06-11: **Lineup accuracy = runtime ESPN override, not file edits.** Tooltip XIs self-update from ESPN summary rosters after each kickoff (localStorage cache, one fetch per event). PROJECTED_LINEUPS is now only the pre-first-match fallback; no manual refresh needed for the rest of the tournament.
