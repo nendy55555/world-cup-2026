@@ -3805,8 +3805,17 @@ function renderLeaderboard(){
     // Goal differential — the tiebreaker — shown next to the name.
     const gdSign=p.gd>0?'+':'';
     const gdPill=`<span class="lb-gd ${p.gd>0?'pos':p.gd<0?'neg':'zero'}">GD ${gdSign}${p.gd}</span>`;
+    // Order tiles by points (live-inclusive) DESC, eliminated nations last;
+    // ties keep draft order (stable sort).
+    const sortedNations=DRAFT_COMPLETE
+      ?p.data.nations.slice().sort((a,b)=>{
+          const pa=getNation(a)?getTeamPointsLive(a):-1;
+          const pb=getNation(b)?getTeamPointsLive(b):-1;
+          return (pb-pa)||((isElim(a)?1:0)-(isElim(b)?1:0));
+        })
+      :p.data.nations;
     const flagsHtml=DRAFT_COMPLETE
-      ?p.data.nations.map(n=>{
+      ?sortedNations.map(n=>{
           const nd=getNation(n);
           if(!nd) return '<span class="flag-empty"></span>';
           const e=isElim(n)?' elim':'', lv=nationLive[n]?' live-now':'';
@@ -3820,7 +3829,7 @@ function renderLeaderboard(){
     const liveTag=DRAFT_COMPLETE&&p.livePts>0?`<span class="lb-live" title="Points in play from live games">▲ +${p.livePts} live</span>`:'';
 
     const chipsHtml=DRAFT_COMPLETE
-      ?`<div class="nation-chips">${p.data.nations.map(n=>{
+      ?`<div class="nation-chips">${sortedNations.map(n=>{
           const nd=getNation(n);
           if(!nd) return `<div class="nc"><span style="opacity:.2;font-size:.5rem">TBD</span></div>`;
           const e=isElim(n)?' elim':'', lv=nationLive[n]?' live-now':'';
