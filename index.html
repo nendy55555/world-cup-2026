@@ -655,8 +655,8 @@ a:hover{color:var(--orange);}
 .sbc-vbar{width:100%;display:flex;flex-direction:column-reverse;border-radius:10px 10px 4px 4px;overflow:hidden;transition:height .9s cubic-bezier(.25,.46,.45,.94);}
 .sbc-vseg{width:100%;flex-shrink:0;flex-grow:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-top:1px solid rgba(0,0,0,.28);}
 .sbc-vseg:last-child{border-top:none;}
-.sbc-vseg img{object-fit:cover;pointer-events:none;filter:drop-shadow(0 0 4px rgba(255,255,255,.7));}
-.sbc-vfoot{padding-top:8px;display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;}
+.sbc-vseg img{object-fit:cover;pointer-events:none;border-radius:1px;box-shadow:0 1px 4px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.25);}
+.sbc-vfoot{padding-top:8px;display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;}
 .sbc-vname{font-family:var(--font-display);font-size:.95rem;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center;text-transform:uppercase;letter-spacing:.02em;}
 .sbc-vscore{font-size:var(--fs-h3);font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;font-variant-numeric:tabular-nums;}
 .sbc-vbar-empty{width:100%;height:5px;background:rgba(255,255,255,.05);border-radius:4px;}
@@ -1131,7 +1131,7 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
   .hdr h1{font-size:1.85rem;}
   .main{padding:16px 14px 44px;}
   .dgrid{grid-template-columns:repeat(auto-fill,minmax(235px,1fr));}
-  .sbc-vchart{height:200px;}
+  .sbc-vchart{height:230px;}
   .groups-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));}
 }
 @media(max-width:600px){
@@ -1151,7 +1151,7 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
   .lbscore{font-size:var(--fs-h3);}
   .lbflag{width:20px;height:14px;}
   .flag-empty{width:20px;height:14px;}
-  .sbc-vchart{height:180px;}
+  .sbc-vchart{height:220px;}
   .dgrid{grid-template-columns:1fr;}
   .pool-conf-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}
   .groups-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
@@ -1455,8 +1455,8 @@ table.dt tbody tr:hover td{background:rgba(255,255,255,.012);}
   .tcard{min-width:220px;max-width:240px;}
 
   /* ── BAR CHART — shorter on small screens ────────────────────── */
-  .sbc{padding:14px 14px 16px;margin-bottom:22px;}
-  .sbc-vchart{height:160px;gap:5px;}
+  .sbc{padding:14px 14px 18px;margin-bottom:22px;}
+  .sbc-vchart{height:210px;gap:5px;}
   .sbc-vname{font-size:.6rem;}
   .sbc-vscore{font-size:1.05rem;}
 
@@ -2367,6 +2367,45 @@ const NATION_MAP = {};
 ALL_NATIONS.forEach(n => { NATION_MAP[n.name.toLowerCase()] = n; });
 function getNation(name){ return name ? NATION_MAP[name.toLowerCase().trim()] || null : null; }
 function flag(code,w=40){ return `https://flagcdn.com/w${w}/${code}.png`; }
+
+// ── NATION BAR COLORS ─────────────────────────────────────────────
+// Flag palette per nation — paints each bar-chart segment as vertical
+// stripes of that country's colors instead of the owner's single color.
+const NATION_COLORS = {
+  mx:['#006847','#f5f5f5','#ce1126'], cz:['#11457e','#f5f5f5','#d7141a'],
+  kr:['#f5f5f5','#cd2e3a','#0047a0'], za:['#007a4d','#ffb612','#de3831'],
+  ca:['#d80621','#f5f5f5','#d80621'], ba:['#002395','#fecb00'],
+  ch:['#d52b1e','#f5f5f5'],           qa:['#8d1b3d','#f5f5f5'],
+  br:['#009739','#fedd00','#012169'], 'gb-sct':['#0065bf','#f5f5f5'],
+  ht:['#00209f','#d21034'],           ma:['#c1272d','#006233'],
+  py:['#d52b1e','#f5f5f5','#0038a8'], tr:['#e30a17','#f5f5f5'],
+  au:['#ffcd00','#00843d'],           us:['#b22234','#f5f5f5','#3c3b6e'],
+  ec:['#ffdd00','#034ea2','#ed1c24'], de:['#1a1a1a','#dd0000','#ffce00'],
+  ci:['#f77f00','#f5f5f5','#009e60'], cw:['#002b7f','#f9e814'],
+  nl:['#ae1c28','#f5f5f5','#21468b'], se:['#006aa7','#fecc02'],
+  jp:['#f5f5f5','#bc002d','#f5f5f5'], tn:['#e70013','#f5f5f5'],
+  be:['#1a1a1a','#fdda24','#ef3340'], ir:['#239f40','#f5f5f5','#da0000'],
+  eg:['#ce1126','#f5f5f5','#1a1a1a'], nz:['#00247d','#f5f5f5','#cc142b'],
+  es:['#aa151b','#f1bf00','#aa151b'], uy:['#7bb2dd','#f5f5f5'],
+  sa:['#006c35','#f5f5f5'],           cv:['#003893','#f5f5f5','#cf2027'],
+  no:['#ba0c2f','#f5f5f5','#00205b'], fr:['#0055a4','#f5f5f5','#ef4135'],
+  sn:['#00853f','#fdef42','#e31b23'], iq:['#ce1126','#f5f5f5','#1a1a1a'],
+  ar:['#74acdf','#f5f5f5','#74acdf'], at:['#ed2939','#f5f5f5','#ed2939'],
+  dz:['#006233','#f5f5f5','#d21034'], jo:['#1a1a1a','#f5f5f5','#007a3d'],
+  co:['#fcd116','#003893','#ce1126'], pt:['#046a38','#da291c'],
+  uz:['#0099b5','#f5f5f5','#1eb53a'], cd:['#007fff','#f7d618','#ce1021'],
+  'gb-eng':['#f5f5f5','#ce1124'],     hr:['#e4002b','#f5f5f5','#171796'],
+  pa:['#d21034','#f5f5f5','#005293'], gh:['#ce1126','#fcd116','#006b3f'],
+};
+// Hard-stop vertical stripes; falls back to a solid color for unknown codes.
+function nationBarBg(code,fallback){
+  const cols = code && NATION_COLORS[code];
+  if(!cols || !cols.length) return fallback;
+  if(cols.length===1) return cols[0];
+  const n=cols.length;
+  const stops=cols.map((c,i)=>`${c} ${(i/n*100).toFixed(1)}% ${((i+1)/n*100).toFixed(1)}%`).join(',');
+  return `linear-gradient(90deg,${stops})`;
+}
 
 // ── BOX SCORE FLAG COVERAGE ───────────────────────────────────────
 // FLAG_CODE_MAP guarantees a flag for every team ESPN can throw at us —
@@ -3864,33 +3903,32 @@ function renderBarChart(){
     name,data,pts:getPlayerPointsLive(name),
   })).sort((a,b)=>b.pts-a.pts||getPlayerGD(b.name)-getPlayerGD(a.name));
   const maxPts=Math.max(...players.map(p=>p.pts),1);
-  const BAR_H=240;
 
+  // Heights are PERCENTAGES of the responsive chart area (.sbc-vbar-wrap),
+  // so bars always fit inside .sbc-vchart at every breakpoint — fixed px
+  // heights used to overflow the card on mobile.
   document.getElementById('sbcRows').innerHTML=`<div class="sbc-vchart">${players.map((p,i)=>{
     const color=COLORS[p.data.ci];
-    const totalH=maxPts>0?Math.round((p.pts/maxPts)*BAR_H):0;
+    const totalPct=maxPts>0?(p.pts/maxPts)*100:0;
     const pill=i===0?'first':p.pts===players[0].pts?'tied':'behind';
     let segs='';
-    if(DRAFT_COMPLETE){
-      // Segments share the owning player's color. Subtle opacity ramp
-      // gives each contributing nation a faint slice without breaking the
-      // visual tie to the leaderboard.
+    if(DRAFT_COMPLETE && p.pts>0){
+      // Each contributing nation gets a slice painted in its own flag
+      // colors (vertical stripes), sized as its share of the bar.
       const contributing = p.data.nations.filter(n=>getTeamPointsLive(n)>0);
-      contributing.forEach((n, idx)=>{
+      contributing.forEach((n)=>{
         const pts=getTeamPointsLive(n);
         const nd=getNation(n);
-        const segH=Math.round((pts/maxPts)*BAR_H);
-        // Opacity ramp 1.0 → 0.55 over up to 8 segments
-        const alpha = 1 - (idx * 0.06);
-        segs+=`<div class="sbc-vseg" style="height:${segH}px;background:${color};opacity:${alpha.toFixed(2)};">
+        const segPct=(pts/p.pts)*100;
+        segs+=`<div class="sbc-vseg" style="height:${segPct.toFixed(2)}%;background:${nationBarBg(nd&&nd.code,color)};">
           ${nd?`<img src="${flag(nd.code,20)}" style="width:18px;height:12px;object-fit:cover;border-radius:1px;" loading="lazy">`:''}
         </div>`;
       });
     }
     return `<div class="sbc-vcol">
       <div class="sbc-vbar-wrap">
-        ${totalH>0
-          ?`<div class="sbc-vbar" style="height:${totalH}px;">${segs||`<div style="height:100%;background:${color}33;border-radius:8px 8px 0 0;"></div>`}</div>`
+        ${totalPct>0
+          ?`<div class="sbc-vbar" style="height:${totalPct.toFixed(2)}%;">${segs||`<div style="height:100%;background:${color}33;border-radius:8px 8px 0 0;"></div>`}</div>`
           :`<div class="sbc-vbar-empty"></div>`}
       </div>
       <div class="sbc-vfoot">
@@ -3935,7 +3973,7 @@ function renderDraftCards(){
             <span class="dcard-name editable-team-name" style="color:${color}">${teamLabel(p.name)}</span>
             <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
           </div>
-          <span class="dcard-career">${p.data.nations.length||'–'} nations · ${p.data.trophies||0} trophies</span>
+          <span class="dcard-career">${p.data.nations.length||'–'} nations${p.data.trophies?` · ${p.data.trophies} ${p.data.trophies===1?'trophy':'trophies'}`:''}</span>
         </div>
         <div class="dcard-hdr-right">
           <span class="dcard-score" style="color:${color}">${p.pts}</span>

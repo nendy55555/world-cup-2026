@@ -285,3 +285,5 @@ Added a second draft on the same single-page app. Two leagues coexist with full 
 - **Commit 8b36aab** also swept in previously uncommitted Daily Recap work from the working tree.
 - **PUSH PENDING:** sandbox has no GitHub creds — Thomas must `git push` from Mac.
 - **Deploy note (2026-06-11):** commit `8b36aab` could not be pushed from the sandbox (no GitHub creds) — Thomas pushes manually from his Mac. Live site stays on the pre-tournament build until `git push origin main` runs.
+
+- 2026-06-11: Bar chart fixed — segments now striped in each nation's flag colors (NATION_COLORS map + nationBarBg()), heights converted px→% so bars no longer overflow card/section on mobile; mobile chart heights raised (210-230px); "0 trophies" hidden on draft cards (shows only when >0).
