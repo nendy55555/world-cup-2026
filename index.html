@@ -5293,6 +5293,21 @@ async function mpDisconnect(){
 // ── Apply remote state ───────────────────────────────────────────
 function mpApplyRemoteState(remote){
   if(!remote) return;
+  // GUARD: a stale/partial room (e.g. an abandoned pre-draft lobby) must
+  // never shadow the baked-in completed draft. If the embedded draft has
+  // more picks than the remote state, keep the embedded board and ignore
+  // the room payload. Fixes friends stuck on "Draft Pending" after opening
+  // an old #room= link.
+  const _emb = embeddedDraftFor(currentLeagueId);
+  if(_emb && (remote.picks?.length || 0) < _emb.picks.length){
+    if(!draftState || (draftState.picks?.length || 0) < _emb.picks.length){
+      draftState = _emb;
+      saveDraftState();
+      refreshTrackerAfterDraftChange();
+    }
+    renderDraft();
+    return;
+  }
   const wasInit = !draftState;
   const prevStarted = draftState?.startedAt || 0;
   // Ignore if equivalent (shallow check on pick count + completedAt)
