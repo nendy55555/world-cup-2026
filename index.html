@@ -599,6 +599,7 @@ a:hover{color:var(--orange);}
 .lb-gd.pos{color:#16d97e;background:rgba(22,217,126,.12);border-color:rgba(22,217,126,.3);}
 .lb-gd.neg{color:#ff6b6b;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.3);}
 .lb-gd.zero{color:var(--text3);background:rgba(255,255,255,.05);border-color:var(--border);}
+.lb-gp{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:5px;white-space:nowrap;color:var(--text2);background:rgba(255,255,255,.05);border:1px solid var(--border);}
 /* Rename pencil — subtle until row hover/focus */
 .lb-edit{background:none;border:none;cursor:pointer;color:var(--text3);font-size:.85rem;line-height:1;padding:2px 4px;border-radius:5px;opacity:0;transition:opacity .15s,color .15s,background .15s;flex-shrink:0;}
 .lbrow:hover .lb-edit,.lb-edit:focus-visible{opacity:.65;}
@@ -2368,6 +2369,20 @@ const NATION_MAP = {};
 ALL_NATIONS.forEach(n => { NATION_MAP[n.name.toLowerCase()] = n; });
 function getNation(name){ return name ? NATION_MAP[name.toLowerCase().trim()] || null : null; }
 function flag(code,w=40){ return `https://flagcdn.com/w${w}/${code}.png`; }
+// Flag <img> onerror handler with retry. A transient network blip used to dim
+// the flag permanently (until next full render). Now: retry 1 = same URL after
+// a short delay; retry 2 = the w80 variant (different URL dodges any cached
+// failure); only then give up and dim.
+function flagRetry(img){
+  const n = +(img.dataset.r||0);
+  if(n >= 2){ img.style.opacity='.15'; return; }
+  img.dataset.r = n+1;
+  const src = img.src;
+  setTimeout(()=>{
+    if(!img.isConnected) return;            // row was re-rendered; skip
+    img.src = n===0 ? src : src.replace(/\/w40\//,'/w80/');
+  }, 700*(n+1));
+}
 
 // ── NATION BAR COLORS ─────────────────────────────────────────────
 // Flag palette per nation — paints each bar-chart segment as vertical
@@ -2641,6 +2656,10 @@ function findOwner(nationName){
 
 // ── GAME STATE ────────────────────────────────────────────────────
 let nationPoints={}, nationWins={}, nationDraws={}, nationElim={}, nationLive={};
+// Count of FINISHED games each nation has played (group + KO). Feeds the
+// "GP" games-played pill on the standings leaderboard. Reset + repopulated
+// every fetch alongside the other nation* maps; live games are NOT counted.
+let nationGames={};
 // Provisional points from IN-FLIGHT games ("if it ended right now"). Layered on
 // top of nationPoints for the leaderboard scoreboard so totals swing live as
 // goals go in. NEVER fed into bracket seeding / group tables (those use the
@@ -2682,6 +2701,7 @@ function getTeamLivePts(n){ return nationPtsLive[n]||0; }              // in-pla
 function getTeamPointsLive(n){ return (nationPoints[n]||0)+(nationPtsLive[n]||0); } // banked + in-play
 function getTeamWins(n)  { return nationWins[n]||0; }
 function getTeamDraws(n) { return nationDraws[n]||0; }
+function getTeamGames(n) { return nationGames[n]||0; }
 function getTeamGF(n)    { return nationGF[n]||0; }
 function getTeamGA(n)    { return nationGA[n]||0; }
 function getTeamGD(n)    { return getTeamGF(n)-getTeamGA(n); }
@@ -2707,6 +2727,11 @@ function getPlayerLivePts(name){
 function getPlayerGD(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.reduce((s,n)=>s+getTeamGDAll(n),0);
+}
+// Total FINISHED games across all of a player's nations (group + KO).
+function getPlayerGames(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+getTeamGames(n),0);
 }
 function getPlayerAlive(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
@@ -2913,7 +2938,7 @@ function _standingsAsOf(cutoffMs){
     const t=g.kickoff?Date.parse(g.kickoff):NaN;
     return isNaN(t) ? true : (cutoffMs===null || t<cutoffMs);
   });
-  nationPoints={};nationWins={};nationDraws={};nationGF={};nationGA={};nationGFko={};nationGAko={};nationElim={};
+  nationPoints={};nationWins={};nationDraws={};nationGF={};nationGA={};nationGFko={};nationGAko={};nationElim={};nationGames={};
   allGames=subset;
   for(const g of subset) tallyFinishedGame(g, g.homeTeam, g.awayTeam);
   computeBracketResolved();                 // populates nationElim at this cutoff
@@ -3154,6 +3179,9 @@ function getMockGames(){
 function tallyFinishedGame(g, homeN, awayN){
   const hs=g.homeScore, as=g.awayScore;
   if(hs===null||as===null) return;
+  // Count this finished game toward each nation's games-played total.
+  if(homeN) nationGames[homeN]=(nationGames[homeN]||0)+1;
+  if(awayN) nationGames[awayN]=(nationGames[awayN]||0)+1;
   const isGroupRound=(g.round||'').toLowerCase().includes('group');
   if(isGroupRound){
     if(homeN){nationGF[homeN]=(nationGF[homeN]||0)+hs;nationGA[homeN]=(nationGA[homeN]||0)+as;}
@@ -3185,7 +3213,7 @@ function tallyFinishedGame(g, homeN, awayN){
 
 function applyMockGames(games){
   nationPoints={}; nationWins={}; nationDraws={}; nationElim={};
-  nationGF={}; nationGA={}; nationGFko={}; nationGAko={}; nationPtsLive={};
+  nationGF={}; nationGA={}; nationGFko={}; nationGAko={}; nationPtsLive={}; nationGames={};
   for(const g of games){
     if(g.upcoming) continue;
     if(!g.live) tallyFinishedGame(g, g.homeTeam, g.awayTeam);
@@ -3255,7 +3283,7 @@ async function fetchESPN(){
   const results=await Promise.allSettled(requests);
 
   nationPoints={}; nationWins={}; nationDraws={}; nationElim={};
-  nationGF={}; nationGA={}; nationGFko={}; nationGAko={}; nationPtsLive={};
+  nationGF={}; nationGA={}; nationGFko={}; nationGAko={}; nationPtsLive={}; nationGames={};
   nationLive={}; allGames=[]; todayGames=[]; totalCompleted=0;
 
   const todayStr=new Date().toISOString().slice(0,10);
@@ -3796,6 +3824,7 @@ function renderLeaderboard(){
   const players=Object.entries(DRAFT).map(([name,data])=>({
     name,data,pts:getPlayerPointsLive(name),banked:getPlayerPoints(name),
     livePts:getPlayerLivePts(name),alive:getPlayerAlive(name),gd:getPlayerGD(name),
+    gp:getPlayerGames(name),
   })).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||a.name.localeCompare(b.name));
 
   document.getElementById('lboard').innerHTML=players.map((p,i)=>{
@@ -3805,6 +3834,8 @@ function renderLeaderboard(){
     // Goal differential — the tiebreaker — shown next to the name.
     const gdSign=p.gd>0?'+':'';
     const gdPill=`<span class="lb-gd ${p.gd>0?'pos':p.gd<0?'neg':'zero'}">GD ${gdSign}${p.gd}</span>`;
+    // Games played across all of this player's nations so far.
+    const gpPill=`<span class="lb-gp" title="Games played across all your nations">${p.gp} GP</span>`;
     // Order tiles by points (live-inclusive) DESC, eliminated nations last;
     // ties keep draft order (stable sort).
     const sortedNations=DRAFT_COMPLETE
@@ -3819,7 +3850,7 @@ function renderLeaderboard(){
           const nd=getNation(n);
           if(!nd) return '<span class="flag-empty"></span>';
           const e=isElim(n)?' elim':'', lv=nationLive[n]?' live-now':'';
-          return `<img class="lbflag${e}${lv}" src="${flag(nd.code,40)}" title="${n}" loading="lazy" onerror="this.style.opacity='.15'">`;
+          return `<img class="lbflag${e}${lv}" src="${flag(nd.code,40)}" title="${n}" loading="lazy" onerror="flagRetry(this)">`;
         }).join('')
       :Array(8).fill('<span class="flag-empty"></span>').join('');
 
@@ -3837,7 +3868,7 @@ function renderLeaderboard(){
           const ptsShown=getTeamPointsLive(n), ptsCls=nationLive[n]?' nc-pts-live':'';
           // Subtle player-color tint ties each chip back to its owner
           return `<div class="nc${e}${lv}" style="background:${color}14;border-color:${color}33">
-            <img class="nc-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="this.style.opacity='.15'">
+            <img class="nc-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="flagRetry(this)">
             <span class="nc-abbr">${ABBR[n]||n.slice(0,3).toUpperCase()}</span>
             <span class="nc-pts${ptsCls}">${ptsShown}pt</span>
             ${nationLive[n]?'<span class="nc-live-pip"></span>':''}
@@ -3865,7 +3896,7 @@ function renderLeaderboard(){
         <div class="lbname-row">
           <span class="lbname editable-team-name pc${p.data.ci}">${teamLabel(p.name)}</span>
           <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
-          ${aliveTag}${liveTag}${draftTag}${gdPill}
+          ${aliveTag}${liveTag}${draftTag}${gdPill}${gpPill}
         </div>
         <div class="lbflags">${flagsHtml}</div>
       </div>
@@ -3958,13 +3989,16 @@ function renderDraftCards(){
   const players=Object.entries(DRAFT).map(([name,data])=>({name,data,pts:getPlayerPointsLive(name)})).sort((a,b)=>b.pts-a.pts||getPlayerGD(b.name)-getPlayerGD(a.name));
   document.getElementById('dgrid').innerHTML=players.map(p=>{
     const color=COLORS[p.data.ci];
-    const alive=p.data.nations.filter(n=>!isElim(n));
-    const dead=p.data.nations.filter(n=>isElim(n));
+    // Sort each player's nations by points (live-inclusive) DESC so the highest
+    // scorers sit at the top; ties keep draft order via stable sort.
+    const byPts=(a,b)=>getTeamPointsLive(b)-getTeamPointsLive(a);
+    const alive=p.data.nations.filter(n=>!isElim(n)).sort(byPts);
+    const dead=p.data.nations.filter(n=>isElim(n)).sort(byPts);
     const nationRow=(n,pick)=>{
       const nd=getNation(n); if(!nd) return '';
       const pts=getTeamPointsLive(n), el=isElim(n), lv=nationLive[n];
       return `<div class="dteam-row${el?' elim':''}">
-        <img class="dteam-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="this.style.opacity='.12'">
+        <img class="dteam-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="flagRetry(this)">
         <span class="dteam-name">${n}</span>
         <span class="dteam-group">Grp ${nd.group||'?'}</span>
         ${pick?`<span class="dteam-pick">#${pick}</span>`:''}
@@ -4021,7 +4055,7 @@ function renderGroupsGrid(){
         return `<div class="group-team-row" data-pos="${idx+1}">
           ${posBadge}
           ${ownerColor?`<span class="grp-owner-dot" style="background:${ownerColor}"></span>`:'<span class="grp-owner-dot" style="background:transparent"></span>'}
-          <img class="grp-flag" src="${flag(n.code,40)}" loading="lazy" onerror="this.style.opacity='.15'">
+          <img class="grp-flag" src="${flag(n.code,40)}" loading="lazy" onerror="flagRetry(this)">
           <span class="grp-name">${n.name}</span>
           <span class="grp-record" style="opacity:.6">${w}W ${d}D</span>
           <span class="grp-pts">${pts}</span>
@@ -4496,7 +4530,7 @@ function renderKnockoutBracket(){
     const nd=nation?getNation(nation):null;
     const displayName = nation || labelFor(seed);
     return `<div class="bteam ${cls}" data-seed="${seed}">
-      ${nd?`<img class="bflag" src="${flag(nd.code,40)}" loading="lazy" onerror="this.style.opacity='.12'">`
+      ${nd?`<img class="bflag" src="${flag(nd.code,40)}" loading="lazy" onerror="flagRetry(this)">`
           :`<div style="width:18px;height:12px;border-radius:2px;background:rgba(255,255,255,.06);flex-shrink:0;"></div>`}
       <span class="bname">${displayName}</span>
       <span class="bscore">${score!==''?score:''}</span>
@@ -4921,7 +4955,7 @@ function renderNationsPool(){
           const safeName=n.name.replace(/'/g,"\\'");
           return `<div class="nation-card${n.host?' host':''}${open?' open':''}" onclick="toggleNationCard('${safeName}')">
             <div class="nation-card-hdr">
-              <img class="nation-flag" src="${flag(n.code,open?80:40)}" loading="lazy" onerror="this.style.opacity='.12'">
+              <img class="nation-flag" src="${flag(n.code,open?80:40)}" loading="lazy" onerror="flagRetry(this)">
               <div class="nation-card-info">
                 <div class="nation-name">${n.name}${n.host?' 🏟️':''}</div>
                 <div class="nation-group">${

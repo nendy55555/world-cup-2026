@@ -13,7 +13,7 @@
  * Bump CACHE_VERSION on any breaking SW change to evict old caches.
  */
 
-const CACHE_VERSION  = 'wcb-v18-2026-06-12';
+const CACHE_VERSION  = 'wcb-v21-2026-06-13';
 const STATIC_CACHE   = `${CACHE_VERSION}-static`;
 const EXTERNAL_CACHE = `${CACHE_VERSION}-external`;
 
@@ -163,7 +163,10 @@ async function cacheFirst(req, cacheName) {
   const cached = await cache.match(req);
   if (cached) return cached;
   const res = await fetch(req);
-  if (res && res.ok) cache.put(req, res.clone()).catch(()=>{});
+  // no-cors <img> requests (flagcdn) yield OPAQUE responses: status 0, ok=false.
+  // They are still cacheable — without `res.type==='opaque'` flags were never
+  // cached at all, so every render re-hit the network and any blip killed a flag.
+  if (res && (res.ok || res.type === 'opaque')) cache.put(req, res.clone()).catch(()=>{});
   return res;
 }
 

@@ -1,6 +1,15 @@
 # SESSION-STATE
 
-_Last updated: 2026-06-11_
+_Last updated: 2026-06-12_
+
+## 2026-06-12 — FIX: random flags missing (Iraq, Norway…) + tile sort
+
+**Missing flags root cause (2 compounding bugs):** (1) sw.js `cacheFirst` only cached `res.ok` responses, but cross-origin `<img>` fetches are no-cors → opaque (status 0, ok=false), so flagcdn images were NEVER cached and every render re-hit the network; (2) inline `onerror="this.style.opacity='.15'"` permanently dimmed a flag on a single transient failure. Codes verified correct (iq/no/cw/ht all 200 on flagcdn).
+**Fix:** `cacheFirst` now also caches `res.type==='opaque'`; SW v18→v19. All 6 inline onerror handlers replaced with `flagRetry(img)` (index.html, defined next to `flag()`): retry 1 = same URL after 700ms, retry 2 = w80 variant, then dim. Node harness: ALL PASS (retry escalation + sw assertions), `node --check sw.js` clean.
+
+**Tile sort (same session, earlier):** standings nation chips + mobile flag strip now sort by `getTeamPointsLive` DESC, eliminated last, stable ties (draft order). `sortedNations` in `renderLeaderboard`.
+
+**Needs push** (sandbox can't write .git): commit index.html, sw.js, docs.
 
 ## 2026-06-11 — Live refresh audit + foreground catch-up
 
