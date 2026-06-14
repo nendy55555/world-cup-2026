@@ -3627,7 +3627,6 @@ function renderTicker(){
     }
 
     if(g.venue) metaRows.push(`<div class="tmeta-row"><span class="ico">📍</span><span class="txt">${g.venue}${g.city?' · '+g.city:''}</span></div>`);
-    if(g.broadcasts && g.broadcasts.length) metaRows.push(`<div class="tmeta-row"><span class="ico">📺</span><span class="txt">${g.broadcasts.join(', ')}</span></div>`);
 
     // Betting line for upcoming games only
     let oddsBlock='';
