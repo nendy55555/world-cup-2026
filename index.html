@@ -601,6 +601,10 @@ a:hover{color:var(--orange);}
 .lb-gd.neg{color:#ff6b6b;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.3);}
 .lb-gd.zero{color:var(--text3);background:rgba(255,255,255,.05);border-color:var(--border);}
 .lb-gp{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:5px;white-space:nowrap;color:var(--text2);background:rgba(255,255,255,.05);border:1px solid var(--border);}
+/* Games-played badge, pinned to the top-right corner of each team tile. */
+.lb-round{position:absolute;top:9px;right:11px;z-index:3;display:inline-flex;align-items:baseline;gap:2px;font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:800;line-height:1;color:var(--text2);font-variant-numeric:tabular-nums;pointer-events:none;}
+.lb-round-lbl{font-size:.5rem;font-weight:700;letter-spacing:.05em;opacity:.65;}
+.lbrow.lead .lb-round{color:var(--gold);}
 /* Rename pencil — subtle until row hover/focus */
 .lb-edit{background:none;border:none;cursor:pointer;color:var(--text3);font-size:.85rem;line-height:1;padding:2px 4px;border-radius:5px;opacity:0;transition:opacity .15s,color .15s,background .15s;flex-shrink:0;}
 .lbrow:hover .lb-edit,.lb-edit:focus-visible{opacity:.65;}
@@ -2734,6 +2738,13 @@ function getPlayerGames(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.reduce((s,n)=>s+getTeamGames(n),0);
 }
+// Tournament round a team has reached = the most games any one of its nations
+// has finished. Reads 1 after every nation has played its opener, then ticks
+// up as the tournament progresses. Shown as the top-right number on each tile.
+function getPlayerRound(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((m,n)=>Math.max(m,getTeamGames(n)),0);
+}
 function getPlayerAlive(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.filter(n=>!isElim(n)).length;
@@ -3923,7 +3934,7 @@ function renderLeaderboard(){
   const players=Object.entries(DRAFT).map(([name,data])=>({
     name,data,pts:getPlayerPointsLive(name),banked:getPlayerPoints(name),
     livePts:getPlayerLivePts(name),alive:getPlayerAlive(name),gd:getPlayerGD(name),
-    gp:getPlayerGames(name),
+    gp:getPlayerGames(name),round:getPlayerRound(name),
   })).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||a.name.localeCompare(b.name));
 
   document.getElementById('lboard').innerHTML=players.map((p,i)=>{
@@ -3989,13 +4000,16 @@ function renderLeaderboard(){
         </div>
       </div>`;
     }
+    // Top-right corner: games played (tournament round this team has reached).
+    const roundBadge=`<span class="lb-round" title="Games played — rounds completed so far">${p.round}<span class="lb-round-lbl">GP</span></span>`;
     return `<div class="lbrow pc${p.data.ci}${i===0?' lead':''} au" data-player="${p.name}" style="animation-delay:${i*.05}s">
+      ${roundBadge}
       <div class="lbrank">${i===0&&p.name!=='Andrew'?'⭐':(i+1)}</div>
       <div class="lbinfo">
         <div class="lbname-row">
           <span class="lbname editable-team-name pc${p.data.ci}">${teamLabel(p.name)}</span>
           <button class="lb-edit" onclick="startTeamRename(event)" data-key="${p.name}" title="Rename team" aria-label="Rename team">✎</button>
-          ${aliveTag}${liveTag}${draftTag}${gdPill}${gpPill}
+          ${aliveTag}${liveTag}${draftTag}${gdPill}
         </div>
         <div class="lbflags">${flagsHtml}</div>
       </div>
