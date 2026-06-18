@@ -601,10 +601,9 @@ a:hover{color:var(--orange);}
 .lb-gd.neg{color:#ff6b6b;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.3);}
 .lb-gd.zero{color:var(--text3);background:rgba(255,255,255,.05);border-color:var(--border);}
 .lb-gp{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:5px;white-space:nowrap;color:var(--text2);background:rgba(255,255,255,.05);border:1px solid var(--border);}
-/* Games-played badge, pinned to the top-right corner of each team tile. */
-.lb-round{position:absolute;top:9px;right:11px;z-index:3;display:inline-flex;align-items:baseline;gap:2px;font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:800;line-height:1;color:var(--text2);font-variant-numeric:tabular-nums;pointer-events:none;}
-.lb-round-lbl{font-size:.5rem;font-weight:700;letter-spacing:.05em;opacity:.65;}
-.lbrow.lead .lb-round{color:var(--gold);}
+/* Games-played count, pinned to the top-left corner of each nation chip. */
+.nc-gp{position:absolute;top:2px;left:3px;z-index:2;display:inline-flex;align-items:baseline;gap:1px;font-family:'JetBrains Mono',monospace;font-size:.5rem;font-weight:800;line-height:1;color:var(--text2);opacity:.7;font-variant-numeric:tabular-nums;pointer-events:none;}
+.nc-gp-lbl{font-size:.34rem;font-weight:700;letter-spacing:.03em;opacity:.8;}
 /* Rename pencil — subtle until row hover/focus */
 .lb-edit{background:none;border:none;cursor:pointer;color:var(--text3);font-size:.85rem;line-height:1;padding:2px 4px;border-radius:5px;opacity:0;transition:opacity .15s,color .15s,background .15s;flex-shrink:0;}
 .lbrow:hover .lb-edit,.lb-edit:focus-visible{opacity:.65;}
@@ -704,8 +703,19 @@ a:hover{color:var(--orange);}
 .nation-card.open{overflow:visible;}
 .nation-card:hover{border-color:#C9B284;background:var(--bg4);box-shadow:0 6px 22px rgba(201,178,132,.32);transform:translateY(-1px);z-index:50;}
 /* ── Projected XI hover tooltip ── */
-.nation-lineup-tip{position:fixed;top:0;left:0;z-index:9999;background:linear-gradient(180deg,#0d1730 0%,#070d1f 100%);border:1px solid rgba(255,23,68,.35);border-radius:10px;padding:11px 11px 12px;box-shadow:0 16px 48px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06) inset,0 0 24px rgba(255,23,68,.18);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .14s ease,visibility 0s linear .14s;width:260px;max-height:min(420px,calc(100vh - 80px));overflow:hidden;display:flex;flex-direction:column;}
-.nlt-pitch{display:block;width:100%;height:auto;aspect-ratio:230/165;flex:0 0 auto;margin:0 0 9px;border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 4px 14px rgba(0,0,0,.45);}
+.nation-lineup-tip{position:fixed;top:0;left:0;z-index:9999;background:linear-gradient(180deg,#0d1730 0%,#070d1f 100%);border:1px solid rgba(255,23,68,.35);border-radius:12px;padding:13px 13px 14px;box-shadow:0 18px 54px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.06) inset,0 0 26px rgba(255,23,68,.18);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .14s ease,visibility 0s linear .14s;width:344px;max-height:min(580px,calc(100vh - 56px));overflow:hidden;display:flex;flex-direction:column;}
+/* Opta-style pitch: SVG grass/lines as background, HTML marker layer on top
+   so club crests (loaded async) can swap in over each position. */
+.nlt-pitch-wrap{position:relative;width:100%;aspect-ratio:230/188;flex:0 0 auto;margin:0 0 10px;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 4px 16px rgba(0,0,0,.5);}
+.nlt-pitch-bg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.nlt-markers{position:absolute;inset:0;}
+.nlt-mk{position:absolute;width:0;height:0;}
+.nlt-mk-crest{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.6),0 0 0 1.5px rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+img.nlt-mk-crest{object-fit:contain;padding:2.5px;background:#fff;}
+.nlt-mk-crest.mono{background:hsl(var(--h,210),44%,44%);color:#fff;font-size:8.5px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:.02em;}
+.nlt-mk-labels{position:absolute;left:50%;top:calc(50% + 17px);transform:translateX(-50%);width:78px;text-align:center;pointer-events:none;}
+.nlt-mk-name{display:block;font-size:8.4px;font-weight:700;color:#fff;line-height:1.04;text-shadow:0 1px 2px #000,0 0 3px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nlt-mk-club{display:block;font-size:6.7px;font-weight:600;color:#c7d4ee;line-height:1.12;margin-top:1px;text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;letter-spacing:.02em;}
 .nlt-roster{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:2px;}
 .nlt-roster::-webkit-scrollbar{width:4px;}
 .nlt-roster::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:2px;}
@@ -719,8 +729,11 @@ a:hover{color:var(--orange);}
 .nlt-line{margin-bottom:6px;}
 .nlt-line:last-child{margin-bottom:0;}
 .nlt-line-lbl{font-size:.48rem;font-weight:800;letter-spacing:.14em;color:#8090b8;margin-bottom:3px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
-.nlt-player{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:1.5px 0;font-size:.7rem;line-height:1.25;}
-.nlt-player-name{font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nlt-player{display:flex;align-items:center;gap:7px;padding:2px 0;font-size:.72rem;line-height:1.25;}
+.nlt-rcrest{width:16px;height:16px;flex:0 0 auto;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.2);}
+img.nlt-rcrest{object-fit:contain;padding:1.5px;}
+.nlt-rcrest.mono{background:hsl(var(--h,210),44%,44%);color:#fff;font-size:6px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:.01em;}
+.nlt-player-name{font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;min-width:0;}
 .nlt-player-club{font-size:.52rem;color:#6a7ba0;font-family:'JetBrains Mono',monospace;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;}
 .nlt-empty{font-size:.7rem;color:var(--text3);font-style:italic;text-align:center;padding:6px 0;}
 @media (hover:none){.nation-lineup-tip{display:none;}}
@@ -2738,13 +2751,6 @@ function getPlayerGames(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.reduce((s,n)=>s+getTeamGames(n),0);
 }
-// Tournament round a team has reached = the most games any one of its nations
-// has finished. Reads 1 after every nation has played its opener, then ticks
-// up as the tournament progresses. Shown as the top-right number on each tile.
-function getPlayerRound(name){
-  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
-  return d.nations.reduce((m,n)=>Math.max(m,getTeamGames(n)),0);
-}
 function getPlayerAlive(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.filter(n=>!isElim(n)).length;
@@ -3934,7 +3940,7 @@ function renderLeaderboard(){
   const players=Object.entries(DRAFT).map(([name,data])=>({
     name,data,pts:getPlayerPointsLive(name),banked:getPlayerPoints(name),
     livePts:getPlayerLivePts(name),alive:getPlayerAlive(name),gd:getPlayerGD(name),
-    gp:getPlayerGames(name),round:getPlayerRound(name),
+    gp:getPlayerGames(name),
   })).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||a.name.localeCompare(b.name));
 
   document.getElementById('lboard').innerHTML=players.map((p,i)=>{
@@ -3976,8 +3982,11 @@ function renderLeaderboard(){
           const e=isElim(n)?' elim':'', lv=nationLive[n]?' live-now':'';
           // While live, show the provisional total so the chip matches the swinging board.
           const ptsShown=getTeamPointsLive(n), ptsCls=nationLive[n]?' nc-pts-live':'';
+          // Games this nation has finished (group + KO) — pinned top-left of the chip.
+          const gp=getTeamGames(n);
           // Subtle player-color tint ties each chip back to its owner
           return `<div class="nc${e}${lv}" style="background:${color}14;border-color:${color}33">
+            <span class="nc-gp" title="${gp} game${gp===1?'':'s'} played">${gp}<span class="nc-gp-lbl">GP</span></span>
             <img class="nc-flag" src="${flag(nd.code,40)}" loading="lazy" onerror="flagRetry(this)">
             <span class="nc-abbr">${ABBR[n]||n.slice(0,3).toUpperCase()}</span>
             <span class="nc-pts${ptsCls}">${ptsShown}pt</span>
@@ -4000,10 +4009,7 @@ function renderLeaderboard(){
         </div>
       </div>`;
     }
-    // Top-right corner: games played (tournament round this team has reached).
-    const roundBadge=`<span class="lb-round" title="Games played — rounds completed so far">${p.round}<span class="lb-round-lbl">GP</span></span>`;
     return `<div class="lbrow pc${p.data.ci}${i===0?' lead':''} au" data-player="${p.name}" style="animation-delay:${i*.05}s">
-      ${roundBadge}
       <div class="lbrank">${i===0&&p.name!=='Andrew'?'⭐':(i+1)}</div>
       <div class="lbinfo">
         <div class="lbname-row">
@@ -4962,6 +4968,125 @@ async function refreshActualLineups(){
     _saveActualXI();
     try{ renderNationsPool(); }catch(e){}
   }
+}
+
+// ── CLUB CREST RESOLUTION (hybrid) ───────────────────────────────
+// squads.js stores clubs as plain text. We resolve a real crest per club
+// lazily (only when a nation's tooltip is hovered) via TheSportsDB's free
+// search API, cache the badge URL in localStorage forever, and fall back to
+// a styled monogram when no logo is found or the API is unreachable. An
+// alias map normalises our squad spellings to TheSportsDB's team names.
+const CLUB_LOGO_LS_KEY='wcb-club-logos-v1';
+let CLUB_LOGOS=(()=>{ try{const j=JSON.parse(localStorage.getItem(CLUB_LOGO_LS_KEY)); if(j&&typeof j==='object') return j;}catch(e){} return {}; })();
+function _saveClubLogos(){ try{localStorage.setItem(CLUB_LOGO_LS_KEY,JSON.stringify(CLUB_LOGOS));}catch(e){} }
+// Curated search-term aliases for clubs whose squad spelling differs from
+// TheSportsDB's canonical team name (the "static" half of the hybrid).
+const CLUB_LOGO_ALIASES={
+  'Inter':'Inter Milan','Internazionale':'Inter Milan','AC Milan':'AC Milan',
+  'Man City':'Manchester City','Man United':'Manchester United','Spurs':'Tottenham Hotspur',
+  'Tottenham':'Tottenham Hotspur','Wolves':'Wolverhampton Wanderers','Newcastle':'Newcastle United',
+  'PSG':'Paris Saint-Germain','Paris Saint-Germain':'Paris Saint-Germain','Atletico Madrid':'Atletico Madrid',
+  'Atletico de Madrid':'Atletico Madrid','Real Betis':'Real Betis','Bayern Munich':'Bayern Munich',
+  'Borussia Monchengladbach':'Borussia Monchengladbach','Borussia Dortmund':'Borussia Dortmund',
+  'RB Leipzig':'RB Leipzig','RB Salzburg':'Red Bull Salzburg','Bayer Leverkusen':'Bayer Leverkusen',
+  'Union Saint-Gilloise':'Union SG','Sporting CP':'Sporting Lisbon','Sporting':'Sporting Lisbon',
+  'Al Sadd':'Al Sadd SC','Al Duhail':'Al-Duhail SC','Al Rayyan':'Al-Rayyan SC','Al Arabi':'Al-Arabi SC',
+  'Al Gharafa':'Al-Gharafa SC','Al Wakrah':'Al-Wakrah SC','Al Qadsiah':'Al-Qadsiah','Al Sadd SC':'Al Sadd SC',
+  'LAFC':'Los Angeles FC','Inter Miami':'Inter Miami CF','St. Pauli':'FC St. Pauli','Schalke 04':'Schalke 04',
+  'Mamelodi Sundowns':'Mamelodi Sundowns','Orlando Pirates':'Orlando Pirates','Kaizer Chiefs':'Kaizer Chiefs'
+};
+function _normClub(c){ return (c||'').trim(); }
+// Returns: a URL string (resolved), '' (resolved to none), or undefined (unknown / needs resolve).
+function clubLogoUrl(club){ club=_normClub(club); if(!club) return ''; return (club in CLUB_LOGOS)?CLUB_LOGOS[club]:undefined; }
+function clubInitials(club){
+  const stop=/\b(FC|CF|SC|AC|FK|CD|SE|AS|RC|US|SK|BK|IF|AFC|CFC|SV|VfB|VfL|TSG|RB)\b/gi;
+  const words=club.replace(stop,' ').replace(/[.\-]/g,' ').trim().split(/\s+/).filter(Boolean);
+  if(words.length>=2) return (words[0][0]+words[1][0]).toUpperCase();
+  const w=words[0]||club; return w.slice(0,3).toUpperCase();
+}
+function clubHue(club){ let h=0; for(let i=0;i<club.length;i++) h=(h*31+club.charCodeAt(i))%360; return h; }
+function _crestEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+// Build crest markup. cls = base class ('nlt-mk-crest' on pitch, 'nlt-rcrest' in roster).
+function crestHtml(club, cls){
+  club=_normClub(club); if(!club) return `<span class="${cls} mono" style="--h:0">??</span>`;
+  const url=clubLogoUrl(club);
+  if(url===undefined) _queueClubLogo(club);
+  if(url) return `<img class="${cls}" data-club="${_crestEsc(club)}" src="${url}" alt="" loading="lazy" onerror="crestImgFail(this)">`;
+  return `<span class="${cls} mono" data-club="${_crestEsc(club)}" style="--h:${clubHue(club)}">${_crestEsc(clubInitials(club))}</span>`;
+}
+// An <img> failed to load: mark the club unresolved and swap to a monogram.
+function crestImgFail(img){
+  const club=img.getAttribute('data-club')||''; if(club){ CLUB_LOGOS[club]=''; _saveClubLogos(); }
+  const cls=img.className.replace(/\s*mono\s*/,'');
+  const span=document.createElement('span');
+  span.className=cls+' mono'; span.setAttribute('data-club',club);
+  span.style.setProperty('--h', clubHue(club)); span.textContent=clubInitials(club);
+  if(img.parentNode) img.parentNode.replaceChild(span,img);
+}
+// Lazy resolver: batched, debounced. Only clubs actually hovered get fetched.
+const _clubQueue=new Set(); let _clubTimer=0;
+function _queueClubLogo(club){ club=_normClub(club); if(!club||(club in CLUB_LOGOS)) return; _clubQueue.add(club); if(!_clubTimer) _clubTimer=setTimeout(_flushClubLogos,120); }
+function ensureClubLogosFor(nation){
+  try{
+    const proj=projectedXI(nation,(typeof ACTUAL_XI!=='undefined'&&ACTUAL_XI.nations)?ACTUAL_XI.nations[nation]:undefined);
+    if(proj) proj.players.forEach(p=>p.club&&_queueClubLogo(p.club));
+    const sq=(typeof getSquad==='function')?getSquad(nation):null;
+    if(sq) [...(sq.gk||[]),...(sq.def||[]),...(sq.mid||[]),...(sq.att||[])].forEach(p=>p.club&&_queueClubLogo(p.club));
+  }catch(e){}
+}
+async function _flushClubLogos(){
+  _clubTimer=0;
+  const clubs=[..._clubQueue]; _clubQueue.clear();
+  if(!clubs.length) return;
+  let changed=false;
+  await Promise.allSettled(clubs.map(async club=>{
+    if(club in CLUB_LOGOS) return;
+    const term=CLUB_LOGO_ALIASES[club]||club;
+    try{
+      const r=await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${encodeURIComponent(term)}`);
+      if(!r.ok){ return; } // leave unknown -> retry on a later hover
+      const j=await r.json();
+      const teams=(j&&j.teams)||[];
+      const soccer=teams.filter(t=>(t.strSport||'')==='Soccer');
+      const t=soccer[0]||teams[0];
+      const badge=t&&t.strBadge?t.strBadge:'';
+      CLUB_LOGOS[club]= badge?(badge+'/small'):''; changed=true;
+    }catch(e){ /* network/CORS: leave unknown so a future hover retries */ }
+  }));
+  if(changed){ _saveClubLogos(); _paintResolvedCrests(); }
+}
+// Swap resolved monogram crests in the DOM for real <img> badges, without a
+// full pool re-render (keeps the hovered tooltip stable).
+function _paintResolvedCrests(){
+  document.querySelectorAll('span.nlt-mk-crest.mono[data-club], span.nlt-rcrest.mono[data-club]').forEach(span=>{
+    const club=span.getAttribute('data-club')||''; const url=CLUB_LOGOS[club];
+    if(!url) return;
+    const base=span.classList.contains('nlt-mk-crest')?'nlt-mk-crest':'nlt-rcrest';
+    const img=document.createElement('img');
+    img.className=base; img.setAttribute('data-club',club); img.src=url; img.alt=''; img.loading='lazy';
+    img.onerror=function(){ crestImgFail(img); };
+    if(span.parentNode) span.parentNode.replaceChild(img,span);
+  });
+}
+
+// Map an XI to (x,y) on the pitch for the HTML marker overlay. y range is
+// compressed vs the dot-only version so each crest's name+club labels (which
+// hang below the crest) stay inside the grass. Attackers high (small y),
+// keeper low (large y) — matches broadcast/Opta orientation.
+function pitchPositionsOverlay(formationStr){
+  const parts=formationStr.split('-').map(n=>parseInt(n,10)).filter(n=>!isNaN(n));
+  const out=[{x:0.5,y:0.86}]; // GK
+  const lineCount=parts.length;
+  parts.forEach((count,li)=>{
+    const yT = lineCount===1 ? 0.5 : li/(lineCount-1);
+    const y = 0.70 - (0.70-0.13)*yT; // back line .70 -> front line .13
+    for(let i=0;i<count;i++){
+      const xT=(i+1)/(count+1);
+      const x=0.12+(0.88-0.12)*xT;
+      out.push({x,y});
+    }
+  });
+  return out;
 }
 
 // Hover tooltip: 2D pitch + roster grouped by line.
