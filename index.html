@@ -356,6 +356,7 @@ a:hover{color:var(--orange);}
   font-weight:500;
 }
 .recap-headline b{color:var(--gold);font-weight:700;}
+.recap-banter{font-style:italic;font-weight:500;color:var(--text3);opacity:.92;letter-spacing:.01em;}
 .recap-movers{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
 .recap-mover{
   display:flex;align-items:center;gap:9px;flex-wrap:wrap;
@@ -3006,12 +3007,110 @@ function buildDailyRecap(){
     if(o) elimByOwner.push({owner:o,nation:n});
   }
 
+  // per-game outcomes on the day — used to praise the hot nation / roast the blown-out one
+  const outcomes=[];
+  for(const g of dayGames){
+    const grp=(g.round||'').toLowerCase().includes('group');
+    const margin=Math.abs(g.homeScore-g.awayScore);
+    let winner=null,loser=null,shootout=false;
+    if(g.homeScore>g.awayScore){winner=g.homeTeam;loser=g.awayTeam;}
+    else if(g.awayScore>g.homeScore){winner=g.awayTeam;loser=g.homeTeam;}
+    else if(!grp && g.shootoutWinner){winner=g.shootoutWinner;loser=(g.shootoutWinner===g.homeTeam?g.awayTeam:g.homeTeam);shootout=true;}
+    if(winner){
+      outcomes.push({winner,loser,margin,shootout,
+        winnerOwner:findOwner(winner),loserOwner:findOwner(loser),
+        wScore:Math.max(g.homeScore,g.awayScore),lScore:Math.min(g.homeScore,g.awayScore)});
+    }
+  }
+  // biggest blowout (regulation margin) and best owned win for flavor
+  const blowouts=outcomes.filter(o=>!o.shootout).sort((a,b)=>b.margin-a.margin||b.wScore-a.wScore);
+  const topBlowout=blowouts[0]||null;
+  const ownedWins=outcomes.filter(o=>o.winnerOwner).sort((a,b)=>b.margin-a.margin||b.wScore-a.wScore);
+  const ownedRout =outcomes.filter(o=>o.loserOwner && o.margin>=2).sort((a,b)=>b.margin-a.margin);
+
   // lead change across the day
   const leaderBefore=_leaderOf(before.players);
   const leaderAfter =_leaderOf(after.players);
 
   return {recapDayKey,dayStart,dayGameCount:dayGames.length,movers,elimByOwner,
+          outcomes,topBlowout,ownedWins,ownedRout,
           leaderBefore,leaderAfter,leadChanged:!!leaderAfter && leaderBefore!==leaderAfter};
+}
+
+// Seeded picker so the banter is stable for a given day but varies day to day.
+function _recapSeed(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function _recapPick(arr,seed){return arr[seed%arr.length];}
+
+// A little sultry commentary to spice up the headline — about the actual nations
+// that did well (hot) or got blown out (roasted). Kept short to stay on one line.
+function _natName(n){ return n; }  // nation IDs are already full names (e.g. "Sweden")
+function _own(owner){ return owner ? ` (${teamLabel(owner)})` : ''; }
+
+function _recapBanter(r){
+  const seed=_recapSeed(r.recapDayKey);
+  const bo=r.topBlowout;
+  const ownedWin=(r.ownedWins||[])[0];
+  const ownedRout=(r.ownedRout||[])[0];
+
+  // 1) A real blowout on the day — praise the winner, roast the loser by name.
+  if(bo && bo.margin>=3){
+    const w=_natName(bo.winner), l=_natName(bo.loser);
+    return _recapPick([
+      `${w} looked downright filthy out there while ${l} got their asses handed to em`,
+      `${w} clapped today — ${l} got dragged across the pitch and left it limp`,
+      `${w} put on a steamy little clinic and ${l}${_own(bo.loserOwner)} could only lie there and take it`,
+      `${w} was all hands tonight; ${l}${_own(bo.loserOwner)} got bent over ${bo.wScore}-${bo.lScore}`,
+      `whew, ${w} was hot — ${l} got embarrassed in front of everyone`,
+    ],seed);
+  }
+  // 2) An owned nation won — make it about how hot that nation looked.
+  if(ownedWin){
+    const w=_natName(ownedWin.winner), l=_natName(ownedWin.loser);
+    return _recapPick([
+      `${w}${_own(ownedWin.winnerOwner)} looked absolutely irresistible getting past ${l}`,
+      `${w}${_own(ownedWin.winnerOwner)} brought the heat and left ${l} flustered`,
+      `${w}${_own(ownedWin.winnerOwner)} strutted past ${l} like they owned the place`,
+      `someone owns ${w}${_own(ownedWin.winnerOwner)} and tonight that looked very, very good`,
+      `${w}${_own(ownedWin.winnerOwner)} turned heads and made ${l} sweat`,
+    ],seed);
+  }
+  // 3) Someone's owned nation got routed — give them a hard time.
+  if(ownedRout){
+    const w=_natName(ownedRout.winner), l=_natName(ownedRout.loser);
+    return _recapPick([
+      `${l}${_own(ownedRout.loserOwner)} got their asses handed to em by ${w} — tough look`,
+      `${l}${_own(ownedRout.loserOwner)} got worked over by ${w} and somebody's gonna feel that one`,
+      `${w} had their way with ${l}${_own(ownedRout.loserOwner)} — not a great night to own them`,
+      `${l}${_own(ownedRout.loserOwner)} got stripped down by ${w}, ${ownedRout.wScore}-${ownedRout.lScore}`,
+    ],seed);
+  }
+  // 4) Lead change but no standout result.
+  if(r.leadChanged){
+    const who=teamLabel(r.leaderAfter);
+    return _recapPick([
+      `${who} climbed on top and dared anyone to take it back`,
+      `the crown's got a new lover tonight, and ${who} isn't being shy`,
+      `${who} stole the lead and is wearing it like nothing underneath`,
+      `move over — ${who} is on top now, breathless and unbothered`,
+    ],seed);
+  }
+  // 5) Eliminations only.
+  if(r.elimByOwner.length){
+    const e=r.elimByOwner[0];
+    return _recapPick([
+      `${e.nation} got left in bed cold tonight — the bracket doesn't do goodbyes`,
+      `${e.nation}${_own(e.owner)} went down hard and won't be getting back up`,
+      `the door slammed on ${e.nation}${_own(e.owner)} and the lock turned slow`,
+      `${e.nation} got taken apart tonight, button by button`,
+    ],seed);
+  }
+  // 6) Quiet day.
+  return _recapPick([
+    `a quiet night — the kind that's just foreplay for tomorrow`,
+    `nothing stirred, but the tension is practically panting`,
+    `the table held its breath and bit its lip`,
+    `still waters, and the league is dying for someone to make a move`,
+  ],seed);
 }
 
 function _recapHeadlineHtml(r){
@@ -3025,8 +3124,9 @@ function _recapHeadlineHtml(r){
     parts.push(`${teamLabel(e.owner)}'s ${e.nation} crashed out`);
   });
   if(r.leadChanged) parts.push(`new leader <b>${teamLabel(r.leaderAfter)}</b>`);
-  if(!parts.length) return `A quiet day — no points changed hands.`;
-  return parts.join(' · ') + '.';
+  const banter=`<span class="recap-banter">${_recapBanter(r)}</span>`;
+  if(!parts.length) return `A quiet day — no points changed hands. ${banter}`;
+  return parts.join(' · ') + '. ' + banter;
 }
 
 function renderDailyRecap(){
