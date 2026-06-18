@@ -4847,7 +4847,7 @@ function lineLastName(fullName){
 // XI + formation. We pull those for every played game (one fetch per event,
 // cached in localStorage) so the Nations-tab tooltip always shows each team's
 // LATEST ACTUAL XI. PROJECTED_LINEUPS stays the fallback for unplayed teams.
-const ACTUAL_XI_LS_KEY='wcb-actual-xi-v1'; // global — nation data isn't league-scoped
+const ACTUAL_XI_LS_KEY='wcb-actual-xi-v2'; // global — nation data isn't league-scoped. v2: lock to FIRST played game.
 let ACTUAL_XI=(()=>{ try{const j=JSON.parse(localStorage.getItem(ACTUAL_XI_LS_KEY)); if(j&&j.nations&&j.events) return j;}catch(e){} return {nations:{},events:{}}; })();
 function _saveActualXI(){ try{localStorage.setItem(ACTUAL_XI_LS_KEY,JSON.stringify(ACTUAL_XI));}catch(e){} }
 function _axiNameKey(s){ return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,''); }
@@ -4955,7 +4955,10 @@ async function refreshActualLineups(){
         conv.xi=conv.xi.map(n=>_squadNameFor(nation,n));
         const kt=new Date(g.kickoff||0).getTime()||0;
         const prev=ACTUAL_XI.nations[nation];
-        if(!prev || kt>=(prev.kickoffMs||0)){
+        // Keep each nation's FIRST played-match XI (earliest kickoff), per the
+        // "starting squads based on their first game" requirement. Later games
+        // don't overwrite it.
+        if(!prev || kt < (prev.kickoffMs||Infinity)){
           const opp=(side.homeAway==='home')?g.awayTeam:g.homeTeam;
           ACTUAL_XI.nations[nation]={formation:conv.formation, xi:conv.xi, opp, kickoffMs:kt, eventId:g.id};
           changed=true;
@@ -5009,8 +5012,10 @@ function _crestEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quo
 // Build crest markup. cls = base class ('nlt-mk-crest' on pitch, 'nlt-rcrest' in roster).
 function crestHtml(club, cls){
   club=_normClub(club); if(!club) return `<span class="${cls} mono" style="--h:0">??</span>`;
-  const url=clubLogoUrl(club);
-  if(url===undefined) _queueClubLogo(club);
+  const url=clubLogoUrl(club); // string=resolved, ''=none, undefined=not yet fetched
+  // Note: we deliberately do NOT queue a fetch here — bulk pool renders would
+  // flood the API. Resolution is triggered lazily per nation on hover via
+  // ensureClubLogosFor(); resolved crests are then swapped in by _paintResolvedCrests().
   if(url) return `<img class="${cls}" data-club="${_crestEsc(club)}" src="${url}" alt="" loading="lazy" onerror="crestImgFail(this)">`;
   return `<span class="${cls} mono" data-club="${_crestEsc(club)}" style="--h:${clubHue(club)}">${_crestEsc(clubInitials(club))}</span>`;
 }
@@ -5075,7 +5080,7 @@ function _paintResolvedCrests(){
 // keeper low (large y) — matches broadcast/Opta orientation.
 function pitchPositionsOverlay(formationStr){
   const parts=formationStr.split('-').map(n=>parseInt(n,10)).filter(n=>!isNaN(n));
-  const out=[{x:0.5,y:0.86}]; // GK
+  const out=[{x:0.5,y:0.84}]; // GK
   const lineCount=parts.length;
   parts.forEach((count,li)=>{
     const yT = lineCount===1 ? 0.5 : li/(lineCount-1);
@@ -5100,55 +5105,52 @@ function lineupTipHtml(name){
       <div class="nlt-empty">No projection yet</div>
     </div>`;
   }
-  // ── SVG pitch ──
-  const positions = pitchPositionsForFormation(proj.formation);
-  const W = 230, H = 165;
-  const lineColors = { GK:'#FFD93D', DEF:'#FF6B82', MID:'#7BB7FF', FWD:'#FF1744' };
-  const dots = proj.players.map((p,i) => {
+  // ── Pitch: SVG grass/lines background + HTML crest-marker overlay ──
+  const positions = pitchPositionsOverlay(proj.formation);
+  const GW = 230, GH = 188;
+  const markers = proj.players.map((p,i) => {
     const pos = positions[i] || {x:0.5, y:0.5};
-    const cx = (pos.x * W).toFixed(1);
-    const cy = (pos.y * H).toFixed(1);
-    const c = lineColors[p.line] || '#fff';
-    const label = lineLastName(p.name);
-    return `<g>
-      <circle cx="${cx}" cy="${cy}" r="6" fill="${c}" stroke="#0a1228" stroke-width="1.5" filter="url(#nltDot)"/>
-      <text x="${cx}" y="${(parseFloat(cy)+13).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="7.2" font-family="system-ui,-apple-system,sans-serif" font-weight="700" stroke="#0a1228" stroke-width="2.4" paint-order="stroke" style="paint-order:stroke;letter-spacing:.02em">${label}</text>
-    </g>`;
+    const left=(pos.x*100).toFixed(1), top=(pos.y*100).toFixed(1);
+    const surname = _crestEsc(lineLastName(p.name));
+    const clubLbl = p.club ? `<span class="nlt-mk-club">${_crestEsc(p.club)}</span>` : '';
+    return `<div class="nlt-mk" style="left:${left}%;top:${top}%">
+      ${crestHtml(p.club,'nlt-mk-crest')}
+      <span class="nlt-mk-labels"><span class="nlt-mk-name">${surname}</span>${clubLbl}</span>
+    </div>`;
   }).join('');
-  const pitch = `<svg class="nlt-pitch" viewBox="0 0 ${W} ${H}" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="overflow:hidden">
-    <defs>
-      <linearGradient id="nltGrass" x1="0" x2="0" y1="0" y2="1">
-        <stop offset="0%" stop-color="#1f7544"/>
-        <stop offset="100%" stop-color="#0c3a1f"/>
-      </linearGradient>
-      <pattern id="nltStripes" patternUnits="userSpaceOnUse" width="${W}" height="${(H/8).toFixed(2)}">
-        <rect width="${W}" height="${(H/16).toFixed(2)}" fill="rgba(255,255,255,.05)"/>
-      </pattern>
-      <filter id="nltDot" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="0" dy="1" stdDeviation="1.4" flood-color="#000" flood-opacity=".55"/>
-      </filter>
-    </defs>
-    <rect width="${W}" height="${H}" rx="6" fill="url(#nltGrass)"/>
-    <rect width="${W}" height="${H}" rx="6" fill="url(#nltStripes)"/>
-    <g stroke="rgba(255,255,255,.55)" stroke-width="1" fill="none">
-      <rect x="4" y="4" width="${W-8}" height="${H-8}" rx="2"/>
-      <line x1="4" y1="${H/2}" x2="${W-4}" y2="${H/2}"/>
-      <circle cx="${W/2}" cy="${H/2}" r="14"/>
-      <circle cx="${W/2}" cy="${H/2}" r="1.5" fill="rgba(255,255,255,.55)"/>
-      <rect x="${W*0.25}" y="4" width="${W*0.5}" height="20"/>
-      <rect x="${W*0.37}" y="4" width="${W*0.26}" height="10"/>
-      <rect x="${W*0.25}" y="${H-24}" width="${W*0.5}" height="20"/>
-      <rect x="${W*0.37}" y="${H-14}" width="${W*0.26}" height="10"/>
-    </g>
-    ${dots}
-  </svg>`;
+  const pitch = `<div class="nlt-pitch-wrap">
+    <svg class="nlt-pitch-bg" viewBox="0 0 ${GW} ${GH}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="nltGrass" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#1f7544"/>
+          <stop offset="100%" stop-color="#0c3a1f"/>
+        </linearGradient>
+        <pattern id="nltStripes" patternUnits="userSpaceOnUse" width="${GW}" height="${(GH/8).toFixed(2)}">
+          <rect width="${GW}" height="${(GH/16).toFixed(2)}" fill="rgba(255,255,255,.05)"/>
+        </pattern>
+      </defs>
+      <rect width="${GW}" height="${GH}" fill="url(#nltGrass)"/>
+      <rect width="${GW}" height="${GH}" fill="url(#nltStripes)"/>
+      <g stroke="rgba(255,255,255,.5)" stroke-width="1" fill="none">
+        <rect x="4" y="4" width="${GW-8}" height="${GH-8}" rx="2"/>
+        <line x1="4" y1="${GH/2}" x2="${GW-4}" y2="${GH/2}"/>
+        <circle cx="${GW/2}" cy="${GH/2}" r="20"/>
+        <circle cx="${GW/2}" cy="${GH/2}" r="1.6" fill="rgba(255,255,255,.5)"/>
+        <rect x="${(GW*0.22).toFixed(1)}" y="4" width="${(GW*0.56).toFixed(1)}" height="26"/>
+        <rect x="${(GW*0.37).toFixed(1)}" y="4" width="${(GW*0.26).toFixed(1)}" height="11"/>
+        <rect x="${(GW*0.22).toFixed(1)}" y="${GH-30}" width="${(GW*0.56).toFixed(1)}" height="26"/>
+        <rect x="${(GW*0.37).toFixed(1)}" y="${GH-15}" width="${(GW*0.26).toFixed(1)}" height="11"/>
+      </g>
+    </svg>
+    <div class="nlt-markers">${markers}</div>
+  </div>`;
 
   // ── Roster list ──
   const groups = {GK:[],DEF:[],MID:[],FWD:[]};
   proj.players.forEach(p => groups[p.line].push(p));
   const lineRow = (lbl, arr) => arr.length ? `<div class="nlt-line">
     <div class="nlt-line-lbl">${lbl}</div>
-    ${arr.map(p=>`<div class="nlt-player"><span class="nlt-player-name">${p.name}</span>${p.club?`<span class="nlt-player-club">${p.club}</span>`:''}</div>`).join('')}
+    ${arr.map(p=>`<div class="nlt-player">${crestHtml(p.club,'nlt-rcrest')}<span class="nlt-player-name">${_crestEsc(p.name)}</span>${p.club?`<span class="nlt-player-club">${_crestEsc(p.club)}</span>`:''}</div>`).join('')}
   </div>` : '';
   // Header: actual XI shows opponent + date; unplayed teams keep the projection label.
   let hdrLbl='Projected XI';
@@ -5192,7 +5194,7 @@ function renderNationsPool(){
           const open=NATION_OPEN.has(n.name);
           const safeName=n.name.replace(/'/g,"\\'");
           return `<div class="nation-card${n.host?' host':''}${open?' open':''}" onclick="toggleNationCard('${safeName}')">
-            <div class="nation-card-hdr">
+            <div class="nation-card-hdr" data-nation="${_crestEsc(n.name)}">
               <img class="nation-flag" src="${flag(n.code,open?80:40)}" loading="lazy" onerror="flagRetry(this)">
               <div class="nation-card-info">
                 <div class="nation-name">${n.name}${n.host?' 🏟️':''}</div>
@@ -5223,7 +5225,7 @@ function _positionLineupTipAtCursor(hdr, x, y){
   if (!hdr) return;
   const tip = hdr.querySelector('.nation-lineup-tip');
   if (!tip) return;
-  const TIP_W = 260, GAP = 14, MARGIN = 12;
+  const TIP_W = 344, GAP = 14, MARGIN = 12;
   const vw = window.innerWidth, vh = window.innerHeight;
   const maxH = Math.max(180, Math.min(420, vh - 2 * MARGIN));
   tip.style.maxHeight = maxH + 'px';
@@ -5247,6 +5249,11 @@ function installLineupTipPositioner(){
   pool.addEventListener('mousemove', (e) => {
     const hdr = e.target.closest && e.target.closest('.nation-card-hdr');
     if (!hdr) { _ltpHdr = null; return; }
+    if (hdr !== _ltpHdr) {
+      // New card hovered → lazily resolve that nation's club crests.
+      const nat = hdr.getAttribute('data-nation');
+      if (nat && typeof ensureClubLogosFor === 'function') ensureClubLogosFor(nat);
+    }
     _ltpHdr = hdr;
     _ltpX = e.clientX;
     _ltpY = e.clientY;
