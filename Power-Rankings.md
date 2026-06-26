@@ -1,70 +1,54 @@
 # 🔥 WORLD CUP DRAFT — SULTRY POWER RANKINGS 🔥
-### Matchday 1, the lights just dimmed edition
+### Predictive edition — ranked by where you're *headed*, not just where you slept
 
-Gentlemen. The World Cup is here, the group stage is unbuttoning slowly, and only a handful of you have actually *done anything* so far. Three matches are officially in the books. Most of your rosters are still in the back room fixing their hair. So consider this the appetizer — judged on who's already getting it done and who's all talk and a loaded clip with the safety still on.
+Matchday 1 is in the books, every roster's been undressed, and one of you conceded SEVEN. But this isn't a standings screenshot — it's a **power ranking**, so we ran the rest of the group stage through the live betting odds and ranked everyone by **projected final points** (what you've banked + what your nations are favored to add over their last two games). Soft schedules climb. Brutal run-ins fall. Lights low.
 
-**What's actually happened so far:**
-- 🇺🇸 **USA 4–1 Paraguay** — Balogun bagged a brace, Reyna stamped it in stoppage, Paraguay got walked through SoFi like they paid for the tour. Statement.
-- 🇨🇦 **Canada 1–1 Bosnia** — Cyle Larin off the bench in the 78th to rescue a point. First World Cup point in Canadian history. Romantic, in a "we'll take it" way.
-- 🇨🇭 **Switzerland 1–1 Qatar** — Embolo's early penalty had Switzerland cruising, then Khoukhi headed one in at 90+4. Qatar finished. Switzerland did not.
-
-Everyone else? Still warming up. The tease is real.
+*Ranked by projected final group-stage points (current → projected).*
 
 ---
 
-## 🏆 THE OG6 (Main League) — Power Rankings
+## 🏆 THE OG6
 
-*Official points right now: Carson 4 · Thomas 1 · Andrew 1 · Paul 1 · Shaq 0 · Rudger 0*
+### 1. 👑 Shaq — 13 → ~36 proj
+Strutted in and dropped the biggest number in the league. Germany hung a SEVEN on Curaçao and England took Croatia 4–2 — all teeth, all confidence, zero chill. *Outlook:* still the projected leader on the strength of two title horses, but the lead is thinner than it looks — Croatia, Senegal and Uzbekistan aren't adding much down the stretch, so he can't afford England or Germany to cool off.
 
-### 1. 👑 Carson — 4 pts (+3 GD)
-The only one in this group who showed up dressed to finish. **USA dismantled Paraguay 4–1** and **Qatar stole him a bonus point** with that last-gasp header. Leading the table *and* still holding Argentina and the Netherlands in his back pocket. He hasn't even taken his jacket off yet. Everybody else is playing for second until somebody knocks him off the bed.
+### 2. 😏 Paul — 11 → ~35 proj
+The slow-burn artist: FIVE draws, no rush, only one loss. Colombia and South Korea did the finishing while everyone else kept it warm. *Outlook:* the model's favorite lurker — he has the **softest road left in the league** and is projected to bank more points than anyone the rest of the way. Brazil has another gear, those draws turn into wins, and he creeps right up Shaq's back.
 
-### 2. 😏 Thomas — 1 pt
-One measly Bosnia draw on the board, but baby, look at this lineup waiting in the wings: **France. Morocco. Egypt with Salah. Türkiye.** This is the roster that does its best work after midnight. All foreplay so far — but when Mbappé and the gang finally walk out, this table's getting rearranged. (Yes I wrote my own rankings. No I will not apologize.)
+### 3. 💋 Carson — 10 → ~32 proj
+Argentina 3–0 and USA 4–1 were the two sexiest performances of the round — clean, ruthless, lights-out. The back half went shy on him, but help is coming. *Outlook:* favorable fixtures for his big guns push him **up past Rudger** — his role players are projected to finally convert, and Argentina + USA carry the highest knockout ceiling in the group.
 
-### 3. 🍆 Shaq — 0 pts
-Zero points and somehow still dangerous, because **England AND Germany haven't even kicked a ball yet.** Pure potential energy. The most "all gas, hasn't started the car" team in the league. Could rocket to #1 by the weekend or fold like a cheap tent — there is no in-between for a man holding two heavyweights and a prayer (looking at you, Uzbekistan).
+### 4. 🍑 Rudger — 11 → ~32 proj
+Tied near the top now, but that goal difference is a crime scene (Curaçao got bent over 1–7). Norway railing Iraq 4–1 was filthy in the best way. *Outlook:* the **weakest projected haul of the contenders** — Curaçao, South Africa and Paraguay are anchors the model expects to keep losing, so even when Spain wakes up, the dead weight drags him down the board.
 
-### 4. 💋 Rudger — 0 pts (–3 GD)
-Rough open. **Paraguay got railed 4–1** and dragged his goal difference straight into the negatives. BUT — and it's a big but — he's the proud owner of **Spain, the bookies' tournament favorite,** plus Haaland and Norway. Down bad tonight, terrifying next week. The slow burn. Don't text him after Spain plays, he'll be insufferable.
+### 5. 🙃 Thomas — 9 → ~31 proj
+France 3–1 and Sweden 5–1 were gorgeous, and your Sweden put FIVE on your own Tunisia — we don't kink-shame here. *Outlook:* a middling road keeps him mid-table. France can absolutely carry, but Türkiye, Tunisia and Haiti are cooked, so it's a deep France run or bust.
 
-### 5. 🙂 Andrew — 1 pt
-**Switzerland's draw** keeps him on the board, and Portugal/Belgium are perfectly respectable company to keep. But this is the "great personality" roster — solid, dependable, never quite makes your heart race. Iraq and Panama aren't exactly turning heads. Needs Ronaldo to do something main-character soon.
-
-### 6. 🥲 Paul — 1 pt
-**Canada grinding out a draw** got him going, and Brazil is genuinely elite — a five-star centerpiece. The problem is everything around it. Cape Verde, DR Congo, Iran... he's chauffeuring a Ferrari with six shopping carts hitched to the back. If Brazil ever stalls, this gets lonely fast.
+### 6. 🥲 Andrew — 9 → ~31 proj
+Opened with three straight 1–1 draws — Portugal, Belgium, Switzerland — all foreplay, no finish. Mexico and Ghana saved a little face. *Outlook:* the talent to surge is obvious and the model still keeps him within a whisper of mid-table — but a tough slate leaves him last unless Portugal and Belgium finally finish.
 
 ---
 
-## 🎭 THE SQUAD — Power Rankings
+## 🎭 THE SQUAD
 
-*Official points right now: Tiny 3 (+3) · doyersbeast 3 (–3) · Thomas 1 · Mia's Fiancé 0*
+### 1. 👑 Thomas — 19 → ~51 proj
+England, Argentina, Mexico, Sweden AND Scotland all won — nineteen points and the best record in the league. Devastating. *Outlook:* projected to hold the top spot, but it is **not** safe — doyersbeast is closing fast, so keep the foot down.
 
-### 1. 👑 Tiny — 3 pts (+3 GD)
-Rode **USA's 4–1 demolition** to the top of the table and is sitting on **Brazil, Portugal, Uruguay and Croatia** like a man who knows he drafted well. Best goal difference, best vibes, zero notes. Currently the one everyone in this chat is quietly mad at.
+### 2. 💪 doyersbeast — 15 → ~51 proj
+SIX draws. France (3–1), Colombia and Ivory Coast did the work while the rest held hands and went home. *Outlook:* the comeback king — he has the **softest remaining schedule in the Squad** and is projected to gain the most points of anyone, reeling Thomas in to a near dead heat. Those six "almosts" are about to start finishing.
 
-### 2. 💪 doyersbeast — 3 pts (–3 GD)
-The grinder. Pulled points out of **two separate 1–1 draws (Bosnia AND Switzerland)** while **Paraguay got blown out** and tanked his GD. Level on points with Tiny but did it the sweaty way. Saving grace: he owns **France**, the crown jewel, plus Belgium and Colombia. Busy man, mixed night, still very much in it.
+### 3. 🛌 Tiny — 13 → ~47 proj
+Stone-cold last right now after Croatia, South Africa, Algeria, Uzbekistan and Haiti all faceplanted — five losses, the most in the league. *Outlook:* the best comeback case on the board — favorable fixtures for Brazil, Portugal and Uruguay rocket him from worst to a projected **3rd**. The cold bed is warming up.
 
-### 3. 😘 Thomas — 1 pt
-**Qatar's miracle header** at 90+4 is the only thing keeping him off zero — and honestly, what a way to score. Meanwhile **England, Argentina, Mexico and Morocco** are all still in the locker room stretching. One point now, but this is a roster built to peak late. The comeback arc is loading.
-
-### 4. 🛌 Mia's Fiancé — 0 pts
-Dead last... for exactly seven more days. Because this man is sitting on **Spain — the literal tournament favorite — plus Germany, the Netherlands, Norway and Senegal** and *none of them have played yet.* The sleeping giant of the entire draft. Zero points and the scariest roster on the board. When Spain walks out, the rest of you are going to feel it. Engaged to be married, about to be engaged in violence.
+### 4. 😘 Mia's Fiancé — 16 → ~47 proj
+The sleeping giant woke up loud — Germany 7–1, Norway 4–1, balanced and dangerous. *Outlook:* here's the twist — he has the **toughest road left**, his big names drawing the hardest tests, and the model projects him to **slide from 2nd to 4th** unless Spain finally finds its rhythm and changes the math.
 
 ---
 
-## 🥂 The Outlook (read: who's actually winning this thing)
+## 🥂 The Read
 
-The dirty little secret of these standings: **the table is upside down.** The guys with points (Carson, Tiny, doyersbeast) earned them off mid-tier nations overperforming early — and that's real, banked, can't-take-it-away value. But the heaviest rosters haven't even clocked in:
+The standings and the *projections* don't agree, and that's the whole point. Paul and doyersbeast are the lurkers — softest schedules, most points still on the table, both projected to nearly steal the top. Rudger and Mia's Fiancé have the names but the nastiest run-ins, and the model's already fading them. And Spain (0–0, lol) sitting on most of these rosters is the swing factor — the second the favorite ignites, half these projections move.
 
-- **Spain** (Rudger / Mia's Fiancé) — the favorite, yet to play.
-- **France** (Thomas-main / doyersbeast) — elite, yet to play.
-- **England & Germany** (Shaq / Thomas-squad & Mia's Fiancé) — two giants, yet to play.
-- **Argentina & Brazil** — the champs and the perennials, barely warmed up.
+Two matchdays until the bracket. Bank what you can. ⚽💦
 
-So enjoy the lead while it's cute, Carson and Tiny. Matchday 1 isn't even finished — the big bodies are about to walk out, and a lot of these standings are going to look very different by the weekend.
-
-Stay thirsty. ⚽💦
-
-*Rankings reflect confirmed results through the opening matches (USA–Paraguay, Canada–Bosnia, Switzerland–Qatar). Everything else is still to play — outlook calls are vibes-based and legally non-binding.*
+*Model: projected final group points = points banked through MD1 + expected points from each nation's remaining matches, converted from live DraftKings moneylines. Vibes-adjacent but math-backed. Non-binding.*

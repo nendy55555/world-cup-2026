@@ -1,6 +1,31 @@
 # SESSION-STATE
 
-_Last updated: 2026-06-12_
+_Last updated: 2026-06-18_
+
+## 2026-06-18 — Opta-style lineup tooltip + club crests + first-game XI lock
+
+**Goal:** enlarge the Nations-tab lineup tooltip and give it the Opta look — club crest above each player with name below — and add real club logos for every player. Then base the shown XIs on each team's first played game.
+
+**Tooltip restyle (`index.html` CSS + `lineupTipHtml`):**
+- Panel widened 260px→344px, max-height 420→580. The SVG pitch is now an SVG **background** (`.nlt-pitch-wrap` / `.nlt-pitch-bg`, viewBox 230×188, `preserveAspectRatio=none`) with an absolutely-positioned **HTML marker layer** (`.nlt-markers` / `.nlt-mk`) on top, so async-loaded crests can swap in over each position.
+- New `pitchPositionsOverlay(formation)` — y range compressed (GK .84, lines .70→.13) vs the old dot-only `pitchPositionsForFormation` (still defined, now unused) so labels stay inside the grass.
+- Each starter renders as **crest + surname** on the pitch. The club TEXT label was dropped from the pitch (it overlapped on 4-5-wide lines, verified in-browser); club names live in the roster list below, which now also shows a small crest per row.
+
+**Club crest engine (hybrid — `index.html`, block before `lineupTipHtml`):**
+- `clubLogoUrl` / `crestHtml` / `crestImgFail` / `clubInitials` / `clubHue` / `_crestEsc`. squads.js only stores club NAMES, so crests resolve **lazily on hover** (not at bulk render — that would flood the API): `ensureClubLogosFor(nation)` is called from the hover handler in `installLineupTipPositioner`, queues that nation's clubs, `_flushClubLogos` fetches TheSportsDB `searchteams.php` (free key "3"), caches `strBadge+'/small'` in `localStorage['wcb-club-logos-v1']`, then `_paintResolvedCrests()` swaps resolved monograms→`<img>` in place (no full re-render).
+- `CLUB_LOGO_ALIASES` is the curated "static" half of the hybrid — maps our squad spellings to TheSportsDB names (Inter→Inter Milan, Brighton and Hove Albion→Brighton, Al Sadd→Al Sadd SC, etc.).
+- Robust fallback: unresolved or failed logos render a styled **monogram** disc (club initials, hue-hashed). Feature never looks broken even if the API is unreachable.
+- `data-nation` added to `.nation-card-hdr` so the hover handler knows which nation to resolve.
+
+**First-game XI lock (`refreshActualLineups`):** ingestion now keeps each nation's **earliest** kickoff XI (`kt < prev.kickoffMs`) instead of the latest, per "starting squads based on their first game." Cache key bumped `wcb-actual-xi-v1`→`v2` so it re-ingests from ESPN. Teams not yet played keep their `PROJECTED_LINEUPS`.
+
+**Verified in real browser (Claude-in-Chrome, example.com sandbox):** injected the actual functions + CSS, rendered Netherlands 4-3-3. Confirmed: (1) TheSportsDB fetch succeeds with CORS + key "3"; all test clubs incl. aliased ones resolve a badge; (2) crests paint on pitch AND roster (Liverpool, Inter, Barça, City, Spurs, Brighton, Corinthians, Aston Villa); (3) `/small` badge variant loads; (4) after dropping the pitch club label, no overlap on the back line. Screenshot reviewed.
+
+**Constraints this session:** workspace shell was down (disk space) and server-side web_fetch strips query params through TheSportsDB's redirect, so I could NOT pre-bake badge URLs into a static map or fetch 48 real first-match XIs from the sandbox. The crest engine resolves live in the browser instead (cached after first hover); first-game XIs populate via the existing in-browser ESPN pipeline. Pre-baking a static `CLUB_LOGOS` map + hard-baking first-match XIs into squads.js are good follow-ups for when the shell/network is available.
+
+**Not changed:** mobile still hides the tooltip (`@media max-width:720px`) — hover-only feature; a tap-to-open mobile variant is a possible next step.
+
+**PUSH PENDING:** sandbox has no GitHub creds — Thomas must `git push` from his Mac. Also bump `sw.js` CACHE_VERSION on next deploy so clients pick up the new build.
 
 ## 2026-06-12 — FIX: random flags missing (Iraq, Norway…) + tile sort
 

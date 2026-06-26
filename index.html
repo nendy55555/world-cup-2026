@@ -806,6 +806,7 @@ img.nlt-rcrest{object-fit:contain;padding:1.5px;}
 .grp-name{flex:1;font-weight:500;}
 .grp-pts{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:var(--fs-small);color:var(--gold);min-width:18px;text-align:right;font-variant-numeric:tabular-nums;}
 .grp-record{font-size:.52rem;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.grp-gd{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:.6rem;color:var(--text3);min-width:22px;text-align:right;font-variant-numeric:tabular-nums;}
 .grp-owner-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .grp-pos{
   display:inline-flex;align-items:center;justify-content:center;
@@ -4166,6 +4167,8 @@ function renderGroupsGrid(){
       </div>
       ${nations.map((n,idx)=>{
         const pts=getTeamPoints(n.name), w=getTeamWins(n.name), d=getTeamDraws(n.name);
+        const gd=getTeamGF(n.name)-getTeamGA(n.name);
+        const gdStr=gd>0?`+${gd}`:`${gd}`;
         const owner=ownerOf[n.name];
         const ownerColor=owner?COLORS[DRAFT[owner].ci]:null;
         // Position marker — only show once a game has been played in this group
@@ -4177,6 +4180,7 @@ function renderGroupsGrid(){
           <img class="grp-flag" src="${flag(n.code,40)}" loading="lazy" onerror="flagRetry(this)">
           <span class="grp-name">${n.name}</span>
           <span class="grp-record" style="opacity:.6">${w}W ${d}D</span>
+          <span class="grp-gd" title="Goal difference">${gdStr}</span>
           <span class="grp-pts">${pts}</span>
         </div>`;
       }).join('')}
