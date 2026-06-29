@@ -894,6 +894,46 @@ img.nlt-rcrest{object-fit:contain;padding:1.5px;}
 .tt-cut-line .tt-cut-rule{flex:1;height:0;}
 .tt-prov{color:var(--text3);font-style:italic;font-size:.6rem;}
 
+/* --- Squad League Table (EPL-style) --- */
+.squad-table-wrap{margin-top:6px;}
+.squad-table-scroll{
+  overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--bg3);
+}
+.squad-table-scroll::-webkit-scrollbar{height:4px;}
+.squad-table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.squad-table{width:100%;border-collapse:collapse;font-size:.74rem;min-width:520px;}
+.squad-table thead th{
+  font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);text-align:center;padding:10px 8px;
+  border-bottom:1px solid var(--border);white-space:nowrap;background:rgba(255,255,255,.02);
+}
+.squad-table thead th.st-pos-h,.squad-table thead th.st-team-h{text-align:left;}
+.squad-table tbody td{
+  padding:9px 8px;text-align:center;border-bottom:1px solid rgba(24,48,32,.6);
+  font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;color:var(--text2);
+}
+.squad-table tbody tr:last-child td{border-bottom:none;}
+.st-row{transition:background .15s;}
+.st-row:hover{background:rgba(255,255,255,.025);}
+.st-row.leader{box-shadow:inset 3px 0 0 var(--gold);}
+.st-row.leader td{background:rgba(201,178,132,.05);}
+.st-pos{font-weight:800;color:var(--text3);width:30px;text-align:left;padding-left:14px;}
+.st-row.leader .st-pos{color:var(--gold);}
+.st-team-cell{text-align:left !important;font-family:var(--font-body) !important;}
+.st-team-inner{display:flex;align-items:center;gap:9px;min-width:0;}
+.st-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.st-name{font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.squad-table td.st-w{color:var(--green2);}
+.squad-table td.st-l{color:var(--red2);}
+.st-gd.pos{color:var(--green2);}
+.st-gd.neg{color:var(--red2);}
+.st-gd.zero{color:var(--text3);}
+.st-pts{font-weight:800;color:var(--gold);font-size:.82rem;}
+.squad-table-foot{
+  margin-top:8px;font-size:.56rem;letter-spacing:.04em;color:var(--text3);
+  text-align:center;text-transform:uppercase;
+}
+
 /* --- Advancement Projection --- */
 .proj-wrap{margin-bottom:32px;}
 .proj-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
@@ -2073,6 +2113,15 @@ body{ overscroll-behavior-y:contain; }
     <div class="sec-lbl" id="dgridLabel"><span class="sec-lbl-icon">🃏</span> Draft Squads</div>
     <div class="dgrid reveal" id="dgrid"></div>
 
+    <!-- Squad League Table (EPL-style; hidden until draft complete) -->
+    <div class="sec-lbl" id="squadTableLabel" style="margin-top:28px;display:none"><span class="sec-lbl-icon">📋</span> Squad Table</div>
+    <div class="squad-table-wrap reveal" id="squadTableWrap" style="display:none">
+      <div class="squad-table-scroll">
+        <table class="squad-table" id="squadTable"></table>
+      </div>
+      <div class="squad-table-foot">P played · W win · D draw · L loss · GD goal difference · Pts points</div>
+    </div>
+
   </div>
 
   <!-- ═══ BRACKET TAB ═══ -->
@@ -2092,18 +2141,6 @@ body{ overscroll-behavior-y:contain; }
       <div class="third-note" id="thirdNote"></div>
       <div class="third-table-scroll">
         <table class="third-table" id="thirdTable"></table>
-      </div>
-    </div>
-
-    <!-- Advancement Projection -->
-    <div class="sec-lbl proj-sec-lbl"><span class="sec-lbl-icon">🔮</span> Advancement Odds</div>
-    <div class="proj-wrap reveal">
-      <div class="proj-bar">
-        <div class="proj-note" id="projNote"></div>
-        <button class="proj-run" id="projRunBtn" onclick="runProjection()" type="button">Re-run</button>
-      </div>
-      <div class="proj-table-scroll">
-        <table class="proj-table" id="projTable"></table>
       </div>
     </div>
 
@@ -2900,6 +2937,30 @@ function getPlayerGames(name){
 function getPlayerAlive(name){
   const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
   return d.nations.filter(n=>!isElim(n)).length;
+}
+// ── PLAYER-LEVEL W/D/L AND GOALS (group + KO) ─────────────────────
+// Squad-level league record, summed across a player's nations.
+// Wins include KO wins; Draws are group draws only (KO never draws).
+// Losses are derived: games − wins − draws.
+function getPlayerWins(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+getTeamWins(n),0);
+}
+function getPlayerDraws(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+getTeamDraws(n),0);
+}
+function getPlayerLosses(name){
+  return Math.max(0, getPlayerGames(name)-getPlayerWins(name)-getPlayerDraws(name));
+}
+// Goals for/against across all of a player's nations (group + KO).
+function getPlayerGF(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+(nationGF[n]||0)+(nationGFko[n]||0),0);
+}
+function getPlayerGA(name){
+  const d=DRAFT[name]; if(!d||!d.nations.length) return 0;
+  return d.nations.reduce((s,n)=>s+(nationGA[n]||0)+(nationGAko[n]||0),0);
 }
 
 // ── BRACKET RESOLVER ──────────────────────────────────────────────
@@ -4080,6 +4141,63 @@ function startTeamRename(ev){
 // ── RENDER: LEADERBOARD ───────────────────────────────────────────
 // Track previous player scores so we can pulse rows when they increment.
 let _prevPlayerPts = {};
+// ── RENDER: SQUAD LEAGUE TABLE (EPL-style) ────────────────────────
+// Compact W/D/L/GD/Pts table across the 6 squads (banked, finished games).
+// Sits at the bottom of Standings as a clean results table; sorts by
+// Pts → GD → GF → name, the same chain the leaderboard uses.
+function renderSquadTable(){
+  const tbl=document.getElementById('squadTable');
+  const wrap=document.getElementById('squadTableWrap');
+  const lbl=document.getElementById('squadTableLabel');
+  if(!tbl||!wrap||!lbl) return;
+  if(!DRAFT_COMPLETE){ wrap.style.display='none'; lbl.style.display='none'; return; }
+  lbl.style.display=''; wrap.style.display='';
+
+  const rows=Object.entries(DRAFT).map(([name,data])=>({
+    name, ci:data.ci,
+    p:getPlayerGames(name),
+    w:getPlayerWins(name),
+    d:getPlayerDraws(name),
+    l:getPlayerLosses(name),
+    gf:getPlayerGF(name),
+    ga:getPlayerGA(name),
+    gd:getPlayerGD(name),
+    pts:getPlayerPoints(name),
+  })).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.name.localeCompare(b.name));
+
+  const head=`<thead><tr>
+    <th class="st-pos-h">#</th>
+    <th class="st-team-h">Squad</th>
+    <th>P</th><th>W</th><th>D</th><th>L</th>
+    <th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+  </tr></thead>`;
+
+  const body=`<tbody>${rows.map((r,i)=>{
+    const color=COLORS[r.ci];
+    const gdSign=r.gd>0?'+':'';
+    const gdCls=r.gd>0?'pos':r.gd<0?'neg':'zero';
+    return `<tr class="st-row${i===0?' leader':''}">
+      <td class="st-pos">${i+1}</td>
+      <td class="st-team-cell">
+        <span class="st-team-inner">
+          <span class="st-dot" style="background:${color}"></span>
+          <span class="st-name">${teamLabel(r.name)}</span>
+        </span>
+      </td>
+      <td>${r.p}</td>
+      <td class="st-w">${r.w}</td>
+      <td>${r.d}</td>
+      <td class="st-l">${r.l}</td>
+      <td>${r.gf}</td>
+      <td>${r.ga}</td>
+      <td class="st-gd ${gdCls}">${gdSign}${r.gd}</td>
+      <td class="st-pts">${r.pts}</td>
+    </tr>`;
+  }).join('')}</tbody>`;
+
+  tbl.innerHTML=head+body;
+}
+
 function renderLeaderboard(){
   // pts = banked + in-play (live games count provisionally so the board swings
   // with every goal). livePts = just the in-play portion, shown as a "+N live" pill.
@@ -4191,6 +4309,9 @@ function renderLeaderboard(){
       _prevPlayerPts[p.name] = p.pts;
     });
   });
+
+  // Keep the bottom-of-standings league table in sync with every render.
+  try { renderSquadTable(); } catch(e){}
 }
 
 // Count the leaderboard total from one value to another over ~650ms.
@@ -4486,6 +4607,7 @@ function finishedGroupGameBetween(a,b){
 }
 
 function runProjection(){
+  if(!document.getElementById('projTable')) return;  // Advancement Odds section removed
   if(PROJ_RUNNING) return;
   PROJ_RUNNING=true; PROJ_STALE=false;
   const letters='ABCDEFGHIJKL'.split('');

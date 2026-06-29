@@ -1,6 +1,23 @@
 # SESSION-STATE
 
-_Last updated: 2026-06-18_
+_Last updated: 2026-06-29_
+
+## 2026-06-29 — EPL-style Squad Table at bottom of Standings
+
+**Goal:** add a classic league table (W/D/L/GD) across the 6 squads — not nations — at the bottom of the Standings tab.
+
+**Changes (`index.html` only):**
+- New player-level helpers after `getPlayerAlive`: `getPlayerWins`, `getPlayerDraws`, `getPlayerLosses` (= games − W − D), `getPlayerGF`, `getPlayerGA` (group + KO). Reuse existing `getTeamWins/Draws/Games` and `nationGF/GA/GFko/GAko`.
+- `renderSquadTable()` (defined just before `renderLeaderboard`): builds a `<table id="squadTable">` with columns Pos · Squad (color dot + `teamLabel`) · P W D L GF GA GD Pts. Sorts Pts→GD→GF→name (same chain as leaderboard). Hidden until `DRAFT_COMPLETE`. Leader row gets a gold left-border highlight.
+- Called at the end of `renderLeaderboard()` (wrapped in try/catch) so it stays in sync on every live update.
+- HTML: new section after Draft Squads (`#squadTableLabel` / `#squadTableWrap` / `.squad-table`), hidden by default.
+- CSS: `.squad-table*` block added after `.tt-prov`, mirrors `.third-table` styling (themed, mono numerals, W green / L red, GD pos/neg coloring).
+
+**Verified:** inline-script syntax check (0 errors); Node logic test replicating the scoring model confirmed W+D+L=P invariant holds (incl. KO penalty-loss banking +1pt), correct GD/Pts, and Pts→GD→GF sort order.
+
+**Note:** KO ET/penalty losers count as an L in the table but still bank 1 pt, so Pts ≠ 3·W+1·D exactly — by design (matches the site's KO scoring). Pts column shows actual banked points.
+
+**PUSH PENDING:** push from Thomas's Mac; bump `sw.js` CACHE_VERSION on next deploy.
 
 ## 2026-06-18 — Opta-style lineup tooltip + club crests + first-game XI lock
 
