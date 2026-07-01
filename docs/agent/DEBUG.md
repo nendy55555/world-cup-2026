@@ -2,6 +2,11 @@
 
 Read this first when something breaks. One hypothesis → one change → one verification.
 
+## Known-bug log
+
+**2026-06-29 — Wrong R32 matchups (knockout points leaking into group seeding).**
+Symptom: bracket paired teams that never played (e.g. "Canada vs Algeria"; Canada had already played South Africa). Root cause: `compareGroupStanding` sorted on `getTeamPoints`, which returns the player-facing total INCLUDING knockout points. When a group runner-up won its R32 game (+3), its "group" total tied/passed the real group winner and the seeding silently re-sorted — flipping e.g. Canada to `1B` (→ M85 vs Algeria) and pushing Switzerland to `2B`. Verified against live ESPN + official standings: no group in the whole tournament needs a head-to-head tiebreaker, so points+GD is sufficient once points are group-only. Fix: added `getTeamGroupPoints` / `getTeamGroupWins` / `getTeamGroupDraws` (recount finished GROUP games only) and switched `compareGroupStanding`, the seeding gate, the group-grid + third-place tables, and `runProjection` to them. GF/GA were already group-only (KO goals live in `nationGFko/GAko`). Repro harness: `/tmp/repro.js` fetches ESPN, tallies, resolves — all 16 slots now match actual games.
+
 ## Error → layer routing
 
 | Error pattern | Layer | First file to open |

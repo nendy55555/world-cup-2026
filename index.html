@@ -2964,10 +2964,47 @@ function getPlayerGA(name){
 }
 
 // ── BRACKET RESOLVER ──────────────────────────────────────────────
+// GROUP-ONLY points for seeding. getTeamPoints() is the player-facing total
+// and INCLUDES knockout points, so once a team wins an R32/R16/etc. game its
+// total inflates — which would silently re-sort the group table and corrupt
+// seeding (e.g. a group runner-up who wins in the R32 leapfrogging the actual
+// group winner). Group standings must freeze on group results, so we recount
+// points from finished GROUP games only. GF/GA are already group-only
+// (knockout goals live in nationGFko/GAko), so only points needed isolating.
+function getTeamGroupPoints(n){
+  let p=0;
+  for(const g of allGames){
+    if(g.upcoming || g.live) continue;
+    if(g.homeScore===null || g.awayScore===null) continue;
+    if(!(g.round||'').toLowerCase().includes('group')) continue;
+    if(g.homeTeam!==n && g.awayTeam!==n) continue;
+    const my = g.homeTeam===n ? g.homeScore : g.awayScore;
+    const opp= g.homeTeam===n ? g.awayScore : g.homeScore;
+    if(my>opp) p+=PTS_WIN; else if(my===opp) p+=PTS_DRAW;
+  }
+  return p;
+}
+// Group-only W / D (getTeamWins/Draws include knockout results). Used by the
+// group-stage + third-place tables so records stay consistent with group pts.
+function _groupWD(n){
+  let w=0,d=0;
+  for(const g of allGames){
+    if(g.upcoming || g.live) continue;
+    if(g.homeScore===null || g.awayScore===null) continue;
+    if(!(g.round||'').toLowerCase().includes('group')) continue;
+    if(g.homeTeam!==n && g.awayTeam!==n) continue;
+    const my = g.homeTeam===n ? g.homeScore : g.awayScore;
+    const opp= g.homeTeam===n ? g.awayScore : g.homeScore;
+    if(my>opp) w++; else if(my===opp) d++;
+  }
+  return {w,d};
+}
+function getTeamGroupWins(n){ return _groupWD(n).w; }
+function getTeamGroupDraws(n){ return _groupWD(n).d; }
 // Group standings tiebreakers: points DESC, GD DESC, GF DESC, name ASC.
 // (Head-to-head not tracked — covers ~95% of real cases.)
 function compareGroupStanding(a,b){
-  const pa=getTeamPoints(a.name), pb=getTeamPoints(b.name);
+  const pa=getTeamGroupPoints(a.name), pb=getTeamGroupPoints(b.name);
   if(pa!==pb) return pb-pa;
   const gda=getTeamGD(a.name), gdb=getTeamGD(b.name);
   if(gda!==gdb) return gdb-gda;
@@ -3012,7 +3049,7 @@ function computeBracketResolved(){
     if(nations.length<4){ allGroupsDone=false; return; }
     nations.sort(compareGroupStanding);
     nations.forEach((n,i)=>{
-      if(getTeamPoints(n.name)>0){
+      if(getTeamGroupPoints(n.name)>0){
         bracketResolved[`${i+1}${g}`]=n.name;
       }
     });
@@ -4432,7 +4469,7 @@ function renderGroupsGrid(){
         <span class="group-dates">Jun 11–26</span>
       </div>
       ${nations.map((n,idx)=>{
-        const pts=getTeamPoints(n.name), w=getTeamWins(n.name), d=getTeamDraws(n.name);
+        const pts=getTeamGroupPoints(n.name), w=getTeamGroupWins(n.name), d=getTeamGroupDraws(n.name);
         const gd=getTeamGF(n.name)-getTeamGA(n.name);
         const gdStr=gd>0?`+${gd}`:`${gd}`;
         const owner=ownerOf[n.name];
@@ -4496,7 +4533,7 @@ function renderThirdPlaceStandings(){
 
   const rowFor=(t,rank)=>{
     const n=t.nation;
-    const pts=getTeamPoints(n.name), w=getTeamWins(n.name), d=getTeamDraws(n.name);
+    const pts=getTeamGroupPoints(n.name), w=getTeamGroupWins(n.name), d=getTeamGroupDraws(n.name);
     const pld=groupGamesPlayed(n.name);
     const gf=getTeamGF(n.name), ga=getTeamGA(n.name), gd=gf-ga;
     const gdStr=gd>0?`+${gd}`:`${gd}`;
@@ -4617,7 +4654,7 @@ function runProjection(){
                       .filter(x=>x.nats.length===4);
   const basePts={}, baseGF={}, baseGA={};
   groups.forEach(gr=>gr.nats.forEach(n=>{
-    basePts[n]=getTeamPoints(n); baseGF[n]=getTeamGF(n); baseGA[n]=getTeamGA(n);
+    basePts[n]=getTeamGroupPoints(n); baseGF[n]=getTeamGF(n); baseGA[n]=getTeamGA(n);
   }));
   groups.forEach(gr=>{
     gr.pairs=[];

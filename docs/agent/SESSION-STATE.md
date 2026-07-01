@@ -2,6 +2,20 @@
 
 _Last updated: 2026-06-29_
 
+## 2026-06-29 — FIX: wrong R32 bracket matchups (KO points leaked into group seeding)
+
+**Symptom (user):** bracket showed impossible matchups, e.g. "Canada vs Algeria" though Canada had already played (and beat) South Africa.
+
+**Root cause:** `compareGroupStanding` sorted groups on `getTeamPoints`, which is the player total INCLUDING knockout points. Once a group runner-up won its R32 game (+3), its group total tied/overtook the true group winner and the seeding re-sorted → Canada became `1B` (M85 vs Algeria), Switzerland dropped to `2B`. Same inflation hit Mexico(12), France(12), Brazil(10), etc.
+
+**Verified with a Node repro** (`/tmp/repro.js`, not committed) that fetches live ESPN, ports the tally+resolver, and prints the bracket. Confirmed the bug, then confirmed the fix reproduces all 16 actual R32 games. Cross-checked against ESPN official standings — no group needed a head-to-head tiebreaker, so points(group-only)+GD is sufficient. Seed structure, `ANNEX_C`, and third-place slots were already correct.
+
+**Fix (`index.html`):** new `getTeamGroupPoints` + `_groupWD`/`getTeamGroupWins`/`getTeamGroupDraws` (recount finished GROUP games only). Switched to them in: `compareGroupStanding`, the `computeBracketResolved` seeding gate, `renderGroupsGrid`, the third-place `rowFor`, and `runProjection`'s `basePts`. `getTeamPoints` (total incl KO) stays the leaderboard/scoring value. GF/GA were already group-only.
+
+**Not changed:** propagation (R16→F via `findGameBetween`) needed no change — correct R32 slotting fixes the whole tree.
+
+**PUSH PENDING:** push from Thomas's Mac; bump `sw.js` CACHE_VERSION (clients are caching the old build).
+
 ## 2026-06-29 — EPL-style Squad Table at bottom of Standings
 
 **Goal:** add a classic league table (W/D/L/GD) across the 6 squads — not nations — at the bottom of the Standings tab.
