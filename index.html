@@ -356,7 +356,6 @@ a:hover{color:var(--orange);}
   font-weight:500;
 }
 .recap-headline b{color:var(--gold);font-weight:700;}
-.recap-banter{font-style:italic;font-weight:500;color:var(--text3);opacity:.92;letter-spacing:.01em;}
 .recap-movers{display:flex;flex-direction:column;gap:6px;margin-bottom:4px;}
 .recap-mover{
   display:flex;align-items:center;gap:9px;flex-wrap:wrap;
@@ -932,6 +931,83 @@ img.nlt-rcrest{object-fit:contain;padding:1.5px;}
 .squad-table-foot{
   margin-top:8px;font-size:.56rem;letter-spacing:.04em;color:var(--text3);
   text-align:center;text-transform:uppercase;
+}
+
+/* --- Path to Overtake --- */
+.overtake-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:14px;
+  padding:16px;position:relative;overflow:hidden;
+}
+.ot-hdr{display:flex;flex-wrap:wrap;gap:14px 22px;margin-bottom:14px;}
+.ot-picker-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:160px;}
+.ot-picker-label{font-size:.55rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);}
+.ot-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.ot-chip{
+  background:var(--bg2);border:1px solid var(--border);color:var(--text2);
+  padding:5px 12px;border-radius:999px;font-size:.68rem;font-weight:700;
+  cursor:pointer;transition:all .15s ease;font-family:inherit;
+}
+.ot-chip:hover{border-color:var(--text2);color:var(--text);}
+.ot-chip.active{
+  background:linear-gradient(135deg,var(--bg4),var(--bg3));
+  border-color:var(--ot-color,#C9B284);color:var(--text);
+  box-shadow:0 0 0 1px var(--ot-color,#C9B284),0 0 16px color-mix(in srgb,var(--ot-color) 30%,transparent);
+}
+.ot-status{
+  display:inline-block;padding:4px 11px;border-radius:999px;
+  font-size:.7rem;font-weight:800;letter-spacing:.02em;margin-bottom:10px;
+}
+.ot-status.behind{background:rgba(255,100,100,.12);color:var(--red2);}
+.ot-status.ahead{background:rgba(0,255,136,.1);color:var(--green2);}
+.ot-elim,.ot-alive{
+  padding:10px 12px;border-radius:10px;font-size:.74rem;font-weight:700;
+  margin-bottom:12px;line-height:1.4;
+}
+.ot-elim{background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.3);color:var(--red2);}
+.ot-alive{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);color:var(--green2);}
+.ot-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
+  gap:10px;margin-bottom:6px;
+}
+.ot-stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
+.ot-stat-lbl{font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+.ot-stat-val{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:800;color:var(--text);margin-top:2px;}
+.ot-stat-val.ceil{color:#00ff88;}
+.ot-stat-val.floor{color:var(--text2);}
+.ot-sec-title{
+  font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text3);margin:14px 0 8px;
+}
+.ot-collisions{display:flex;flex-direction:column;gap:8px;}
+.ot-collision{
+  background:var(--bg2);border:1px solid rgba(255,180,60,.3);border-radius:8px;
+  padding:8px 10px;display:flex;flex-direction:column;gap:2px;
+}
+.ot-col-nations{font-weight:800;color:var(--text);font-size:.78rem;}
+.ot-vs{color:var(--text3);font-weight:500;font-size:.68rem;margin:0 4px;}
+.ot-col-meta{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;}
+.ot-col-note{font-size:.66rem;color:#ffb84d;}
+.ot-mirror-note{
+  font-size:.68rem;color:var(--text3);background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;margin-top:4px;line-height:1.4;
+}
+.ot-path{display:flex;flex-direction:column;gap:6px;}
+.ot-path-step{
+  display:flex;align-items:center;gap:10px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:.74rem;
+}
+.ot-path-num{
+  width:18px;height:18px;border-radius:50%;background:rgba(201,178,132,.18);
+  color:var(--gold);font-weight:800;font-size:.62rem;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;
+}
+.ot-path-nation{flex:1;font-weight:700;color:var(--text);}
+.ot-path-add{font-family:'JetBrains Mono',monospace;color:#00ff88;font-weight:700;}
+.ot-path-run{font-family:'JetBrains Mono',monospace;color:var(--text3);font-size:.68rem;}
+.ot-path-foot{font-size:.64rem;color:var(--text3);margin-top:8px;line-height:1.45;}
+.ot-empty{font-size:.72rem;color:var(--text3);padding:8px 0;}
+@media(max-width:640px){
+  .ot-hdr{flex-direction:column;gap:12px;}
 }
 
 /* --- Advancement Projection --- */
@@ -2024,7 +2100,7 @@ body{ overscroll-behavior-y:contain; }
       <img src="trionda-ball-circle.png" alt="FIFA Trionda 2026 Match Ball" class="hdr-ball-img hdr-ball-lg">
       <img src="trionda-ball-circle.png" alt="" class="hdr-ball-img hdr-ball-sm" aria-hidden="true">
     </div>
-    <h1>WORLD CUP BOYZ</h1>
+    <h1>WORLD CUP LADS</h1>
     <div class="hdr-sub">FIFA World Cup 2026 · Snake Draft Tracker</div>
     <div class="hdr-badges">
       <span class="badge green">2026 FIFA World Cup</span>
@@ -2121,6 +2197,10 @@ body{ overscroll-behavior-y:contain; }
       </div>
       <div class="squad-table-foot">P played · W win · D draw · L loss · GD goal difference · Pts points</div>
     </div>
+
+    <!-- Path to Overtake (hidden until draft complete + 2+ players) -->
+    <div class="sec-lbl" id="overtakeLabel" style="margin-top:28px;display:none"><span class="sec-lbl-icon">🎯</span> Path to Overtake</div>
+    <div class="overtake-card reveal" id="overtakeCard" style="display:none"></div>
 
   </div>
 
@@ -3298,82 +3378,6 @@ function buildDailyRecap(){
           leaderBefore,leaderAfter,leadChanged:!!leaderAfter && leaderBefore!==leaderAfter};
 }
 
-// Seeded picker so the banter is stable for a given day but varies day to day.
-function _recapSeed(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
-function _recapPick(arr,seed){return arr[seed%arr.length];}
-
-// A little sultry commentary to spice up the headline — about the actual nations
-// that did well (hot) or got blown out (roasted). Kept short to stay on one line.
-function _natName(n){ return n; }  // nation IDs are already full names (e.g. "Sweden")
-function _own(owner){ return owner ? ` (${teamLabel(owner)})` : ''; }
-
-function _recapBanter(r){
-  const seed=_recapSeed(r.recapDayKey);
-  const bo=r.topBlowout;
-  const ownedWin=(r.ownedWins||[])[0];
-  const ownedRout=(r.ownedRout||[])[0];
-
-  // 1) A real blowout on the day — praise the winner, roast the loser by name.
-  if(bo && bo.margin>=3){
-    const w=_natName(bo.winner), l=_natName(bo.loser);
-    return _recapPick([
-      `${w} looked downright filthy out there while ${l} got their asses handed to em`,
-      `${w} clapped today — ${l} got dragged across the pitch and left it limp`,
-      `${w} put on a steamy little clinic and ${l}${_own(bo.loserOwner)} could only lie there and take it`,
-      `${w} was all hands tonight; ${l}${_own(bo.loserOwner)} got bent over ${bo.wScore}-${bo.lScore}`,
-      `whew, ${w} was hot — ${l} got embarrassed in front of everyone`,
-    ],seed);
-  }
-  // 2) An owned nation won — make it about how hot that nation looked.
-  if(ownedWin){
-    const w=_natName(ownedWin.winner), l=_natName(ownedWin.loser);
-    return _recapPick([
-      `${w}${_own(ownedWin.winnerOwner)} looked absolutely irresistible getting past ${l}`,
-      `${w}${_own(ownedWin.winnerOwner)} brought the heat and left ${l} flustered`,
-      `${w}${_own(ownedWin.winnerOwner)} strutted past ${l} like they owned the place`,
-      `someone owns ${w}${_own(ownedWin.winnerOwner)} and tonight that looked very, very good`,
-      `${w}${_own(ownedWin.winnerOwner)} turned heads and made ${l} sweat`,
-    ],seed);
-  }
-  // 3) Someone's owned nation got routed — give them a hard time.
-  if(ownedRout){
-    const w=_natName(ownedRout.winner), l=_natName(ownedRout.loser);
-    return _recapPick([
-      `${l}${_own(ownedRout.loserOwner)} got their asses handed to em by ${w} — tough look`,
-      `${l}${_own(ownedRout.loserOwner)} got worked over by ${w} and somebody's gonna feel that one`,
-      `${w} had their way with ${l}${_own(ownedRout.loserOwner)} — not a great night to own them`,
-      `${l}${_own(ownedRout.loserOwner)} got stripped down by ${w}, ${ownedRout.wScore}-${ownedRout.lScore}`,
-    ],seed);
-  }
-  // 4) Lead change but no standout result.
-  if(r.leadChanged){
-    const who=teamLabel(r.leaderAfter);
-    return _recapPick([
-      `${who} climbed on top and dared anyone to take it back`,
-      `the crown's got a new lover tonight, and ${who} isn't being shy`,
-      `${who} stole the lead and is wearing it like nothing underneath`,
-      `move over — ${who} is on top now, breathless and unbothered`,
-    ],seed);
-  }
-  // 5) Eliminations only.
-  if(r.elimByOwner.length){
-    const e=r.elimByOwner[0];
-    return _recapPick([
-      `${e.nation} got left in bed cold tonight — the bracket doesn't do goodbyes`,
-      `${e.nation}${_own(e.owner)} went down hard and won't be getting back up`,
-      `the door slammed on ${e.nation}${_own(e.owner)} and the lock turned slow`,
-      `${e.nation} got taken apart tonight, button by button`,
-    ],seed);
-  }
-  // 6) Quiet day.
-  return _recapPick([
-    `a quiet night — the kind that's just foreplay for tomorrow`,
-    `nothing stirred, but the tension is practically panting`,
-    `the table held its breath and bit its lip`,
-    `still waters, and the league is dying for someone to make a move`,
-  ],seed);
-}
-
 function _recapHeadlineHtml(r){
   const parts=[];
   r.movers.filter(m=>m.delta>0).slice(0,2).forEach(m=>{
@@ -3385,9 +3389,8 @@ function _recapHeadlineHtml(r){
     parts.push(`${teamLabel(e.owner)}'s ${e.nation} crashed out`);
   });
   if(r.leadChanged) parts.push(`new leader <b>${teamLabel(r.leaderAfter)}</b>`);
-  const banter=`<span class="recap-banter">${_recapBanter(r)}</span>`;
-  if(!parts.length) return `A quiet day — no points changed hands. ${banter}`;
-  return parts.join(' · ') + '. ' + banter;
+  if(!parts.length) return `A quiet day — no points changed hands.`;
+  return parts.join(' · ') + '.';
 }
 
 function renderDailyRecap(){
