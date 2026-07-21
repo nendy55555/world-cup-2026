@@ -13,7 +13,7 @@
  * Bump CACHE_VERSION on any breaking SW change to evict old caches.
  */
 
-const CACHE_VERSION  = 'wcb-v25-2026-07-08';
+const CACHE_VERSION  = 'wcb-v28-2026-07-20';
 const STATIC_CACHE   = `${CACHE_VERSION}-static`;
 const EXTERNAL_CACHE = `${CACHE_VERSION}-external`;
 

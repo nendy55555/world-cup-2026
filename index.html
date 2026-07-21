@@ -3475,12 +3475,32 @@ const GROUP_DATES = [
   '20260617','20260618','20260619','20260620','20260621','20260622',
   '20260623','20260624','20260625','20260626',
 ];
+// FIX 2026-07-17: array was missing 0711 (QF: England 2-1 Norway AET) and
+// 0714 (SF1: Spain 2-0 France) — those games never got fetched, so the
+// tracker silently stopped reflecting reality around July 10. Switched to
+// a contiguous range through the Final so no single-day gap can do this again.
 const KNOCKOUT_DATES = [
   '20260627','20260628','20260629','20260630','20260701','20260702','20260703',
-  '20260704','20260705','20260706','20260707',
-  '20260708','20260709','20260710','20260712','20260715','20260719',
+  '20260704','20260705','20260706','20260707','20260708','20260709','20260710',
+  '20260711','20260712','20260713','20260714','20260715','20260716','20260717',
+  '20260718','20260719',
 ];
 const ALL_DATES = [...GROUP_DATES, ...KNOCKOUT_DATES];
+
+// ── MANUAL RESULT OVERRIDES ───────────────────────────────────────
+// ESPN's public scoreboard occasionally lags on flipping a finished match
+// to Final. The 2026 Final was the worst case: hours after full time its
+// feed still returned "Argentina at Spain" as STATUS_SCHEDULED, 0-0, so the
+// tracker had no completed final to crown a champion from. Any entry here is
+// treated as the source of truth for that ESPN event id until the live feed
+// catches up. Scores are keyed by NATION name (not home/away) so ESPN
+// flipping the orientation can't invert the result. Delete an entry once
+// ESPN reports the same or a truer result — the override is idempotent.
+//   { <eventId>: { <Nation>:goals, <Nation>:goals, wentExtra?, shootoutWinner?, round? } }
+const RESULT_OVERRIDES = {
+  // FINAL — Spain 1-0 Argentina (a.e.t., Ferran Torres 106'), MetLife, Jul 19 2026
+  '760517': { Spain: 1, Argentina: 0, wentExtra: true, round: 'Final' },
+};
 
 // ── MOCK DATA ─────────────────────────────────────────────────────
 // Helper: build an ISO kickoff time from yyyy-mm-dd and hour offset from now
@@ -3713,6 +3733,22 @@ async function fetchESPN(){
       let shootoutWinner=null;
       if(hasShootout && hShoot!==aShoot) shootoutWinner=(hShoot>aShoot?homeN:awayN);
 
+      // Apply any manual override for this event (see RESULT_OVERRIDES).
+      // Only overrides games ESPN has NOT already marked finished, so once the
+      // real result lands the live feed silently takes back over. Scores are
+      // looked up by nation, so home/away orientation is irrelevant.
+      let ovFinished=finished, ovLive=live, ovUpcoming=upcoming,
+          ovHs=hs, ovAs=as, ovWentExtra=wentExtra, ovShootoutWinner=shootoutWinner, ovRound=round;
+      const _ov=RESULT_OVERRIDES[ev.id];
+      if(_ov && !finished){
+        ovFinished=true; ovLive=false; ovUpcoming=false;
+        if(_ov[homeN]!=null) ovHs=_ov[homeN];
+        if(_ov[awayN]!=null) ovAs=_ov[awayN];
+        if(_ov.wentExtra) ovWentExtra=true;
+        if(_ov.shootoutWinner) ovShootoutWinner=_ov.shootoutWinner;
+        if(_ov.round) ovRound=_ov.round;
+      }
+
       const g={
         id:ev.id, date:dateStr.slice(0,8), kickoff,
         homeTeam:homeN||home.team?.displayName||'?',
@@ -3721,25 +3757,25 @@ async function fetchESPN(){
         // only after FLAG_CODE_MAP and getNation() both miss.
         homeLogo:home.team?.logo||null,
         awayLogo:away.team?.logo||null,
-        homeScore:finished||live?hs:null,
-        awayScore:finished||live?as:null,
-        status:live?`LIVE ${clockStr}`:finished?'Final':clockStr,
-        round, isDraw:finished&&hs===as, live, upcoming,
+        homeScore:ovFinished||ovLive?ovHs:null,
+        awayScore:ovFinished||ovLive?ovAs:null,
+        status:ovLive?`LIVE ${clockStr}`:ovFinished?'Final':clockStr,
+        round:ovRound, isDraw:ovFinished&&ovHs===ovAs, live:ovLive, upcoming:ovUpcoming,
         venue, city, broadcasts, odds,
-        wentExtra, shootoutWinner,
+        wentExtra:ovWentExtra, shootoutWinner:ovShootoutWinner,
         homeShootout:hShoot, awayShootout:aShoot,
       };
       allGames.push(g);
-      if(live || (kickoff && kickoff.startsWith(todayStr))) todayGames.push(g);
+      if(ovLive || (kickoff && kickoff.startsWith(todayStr))) todayGames.push(g);
 
-      if(finished){
+      if(ovFinished){
         totalCompleted++;
-        currentRound=round;
+        currentRound=ovRound;
         tallyFinishedGame(g, homeN, awayN);
       }
-      if(live){
-        if(homeN){ nationLive[homeN]={hs,as}; nationPtsLive[homeN]=(nationPtsLive[homeN]||0)+provisionalPts(hs,as); }
-        if(awayN){ nationLive[awayN]={hs,as}; nationPtsLive[awayN]=(nationPtsLive[awayN]||0)+provisionalPts(as,hs); }
+      if(ovLive){
+        if(homeN){ nationLive[homeN]={hs:ovHs,as:ovAs}; nationPtsLive[homeN]=(nationPtsLive[homeN]||0)+provisionalPts(ovHs,ovAs); }
+        if(awayN){ nationLive[awayN]={hs:ovAs,as:ovHs}; nationPtsLive[awayN]=(nationPtsLive[awayN]||0)+provisionalPts(ovAs,ovHs); }
       }
     }
   });
@@ -4352,6 +4388,7 @@ function renderLeaderboard(){
 
   // Keep the bottom-of-standings league table in sync with every render.
   try { renderSquadTable(); } catch(e){}
+  try { renderOvertakeCard(); } catch(e){}
 }
 
 // Count the leaderboard total from one value to another over ~650ms.
@@ -5058,6 +5095,262 @@ function computePlayerDestiny(playerName){
     lockedNationByMatch,
     perNation,
   };
+}
+
+// ── PATH TO OVERTAKE ──────────────────────────────────────────────
+// "What has to happen for YOU to finish ahead of a rival" — built on top of
+// the same per-nation ceiling/floor math as Destiny mode, plus two things
+// Destiny doesn't track: confirmed head-to-head collisions between two
+// specific rosters, and a single greedy "here's one way to get there" path.
+let OVERTAKE_YOU = null;
+let OVERTAKE_RIVAL = null;
+
+// Next NOT-YET-FINISHED fixture for a nation, straight from live ESPN data.
+// ESPN populates the opponent name on future KO fixtures as soon as both
+// sides are known (e.g. "France vs Morocco" appears days before kickoff),
+// so this is more reliable than re-deriving bracket seeding by hand.
+// Game objects store `date` as a YYYYMMDD fetch-bucket string (not a real
+// parseable date — see fetchESPN) and the true ISO kickoff separately as
+// `kickoff`. Normalize whichever we've got into something `new Date()` and
+// toLocaleDateString() can actually read.
+function _otParseableDate(g){
+  if(g.kickoff) return g.kickoff;
+  const d=String(g.date||'');
+  if(/^\d{8}$/.test(d)) return `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+  return d || null;
+}
+function nationNextFixture(n){
+  if(!allGames || !allGames.length) return null;
+  const candidates = allGames.filter(g=>{
+    if(g.homeTeam!==n && g.awayTeam!==n) return false;
+    if(!g.live && g.homeScore!==null && g.awayScore!==null) return false; // finished
+    return true;
+  });
+  if(!candidates.length) return null;
+  candidates.sort((a,b)=> new Date(_otParseableDate(a)) - new Date(_otParseableDate(b)));
+  const g = candidates[0];
+  const opponent = g.homeTeam===n ? g.awayTeam : g.homeTeam;
+  if(!opponent || isTbdSlot(opponent)) return null;
+  return { opponent, date:_otParseableDate(g), round:g.round, live:!!g.live };
+}
+
+// Two of the SAME player's alive nations facing each other — a "free" swing
+// where that player is guaranteed to bank the win no matter the result.
+function selfMirrorMatches(playerName){
+  const d=DRAFT[playerName]; if(!d) return [];
+  const out=[], seen=new Set();
+  for(const n of d.nations){
+    if(isElim(n)) continue;
+    const fx=nationNextFixture(n);
+    if(!fx || isElim(fx.opponent)) continue;
+    if(!d.nations.includes(fx.opponent)) continue;
+    const key=[n,fx.opponent].sort().join('|');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push({a:n, b:fx.opponent, date:fx.date, round:fx.round});
+  }
+  return out;
+}
+
+// Core calculation: can `youName` still finish ahead of `rivalName`, and if
+// so, what's one plausible route? Returns null if either player has no picks.
+function computeOvertakeScenario(youName, rivalName){
+  const you=computePlayerDestiny(youName), rival=computePlayerDestiny(rivalName);
+  if(!you || !rival) return null;
+
+  const gapNow = rival.currentPts - you.currentPts;      // >0 = you're trailing
+  const headroom = you.ceiling - rival.floor;             // <0 = mathematically done
+  const eliminated = headroom < 0;
+
+  // Confirmed head-to-head swing games: your alive nation's very next fixture
+  // is against one of the rival's alive nations.
+  const rivalAlive = new Set(DRAFT[rivalName].nations.filter(n=>!isElim(n)));
+  const collisions=[];
+  for(const n of DRAFT[youName].nations){
+    if(isElim(n)) continue;
+    const fx=nationNextFixture(n);
+    if(fx && rivalAlive.has(fx.opponent)){
+      collisions.push({ yourNation:n, rivalNation:fx.opponent, date:fx.date, round:fx.round, live:fx.live });
+    }
+  }
+
+  const yourMirrors = selfMirrorMatches(youName);
+  const rivalMirrors = selfMirrorMatches(rivalName);
+
+  // Greedy path: your alive nations, collision nations first (double value —
+  // it scores for you AND caps the rival's colliding nation), then by
+  // remaining ceiling. Stack them until the running total clears the
+  // rival's floor.
+  const collidingNames = new Set(collisions.map(c=>c.yourNation));
+  const candidates = you.perNation
+    .filter(pn=>!pn.info.eliminated)
+    .slice()
+    .sort((a,b)=>{
+      const ac=collidingNames.has(a.nation)?1:0, bc=collidingNames.has(b.nation)?1:0;
+      if(ac!==bc) return bc-ac;
+      return b.ceilingAdd - a.ceilingAdd;
+    });
+
+  let running = you.currentPts;
+  const path=[];
+  for(const pn of candidates){
+    if(running > rival.floor) break;
+    running += pn.ceilingAdd;
+    path.push({
+      nation: pn.nation,
+      addedPts: pn.ceilingAdd,
+      runningTotal: running,
+      isCollision: collidingNames.has(pn.nation),
+    });
+  }
+  const pathClinches = running > rival.floor;
+
+  return {
+    you: youName, rival: rivalName,
+    youColor: you.color, rivalColor: rival.color,
+    youCurrent: you.currentPts, rivalCurrent: rival.currentPts,
+    youCeiling: you.ceiling, rivalFloor: rival.floor,
+    youRealistic: you.realistic, rivalRealistic: rival.realistic,
+    gapNow, eliminated,
+    collisions, yourMirrors, rivalMirrors,
+    path, pathClinches,
+  };
+}
+
+function _otFmtDate(iso){
+  try{ return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
+  catch(e){ return ''; }
+}
+
+function _otDefaultYou(){
+  try{ if(mpClaimedName && DRAFT[mpClaimedName]) return mpClaimedName; }catch(e){}
+  return Object.keys(DRAFT)[0] || null;
+}
+function _otDefaultRival(youName){
+  const ranked = Object.keys(DRAFT)
+    .map(n=>({n,pts:getPlayerPoints(n)}))
+    .sort((a,b)=>b.pts-a.pts);
+  const idx = ranked.findIndex(r=>r.n===youName);
+  if(idx<0 || ranked.length<2) return null;
+  if(idx>0) return ranked[idx-1].n;          // closest player ahead of you
+  return ranked[1] ? ranked[1].n : null;      // you're leading — nearest chaser
+}
+
+function setOvertakeYou(name){
+  OVERTAKE_YOU = name;
+  if(OVERTAKE_RIVAL===name) OVERTAKE_RIVAL = null; // re-pick a valid rival
+  renderOvertakeCard();
+  vibe([8]);
+}
+function setOvertakeRival(name){
+  OVERTAKE_RIVAL = name;
+  renderOvertakeCard();
+  vibe([8]);
+}
+
+function _otChipsHtml(selected, onclickFn, colorFor){
+  return Object.keys(DRAFT).map(name=>{
+    const active = name===selected ? ' active' : '';
+    const color = colorFor(name);
+    return `<button class="ot-chip${active}" style="--ot-color:${color}" onclick="${onclickFn}('${_otEsc(name)}')" type="button">${teamLabel(name)}</button>`;
+  }).join('');
+}
+function _otEsc(s){ return String(s).replace(/'/g,"\\'"); }
+
+function otBodyHtml(s){
+  if(!s) return '<div class="ot-empty">Pick two players to compare.</div>';
+  const gapAbs = Math.abs(s.gapNow);
+  const statusHtml = s.gapNow<=0
+    ? `<span class="ot-status ahead">You're ahead by ${gapAbs} pt${gapAbs===1?'':'s'}</span>`
+    : `<span class="ot-status behind">You trail by ${gapAbs} pt${gapAbs===1?'':'s'}</span>`;
+
+  const headroom = s.youCeiling - s.rivalFloor;
+  const verdictHtml = s.eliminated
+    ? `<div class="ot-elim">📉 Statistically eliminated — even your ceiling (${s.youCeiling}) can't reach ${teamLabel(s.rival)}'s guaranteed floor (${s.rivalFloor}).</div>`
+    : `<div class="ot-alive">✅ Still alive — your ceiling (${s.youCeiling}) clears ${teamLabel(s.rival)}'s floor (${s.rivalFloor}) by ${headroom} pt${headroom===1?'':'s'}.</div>`;
+
+  const statsHtml = `<div class="ot-stats">
+    <div class="ot-stat"><div class="ot-stat-lbl">You</div><div class="ot-stat-val" style="color:${s.youColor}">${s.youCurrent}</div></div>
+    <div class="ot-stat"><div class="ot-stat-lbl">${teamLabel(s.rival)}</div><div class="ot-stat-val" style="color:${s.rivalColor}">${s.rivalCurrent}</div></div>
+    <div class="ot-stat"><div class="ot-stat-lbl">Your Ceiling</div><div class="ot-stat-val ceil">${s.youCeiling}</div></div>
+    <div class="ot-stat"><div class="ot-stat-lbl">Their Floor</div><div class="ot-stat-val floor">${s.rivalFloor}</div></div>
+  </div>`;
+
+  let collisionsHtml='';
+  if(s.collisions.length){
+    collisionsHtml = `<div class="ot-sec-title">⚔️ Head-to-head swing games</div><div class="ot-collisions">` +
+      s.collisions.map(c=>`<div class="ot-collision">
+        <span class="ot-col-nations">${c.yourNation}<span class="ot-vs">vs</span>${c.rivalNation}</span>
+        <span class="ot-col-meta">${c.round||''}${c.date?' · '+_otFmtDate(c.date):''}${c.live?' · LIVE NOW':''}</span>
+        <span class="ot-col-note">Win = +3 for you, and it caps their nation right there.</span>
+      </div>`).join('') + `</div>`;
+  }
+
+  const mirrorBits=[];
+  if(s.rivalMirrors.length) mirrorBits.push(`${teamLabel(s.rival)}'s ${s.rivalMirrors.map(m=>m.a+'/'+m.b).join(', ')} play each other next — they bank the win no matter what.`);
+  if(s.yourMirrors.length) mirrorBits.push(`Your ${s.yourMirrors.map(m=>m.a+'/'+m.b).join(', ')} play each other next — you're guaranteed that win.`);
+  const mirrorHtml = mirrorBits.length ? `<div class="ot-mirror-note">🔁 ${mirrorBits.join(' ')}</div>` : '';
+
+  let pathHtml='';
+  if(s.gapNow>0){
+    if(!s.path.length){
+      pathHtml = `<div class="ot-sec-title">🛤️ Path</div><div class="ot-empty">No alive nations left — nothing more you can do here.</div>`;
+    } else {
+      pathHtml = `<div class="ot-sec-title">🛤️ One path to get there</div><div class="ot-path">` +
+        s.path.map((p,i)=>`<div class="ot-path-step">
+          <span class="ot-path-num">${i+1}</span>
+          <span class="ot-path-nation">${p.nation}${p.isCollision?' ⚔️':''} wins out</span>
+          <span class="ot-path-add">+${p.addedPts}</span>
+          <span class="ot-path-run">→ ${p.runningTotal}</span>
+        </div>`).join('') + `</div>` +
+        `<div class="ot-path-foot">${s.pathClinches
+          ? `Do that and you'd finish ahead — assuming ${teamLabel(s.rival)}'s other nations get nothing more. Their real floor (${s.rivalFloor}) already assumes that, so this is the clean case.`
+          : `Even running all your alive nations to the title doesn't close it on paper — you need ${teamLabel(s.rival)} to actually lose some games too.`}</div>`;
+    }
+  } else {
+    pathHtml = `<div class="ot-sec-title">🛡️ Protecting the lead</div><div class="ot-empty">Watch the swing games above — a loss there hands points directly to ${teamLabel(s.rival)}.</div>`;
+  }
+
+  return statusHtml + verdictHtml + statsHtml + collisionsHtml + mirrorHtml + pathHtml;
+}
+
+function renderOvertakeCard(){
+  const lbl=document.getElementById('overtakeLabel');
+  const card=document.getElementById('overtakeCard');
+  if(!lbl||!card) return;
+  const names=Object.keys(DRAFT);
+  if(!DRAFT_COMPLETE || names.length<2){ lbl.style.display='none'; card.style.display='none'; return; }
+  lbl.style.display=''; card.style.display='';
+
+  if(!OVERTAKE_YOU || !DRAFT[OVERTAKE_YOU]) OVERTAKE_YOU = _otDefaultYou();
+  if(!OVERTAKE_RIVAL || !DRAFT[OVERTAKE_RIVAL] || OVERTAKE_RIVAL===OVERTAKE_YOU){
+    OVERTAKE_RIVAL = _otDefaultRival(OVERTAKE_YOU);
+  }
+
+  const colorFor=(n)=>COLORS[DRAFT[n].ci];
+  const rivalChipNames = names.filter(n=>n!==OVERTAKE_YOU);
+
+  const headerHtml = `<div class="ot-hdr">
+    <div class="ot-picker-group">
+      <div class="ot-picker-label">You are</div>
+      <div class="ot-chips">${_otChipsHtml(OVERTAKE_YOU, 'setOvertakeYou', colorFor)}</div>
+    </div>
+    <div class="ot-picker-group">
+      <div class="ot-picker-label">Chasing</div>
+      <div class="ot-chips">${rivalChipNames.map(name=>{
+        const active = name===OVERTAKE_RIVAL ? ' active' : '';
+        return `<button class="ot-chip${active}" style="--ot-color:${colorFor(name)}" onclick="setOvertakeRival('${_otEsc(name)}')" type="button">${teamLabel(name)}</button>`;
+      }).join('')}</div>
+    </div>
+  </div>`;
+
+  if(!OVERTAKE_RIVAL){
+    card.innerHTML = headerHtml + `<div class="ot-empty">Need at least one other player in this league to compare against.</div>`;
+    return;
+  }
+
+  const scenario = computeOvertakeScenario(OVERTAKE_YOU, OVERTAKE_RIVAL);
+  card.innerHTML = headerHtml + otBodyHtml(scenario);
 }
 
 // Apply overlay to already-rendered bracket DOM

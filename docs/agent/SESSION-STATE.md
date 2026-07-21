@@ -1,6 +1,39 @@
 # SESSION-STATE
 
-_Last updated: 2026-06-29_
+_Last updated: 2026-07-20_
+
+## 2026-07-20 — FIX: no champion (ESPN feed lagged on the Final) + manual override mechanism
+
+**Symptom (Thomas):** live site never crowned a winner though Spain won the WC.
+
+**Root cause:** the tracker derives the champion purely from live ESPN data
+(`koWinner(final game)`). Hours after full time, ESPN's `fifa.world/scoreboard`
+still returned event `760517` ("Argentina at Spain", MetLife, Jul 19) as
+`STATUS_SCHEDULED`, `completed:false`, 0-0. No finished final in the feed → no
+champion. Both semis WERE final in ESPN (Spain 2-0 France, Argentina 2-1
+England), so the only missing piece was the final result itself.
+
+**Fix (`index.html`):** new `RESULT_OVERRIDES` map (const, right after
+`ALL_DATES`) + a small apply-block in `fetchESPN` just before the `g={}` build.
+An entry patches a single ESPN event to finished with nation-keyed scores;
+gated on `!finished` so the live feed silently takes back over once ESPN posts
+the real result. Seeded with the Final: `'760517':{Spain:1,Argentina:0,
+wentExtra:true,round:'Final'}`. Spain banks 3, Argentina banks its 1-pt ET
+consolation (`wentExtra`), `CHAMPION=Spain`, Argentina marked eliminated.
+
+**Also bundled (were uncommitted in the working tree):** the 2026-07-17
+contiguous `KNOCKOUT_DATES` range through the Final, and the Path-to-Overtake
+card. Live site (commit 753c7dc) predates all of it, so late-tournament data
+was stale on prod regardless.
+
+**Verified:** `node --check` on both inline blocks + `sw.js`; logic sim of the
+override path (koWinner + KO tally) → Spain champion, 3-1 split, game finished;
+live ESPN confirms both semis final so the bracket resolves both finalists.
+`sw.js` CACHE_VERSION v27→**v28**-2026-07-20.
+
+**PUSH PENDING:** sandbox has no GitHub creds — Thomas must `git push` from his
+Mac for the live site to update. Remove the `760517` override later if/when
+ESPN backfills the real final (optional; it's idempotent).
 
 ## 2026-06-29 — FIX: wrong R32 bracket matchups (KO points leaked into group seeding)
 
